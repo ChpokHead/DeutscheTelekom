@@ -1,0 +1,27 @@
+h1.mainTitle{
+    color: #4e50e3;
+    font-family: 'Helvetica Neue', sans-serif;
+    font-size: 220px;
+    font-weight: bold;
+    letter-spacing: -1px;
+    line-height: 1;
+    text-align: center;
+}
+a.mainButton{
+    display:inline-block;
+    padding:0.3em 1.2em;
+    margin:0 0.3em 0.3em 0;
+    border-radius:2em;
+    box-sizing: border-box;
+    text-decoration:none;
+    font-family:'Helvetica Neue',sans-serif;
+    font-weight:bold;
+    color:#FFFFFF;
+    background-color:#123ab0;
+    text-align:center;
+    transition: all 0.2s;
+    font-size: 25px;
+}
+a.mainButton:hover{
+    background-color:#4095c6;
+}
