@@ -1,3 +1,44 @@
+body {
+    display: flex;
+    align-items: center;
+    padding-top: 40px;
+    padding-bottom: 40px;
+    background-image: url("/images/back.jpeg");
+    background-repeat: no-repeat;
+    background-size: 105%;
+}
+
+.form-signin {
+    width: 100%;
+    max-width: 500px;
+    padding: 15px;
+    margin: 10% auto auto;
+}
+
+.form-signin .checkbox {
+    font-weight: 400;
+}
+
+.form-signin .form-floating:focus-within {
+    z-index: 2;
+}
+
+.form-signin input[type="email"] {
+    margin-bottom: -1px;
+    border-bottom-right-radius: 0;
+    border-bottom-left-radius: 0;
+}
+
+.form-signin input[type="password"] {
+    margin-bottom: 10px;
+    border-top-left-radius: 0;
+    border-top-right-radius: 0;
+}
+
+.shadow-5-strong {
+    box-shadow: 0 6px 20px 0 rgba(0,0,0,.25),0 12px 40px 5px rgba(0,0,0,.2) !important;
+}
+
 h1.mainTitle{
     color: #4e50e3;
     font-family: 'Helvetica Neue', sans-serif;
@@ -7,6 +48,7 @@ h1.mainTitle{
     line-height: 1;
     text-align: center;
 }
+
 a.mainButton{
     display:inline-block;
     padding:0.3em 1.2em;
@@ -22,6 +64,7 @@ a.mainButton{
     transition: all 0.2s;
     font-size: 25px;
 }
+
 a.mainButton:hover{
     background-color:#4095c6;
 }
