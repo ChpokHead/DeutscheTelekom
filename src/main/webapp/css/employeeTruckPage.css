@@ -1,0 +1,48 @@
+.side-navbar {
+    width: 180px;
+    height: 100%;
+    position: fixed;
+    margin-left: -300px;
+    background-color: #100901;
+    transition: 0.5s;
+    padding-left: 0;
+    padding-right: 0;
+}
+
+#navbar-header {
+    color: #ff910a;
+}
+
+.nav-link:active,
+.nav-link:focus {
+    color: white;
+    background-color: #ff910a;
+}
+
+.nav-link:hover {
+    color: black;
+    background-color: #d7d6d6;
+}
+
+.my-container {
+    transition: 0.4s;
+}
+
+.active-nav {
+    margin-left: 0;
+}
+
+.nav-link{
+    color: black;
+}
+
+/* for main section */
+.active-cont {
+    margin-left: 180px;
+}
+
+#menu-btn {
+    background-color: #100901;
+    color: #d70000;
+    margin-left: -62px;
+}

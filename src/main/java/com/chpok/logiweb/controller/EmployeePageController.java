@@ -7,14 +7,9 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 
 @Controller
-public class EmployeeController {
-    @Autowired
-    TruckService truckService;
-
+public class EmployeePageController {
     @GetMapping("/employeePage")
     String getEmployeePage(Model model) {
-        model.addAttribute("availableTrucks", truckService.findAll());
-
         return "employeePage";
     }
 }

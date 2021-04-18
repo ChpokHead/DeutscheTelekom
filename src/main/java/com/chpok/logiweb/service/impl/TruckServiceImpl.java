@@ -20,4 +20,9 @@ public class TruckServiceImpl implements TruckService {
     public List<Truck> findAll() {
         return truckDao.findAll();
     }
+
+    @Override
+    public void update(Truck truck) {
+        truckDao.update(truck);
+    }
 }

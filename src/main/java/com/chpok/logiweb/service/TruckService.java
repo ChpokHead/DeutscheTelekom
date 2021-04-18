@@ -6,4 +6,5 @@ import java.util.List;
 
 public interface TruckService {
     List<Truck> findAll();
+    void update(Truck truck);
 }

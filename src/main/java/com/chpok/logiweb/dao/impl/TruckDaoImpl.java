@@ -9,6 +9,7 @@ import org.springframework.stereotype.Component;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Types;
 import java.util.Optional;
 
 @Component
@@ -16,7 +17,7 @@ public class TruckDaoImpl extends AbstractCrudDao<Truck> implements TruckDao {
     private static final String SAVE_QUERY = "INSERT INTO truck (reg_number, drivers_shift, capacity, status, location) values(?, ?, ?, ?, ?)";
     private static final String FIND_BY_ID_QUERY = "SELECT * FROM truck WHERE id = ?";
     private static final String FIND_ALL_QUERY = "SELECT * FROM truck";
-    private static final String UPDATE_QUERY = "UPDATE truck SET reg_number = ?, drivers_shift = ?, capacity = ?, status = ? WHERE id = ?";
+    private static final String UPDATE_QUERY = "UPDATE truck SET reg_number = ?, drivers_shift = ?, capacity = ?, status = CAST(? AS truck_status), location = ? WHERE id = ?";
     private static final String DELETE_BY_ID_QUERY = "DELETE FROM truck WHERE id = ?";
     private static final String FIND_BY_REG_NUMBER_QUERY = "SELECT * FROM truck WHERE reg_number = ?";
 
@@ -48,7 +49,12 @@ public class TruckDaoImpl extends AbstractCrudDao<Truck> implements TruckDao {
 
     @Override
     protected void updateValues(PreparedStatement preparedStatement, Truck entity) throws SQLException {
-        throw new UnsupportedOperationException();
+        preparedStatement.setString(1, entity.getRegNumber());
+        preparedStatement.setShort(2, entity.getDriversShift());
+        preparedStatement.setShort(3, entity.getCapacity());
+        preparedStatement.setString(4, entity.getStatus().toString());
+        preparedStatement.setString(5, entity.getLocation());
+        preparedStatement.setLong(6, entity.getId());
     }
 
     @Override
