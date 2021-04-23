@@ -1,8 +1,6 @@
-package com.chpok.logiweb.form;
+package com.chpok.logiweb.dto;
 
-import com.chpok.logiweb.model.TruckStatus;
-
-public class TruckForm {
+public class TruckDto {
     private Long id;
     private String regNumber;
     private Short driversShift;

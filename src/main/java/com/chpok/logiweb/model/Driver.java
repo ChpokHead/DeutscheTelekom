@@ -1,14 +1,48 @@
 package com.chpok.logiweb.model;
 
-public class Driver {
-    private final Long id;
-    private final String firstName;
-    private final String lastName;
-    private final String personalNumber;
-    private final Short monthWorkedHours;
-    private final DriverStatus status;
-    private final String location;
-    private final Truck truck;
+import com.chpok.logiweb.model.enums.DriverStatus;
+import com.chpok.logiweb.util.PostgreSQLEnumType;
+import org.hibernate.annotations.DynamicInsert;
+import org.hibernate.annotations.Type;
+import org.hibernate.annotations.TypeDef;
+
+import javax.persistence.*;
+
+@Entity
+@Table(name = "driver")
+@DynamicInsert
+@TypeDef(
+        name = "pgsql_enum",
+        typeClass = PostgreSQLEnumType.class
+)
+public class Driver extends AbstractModel{
+    @Column(name = "first_name")
+    private String firstName;
+
+    @Column(name = "last_name")
+    private String lastName;
+
+    @Column(name = "personal_number")
+    private String personalNumber;
+
+    @Column(name = "month_worked_hours")
+    private Short monthWorkedHours;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "status", columnDefinition = "driver_status")
+    @Type(type = "pgsql_enum")
+    private DriverStatus status;
+
+    @Column(name = "location")
+    private String location;
+
+    @ManyToOne
+    @JoinColumn(name = "truck_id")
+    private Truck currentTruck;
+
+    public Driver() {
+
+    }
 
     private Driver(Builder builder) {
         this.id = builder.id;
@@ -18,7 +52,7 @@ public class Driver {
         this.monthWorkedHours = builder.monthWorkedHours;
         this.status = builder.status;
         this.location = builder.location;
-        this.truck = builder.truck;
+        this.currentTruck = builder.currentTruck;
     }
 
     public static Builder builder() {
@@ -53,8 +87,8 @@ public class Driver {
         return location;
     }
 
-    public Truck getTruck() {
-        return truck;
+    public Truck getCurrentTruck() {
+        return currentTruck;
     }
 
     public static class Builder {
@@ -65,7 +99,7 @@ public class Driver {
         private Short monthWorkedHours;
         private DriverStatus status;
         private String location;
-        private Truck truck;
+        private Truck currentTruck;
 
         private Builder(){
 
@@ -106,8 +140,8 @@ public class Driver {
             return this;
         }
 
-        public Builder withTruck(Truck truck) {
-            this.truck = truck;
+        public Builder withCurrentTruck(Truck truck) {
+            this.currentTruck = truck;
             return this;
         }
 

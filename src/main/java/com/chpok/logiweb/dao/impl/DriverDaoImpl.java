@@ -1,8 +1,8 @@
 package com.chpok.logiweb.dao.impl;
 
-import com.chpok.logiweb.dao.TruckDao;
+import com.chpok.logiweb.dao.DriverDao;
 import com.chpok.logiweb.dao.exception.DatabaseRuntimeException;
-import com.chpok.logiweb.model.Truck;
+import com.chpok.logiweb.model.Driver;
 import com.chpok.logiweb.util.HibernateUtil;
 import org.hibernate.Session;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,14 +14,14 @@ import java.util.Optional;
 import java.util.Set;
 
 @Component
-public class TruckDaoImpl implements TruckDao{
-    private static final String FIND_ALL_QUERY = "SELECT t FROM Truck t";
+public class DriverDaoImpl implements DriverDao {
+    private static final String FIND_ALL_QUERY = "SELECT d FROM Driver d";
 
     @Autowired
-    private HibernateUtil hibernateUtil;
+    HibernateUtil hibernateUtil;
 
     @Override
-    public void save(Truck entity) {
+    public void save(Driver entity) {
         try (Session session =
                      Objects.requireNonNull(hibernateUtil.sessionFactory().getObject()).openSession()) {
             session.beginTransaction();
@@ -30,46 +30,45 @@ public class TruckDaoImpl implements TruckDao{
 
             session.getTransaction().commit();
         } catch (NullPointerException npe) {
-            throw new DatabaseRuntimeException("DB truck saving exception", npe);
+            throw new DatabaseRuntimeException("DB driver saving exception", npe);
         }
 
     }
 
     @Override
-    public Optional<Truck> findById(Long id) {
+    public Optional<Driver> findById(Long id) {
         return Optional.empty();
     }
 
     @Override
-    public List<Truck> findAll() {
+    public List<Driver> findAll() {
         try (Session session =
                      Objects.requireNonNull(hibernateUtil.sessionFactory().getObject()).openSession()) {
             session.beginTransaction();
 
-            final List<Truck> allTrucks = session.createQuery(FIND_ALL_QUERY, Truck.class).getResultList();
+            final List<Driver> allDrivers = session.createQuery(FIND_ALL_QUERY, Driver.class).getResultList();
 
             session.getTransaction().commit();
 
-            return allTrucks;
-        }  catch (NullPointerException npe) {
-            throw new DatabaseRuntimeException("DB getting all trucks exception", npe);
+            return allDrivers;
+        } catch (NullPointerException npe) {
+            throw new DatabaseRuntimeException("DB getting all driver exception", npe);
         }
 
     }
 
     @Override
-    public void update(Truck entity) {
-        try (Session session =
-                     Objects.requireNonNull(hibernateUtil.sessionFactory().getObject()).openSession()) {
+    public void update(Driver entity) {
+        try(Session session =
+                    Objects.requireNonNull(hibernateUtil.sessionFactory().getObject()).openSession()) {
             session.beginTransaction();
 
             session.update(entity);
 
             session.getTransaction().commit();
         }  catch (NullPointerException npe) {
-            throw new DatabaseRuntimeException("DB truck updating exception", npe);
+            throw new DatabaseRuntimeException("DB driver updating exception", npe);
         }
-
     }
 
     @Override
@@ -78,15 +77,14 @@ public class TruckDaoImpl implements TruckDao{
                      Objects.requireNonNull(hibernateUtil.sessionFactory().getObject()).openSession()) {
             session.beginTransaction();
 
-            final Truck deletingTruck = session.get(Truck.class, id);
+            final Driver deletingDriver = session.load(Driver.class, id);
 
-            session.delete(deletingTruck);
+            session.delete(deletingDriver);
 
             session.getTransaction().commit();
         }  catch (NullPointerException npe) {
             throw new DatabaseRuntimeException("DB driver deleting exception", npe);
         }
-
     }
 
     @Override
@@ -95,8 +93,7 @@ public class TruckDaoImpl implements TruckDao{
     }
 
     @Override
-    public Optional<Truck> findByRegNumber(String regNumber) {
+    public Optional<Driver> findByPersonalNumber(String personalNumber) {
         return Optional.empty();
     }
-
 }

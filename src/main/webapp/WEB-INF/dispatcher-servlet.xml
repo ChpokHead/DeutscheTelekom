@@ -8,6 +8,9 @@
     <context:component-scan base-package="com.chpok.logiweb"/>
     <mvc:annotation-driven ignore-default-model-on-redirect="true"></mvc:annotation-driven>
 
+    <bean id="hiddenHttpMethodFilter" class="org.springframework.web.filter.HiddenHttpMethodFilter">
+
+    </bean>
 
     <bean id="templateResolver" class="org.thymeleaf.spring5.templateresolver.SpringResourceTemplateResolver">
         <property name="prefix" value="/html/"/>

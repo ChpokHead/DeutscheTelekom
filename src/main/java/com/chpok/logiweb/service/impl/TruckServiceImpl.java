@@ -17,12 +17,22 @@ public class TruckServiceImpl implements TruckService {
     }
 
     @Override
-    public List<Truck> findAll() {
+    public List<Truck> getAllTrucks() {
         return truckDao.findAll();
     }
 
     @Override
-    public void update(Truck truck) {
+    public void updateTruck(Truck truck) {
         truckDao.update(truck);
+    }
+
+    @Override
+    public void deleteTruck(Long id) {
+        truckDao.deleteById(id);
+    }
+
+    @Override
+    public void saveTruck(Truck truck) {
+        truckDao.save(truck);
     }
 }

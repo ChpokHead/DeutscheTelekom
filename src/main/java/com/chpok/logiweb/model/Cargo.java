@@ -1,10 +1,12 @@
 package com.chpok.logiweb.model;
 
+import com.chpok.logiweb.model.enums.CargoStatus;
+
 public class Cargo {
-    private final Long id;
-    private final String name;
-    private final Integer weight;
-    private final CargoStatus status;
+    private Long id;
+    private String name;
+    private Integer weight;
+    private CargoStatus status;
 
     private Cargo(Builder builder) {
         this.id = builder.id;

@@ -5,6 +5,8 @@ import com.chpok.logiweb.model.Truck;
 import java.util.List;
 
 public interface TruckService {
-    List<Truck> findAll();
-    void update(Truck truck);
+    List<Truck> getAllTrucks();
+    void updateTruck(Truck truck);
+    void deleteTruck(Long id);
+    void saveTruck(Truck truck);
 }

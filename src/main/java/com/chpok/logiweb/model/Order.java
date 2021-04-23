@@ -1,13 +1,15 @@
 package com.chpok.logiweb.model;
 
+import com.chpok.logiweb.model.enums.WaypointType;
+
 import java.util.List;
 
 public class Order {
-    private final Long id;
-    private final Boolean isCompleted;
-    private final Truck truck;
-    private final List<Driver> drivers;
-    private final List<Waypoint> waypoints;
+    private Long id;
+    private Boolean isCompleted;
+    private Truck truck;
+    private List<Driver> drivers;
+    private List<Waypoint> waypoints;
 
     private Order(Builder builder) {
         this.id = builder.id;
@@ -59,7 +61,7 @@ public class Order {
             return new Order(this);
         }
     }
-    public class Waypoint {
+    public static class Waypoint {
         private final String location;
         private final Cargo cargo;
         private final WaypointType type;

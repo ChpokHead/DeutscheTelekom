@@ -1,12 +1,39 @@
 package com.chpok.logiweb.model;
 
-public class Truck {
-    private final Long id;
-    private final String regNumber;
-    private final Short driversShift;
-    private final Short capacity;
-    private final TruckStatus status;
-    private final String location;
+import com.chpok.logiweb.model.enums.TruckStatus;
+import com.chpok.logiweb.util.PostgreSQLEnumType;
+import org.hibernate.annotations.Type;
+import org.hibernate.annotations.TypeDef;
+
+import javax.persistence.*;
+import java.util.List;
+
+@Entity
+@Table(name = "truck")
+@TypeDef(
+        name = "pgsql_enum",
+        typeClass = PostgreSQLEnumType.class
+)
+public class Truck extends AbstractModel{
+    @Column(name = "reg_number")
+    private String regNumber;
+
+    @Column(name = "drivers_shift")
+    private Short driversShift;
+
+    @Column(name = "capacity")
+    private Short capacity;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "status", columnDefinition = "truck_status")
+    @Type(type="pgsql_enum")
+    private TruckStatus status;
+
+    @Column(name = "location")
+    private String location;
+
+    @OneToMany(mappedBy = "currentTruck", fetch = FetchType.LAZY)
+    private List<Driver> currentDrivers;
 
     private Truck(Builder builder) {
         this.id = builder.id;
@@ -15,6 +42,11 @@ public class Truck {
         this.capacity = builder.capacity;
         this.status = builder.status;
         this.location = builder.location;
+        this.currentDrivers = builder.currentDrivers;
+    }
+
+    public Truck() {
+
     }
 
     public static Builder builder() {
@@ -45,6 +77,10 @@ public class Truck {
         return location;
     }
 
+    public List<Driver> getCurrentDrivers() {
+        return currentDrivers;
+    }
+
     public static class Builder {
         private Long id;
         private String regNumber;
@@ -52,6 +88,7 @@ public class Truck {
         private Short capacity;
         private TruckStatus status;
         private String location;
+        private List<Driver> currentDrivers;
 
         private Builder() {}
 
@@ -82,6 +119,11 @@ public class Truck {
 
         public Builder withLocation(String location) {
             this.location = location;
+            return this;
+        }
+
+        public Builder withCurrentDrivers(List<Driver> currentDrivers) {
+            this.currentDrivers = currentDrivers;
             return this;
         }
 

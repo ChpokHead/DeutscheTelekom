@@ -1,44 +1,73 @@
 package com.chpok.logiweb.controller;
 
-import com.chpok.logiweb.form.TruckForm;
+import com.chpok.logiweb.dto.TruckDto;
 import com.chpok.logiweb.model.Truck;
-import com.chpok.logiweb.model.TruckStatus;
+import com.chpok.logiweb.model.enums.TruckStatus;
 import com.chpok.logiweb.service.TruckService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.servlet.ModelAndView;
-
-import java.util.List;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ModelAttribute;
 
 @Controller
+@RequestMapping("/employeeTruck")
 public class EmployeeTruckPageController {
-    @Autowired
-    TruckService truckService;
+    private static final String REDIRECT_TO_MAIN_PAGE = "redirect:/employeeTruck";
 
-    @GetMapping("/employeeTruckPage")
-    String getEmployeeTrucks(Model model) {
-        model.addAttribute("trucks", truckService.findAll());
-        model.addAttribute("truckForm", new TruckForm());
+    @Autowired
+    private TruckService truckService;
+
+    @GetMapping
+    public String getTrucks(Model model) {
+        model.addAttribute("trucks", truckService.getAllTrucks());
+
+        model.addAttribute("truck", new TruckDto());
+
         return "employeeTruckPage";
     }
 
-    @PostMapping("/employeeTruckPage")
-    ModelAndView updateEmployeeTrucks(@ModelAttribute TruckForm truckForm) {
-        final Truck truck = Truck.builder()
-                .withId(truckForm.getId())
-                .withRegNumber(truckForm.getRegNumber())
-                .withDriversShift(truckForm.getDriversShift())
-                .withCapacity(truckForm.getCapacity())
-                .withLocation(truckForm.getLocation())
-                .withStatus(TruckStatus.fromInteger(truckForm.getStatus())).build();
+    @PutMapping
+    public String updateTruck(@ModelAttribute TruckDto truckDto) {
+        final Truck updatingTruck = Truck.builder()
+                .withId(truckDto.getId())
+                .withRegNumber(truckDto.getRegNumber())
+                .withDriversShift(truckDto.getDriversShift())
+                .withCapacity(truckDto.getCapacity())
+                .withLocation(truckDto.getLocation())
+                .withStatus(TruckStatus.fromInteger(truckDto.getStatus())).build();
 
-        truckService.update(truck);
+        truckService.updateTruck(updatingTruck);
 
-        return new ModelAndView("employeeTruckPage", "trucks", truckService.findAll());
+        return REDIRECT_TO_MAIN_PAGE;
     }
+
+    @DeleteMapping
+    public String deleteTruck(@RequestParam(name = "delete-truck-id")Long deletingTruckId) {
+        if (deletingTruckId != null) {
+            truckService.deleteTruck(deletingTruckId);
+        }
+
+        return REDIRECT_TO_MAIN_PAGE;
+    }
+
+    @PostMapping
+    public String addTruck(@ModelAttribute TruckDto truckDto) {
+        final Truck addingTruck = Truck.builder()
+                .withRegNumber(truckDto.getRegNumber())
+                .withDriversShift(truckDto.getDriversShift())
+                .withCapacity(truckDto.getCapacity())
+                .withLocation(truckDto.getLocation())
+                .withStatus(TruckStatus.fromInteger(truckDto.getStatus())).build();
+
+        truckService.saveTruck(addingTruck);
+
+        return REDIRECT_TO_MAIN_PAGE;
+    }
+
 }
