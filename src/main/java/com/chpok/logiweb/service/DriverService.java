@@ -2,6 +2,7 @@ package com.chpok.logiweb.service;
 
 import com.chpok.logiweb.model.Driver;
 import com.chpok.logiweb.model.Truck;
+import org.springframework.stereotype.Component;
 
 import java.util.List;
 

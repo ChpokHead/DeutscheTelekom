@@ -20,6 +20,7 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 public class EmployeeDriverPageController {
     private static final String REDIRECT_TO_MAIN_PAGE = "redirect:/employeeDriver";
 
+    @Autowired
     private DriverService driverService;
 
     @GetMapping

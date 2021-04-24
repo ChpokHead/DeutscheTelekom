@@ -13,4 +13,5 @@ public enum TruckStatus {
         }
         return null;
     }
+
 }

@@ -4,6 +4,7 @@ import com.chpok.logiweb.dao.TruckDao;
 import com.chpok.logiweb.dao.exception.DatabaseRuntimeException;
 import com.chpok.logiweb.model.Truck;
 import com.chpok.logiweb.util.HibernateUtil;
+import org.hibernate.Hibernate;
 import org.hibernate.Session;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -37,7 +38,18 @@ public class TruckDaoImpl implements TruckDao{
 
     @Override
     public Optional<Truck> findById(Long id) {
-        return Optional.empty();
+        try (Session session =
+                Objects.requireNonNull(hibernateUtil.sessionFactory().getObject()).openSession()){
+            session.beginTransaction();
+
+            final Truck truck = session.get(Truck.class, id);
+            Hibernate.initialize(truck.getCurrentDrivers());
+            session.getTransaction().commit();
+
+            return Optional.of(truck);
+        } catch (NullPointerException npe) {
+            throw new DatabaseRuntimeException("DB find truck by id exception", npe);
+        }
     }
 
     @Override

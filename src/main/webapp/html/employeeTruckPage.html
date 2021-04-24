@@ -245,6 +245,21 @@
     $("[name=update-truck-btn]").click(function () {
         var passedID = $(this).attr('id');
         $('#truck-id-input').val(passedID);
+        $.ajax({
+            type:"GET",
+            contentType: "application/json",
+            url: "/employeeTruck/" + passedID,
+            success: function (data) {
+                console.log(data);
+
+                $('#inputRegNum').val(data["regNumber"]);
+                $('#inputDriversShift').val(data["driversShift"]);
+                $('#inputCapacity').val(data["capacity"]);
+                $('#truckStatus').val(data["status"]);
+                $('#location').val(data["location"]);
+            }
+        });
+
     });
 </script>
 <script th:inline="javascript" type="text/javascript">

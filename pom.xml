@@ -17,10 +17,13 @@
         <servlet.version>2.5</servlet.version>
         <maven.war.plugin.version>3.3.0</maven.war.plugin.version>
         <spring.mvc.version>5.3.4</spring.mvc.version>
+        <spring.orm.version>5.1.6.RELEASE</spring.orm.version>
         <postgres.version>42.2.5</postgres.version>
         <hikari.version>4.0.3</hikari.version>
         <log4j.version>2.14.0</log4j.version>
         <thymeleaf.version>3.0.11.RELEASE</thymeleaf.version>
+        <hibernate.version>5.4.2.Final</hibernate.version>
+        <jackson.version>2.12.2</jackson.version>
     </properties>
 
     <dependencies>
@@ -84,13 +87,25 @@
         <dependency>
             <groupId>org.hibernate</groupId>
             <artifactId>hibernate-core</artifactId>
-            <version>5.4.2.Final</version>
+            <version>${hibernate.version}</version>
         </dependency>
 
         <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-orm</artifactId>
-            <version>5.1.6.RELEASE</version>
+            <version>${spring.orm.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>com.fasterxml.jackson.core</groupId>
+            <artifactId>jackson-core</artifactId>
+            <version>${jackson.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>com.fasterxml.jackson.core</groupId>
+            <artifactId>jackson-databind</artifactId>
+            <version>${jackson.version}</version>
         </dependency>
     </dependencies>
 

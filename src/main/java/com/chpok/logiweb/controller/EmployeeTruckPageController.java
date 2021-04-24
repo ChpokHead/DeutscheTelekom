@@ -1,19 +1,16 @@
 package com.chpok.logiweb.controller;
 
+import com.chpok.logiweb.dao.exception.DatabaseRuntimeException;
 import com.chpok.logiweb.dto.TruckDto;
-import com.chpok.logiweb.model.Truck;
-import com.chpok.logiweb.model.enums.TruckStatus;
 import com.chpok.logiweb.service.TruckService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.server.ResponseStatusException;
+
+import java.util.NoSuchElementException;
 
 @Controller
 @RequestMapping("/employeeTruck")
@@ -32,17 +29,19 @@ public class EmployeeTruckPageController {
         return "employeeTruckPage";
     }
 
+    @GetMapping(value = "/{id}")
+    @ResponseBody
+    public TruckDto getTruck(@PathVariable Long id) {
+        try {
+            return truckService.getTruckById(id);
+        } catch (DatabaseRuntimeException dre) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Truck not found", dre);
+        }
+    }
+
     @PutMapping
     public String updateTruck(@ModelAttribute TruckDto truckDto) {
-        final Truck updatingTruck = Truck.builder()
-                .withId(truckDto.getId())
-                .withRegNumber(truckDto.getRegNumber())
-                .withDriversShift(truckDto.getDriversShift())
-                .withCapacity(truckDto.getCapacity())
-                .withLocation(truckDto.getLocation())
-                .withStatus(TruckStatus.fromInteger(truckDto.getStatus())).build();
-
-        truckService.updateTruck(updatingTruck);
+        truckService.updateTruck(truckDto);
 
         return REDIRECT_TO_MAIN_PAGE;
     }
@@ -58,14 +57,7 @@ public class EmployeeTruckPageController {
 
     @PostMapping
     public String addTruck(@ModelAttribute TruckDto truckDto) {
-        final Truck addingTruck = Truck.builder()
-                .withRegNumber(truckDto.getRegNumber())
-                .withDriversShift(truckDto.getDriversShift())
-                .withCapacity(truckDto.getCapacity())
-                .withLocation(truckDto.getLocation())
-                .withStatus(TruckStatus.fromInteger(truckDto.getStatus())).build();
-
-        truckService.saveTruck(addingTruck);
+        truckService.saveTruck(truckDto);
 
         return REDIRECT_TO_MAIN_PAGE;
     }
