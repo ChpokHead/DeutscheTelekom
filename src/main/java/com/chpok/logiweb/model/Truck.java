@@ -29,11 +29,16 @@ public class Truck extends AbstractModel{
     @Type(type="pgsql_enum")
     private TruckStatus status;
 
-    @Column(name = "location")
-    private String location;
+    @ManyToOne
+    @JoinColumn(name = "location_id")
+    private Location location;
 
     @OneToMany(mappedBy = "currentTruck", fetch = FetchType.LAZY)
     private List<Driver> currentDrivers;
+
+    public Truck() {
+
+    }
 
     private Truck(Builder builder) {
         this.id = builder.id;
@@ -43,10 +48,6 @@ public class Truck extends AbstractModel{
         this.status = builder.status;
         this.location = builder.location;
         this.currentDrivers = builder.currentDrivers;
-    }
-
-    public Truck() {
-
     }
 
     public static Builder builder() {
@@ -73,7 +74,7 @@ public class Truck extends AbstractModel{
         return status;
     }
 
-    public String getLocation() {
+    public Location getLocation() {
         return location;
     }
 
@@ -87,7 +88,7 @@ public class Truck extends AbstractModel{
         private Short driversShift;
         private Short capacity;
         private TruckStatus status;
-        private String location;
+        private Location location;
         private List<Driver> currentDrivers;
 
         private Builder() {}
@@ -117,7 +118,7 @@ public class Truck extends AbstractModel{
             return this;
         }
 
-        public Builder withLocation(String location) {
+        public Builder withLocation(Location location) {
             this.location = location;
             return this;
         }

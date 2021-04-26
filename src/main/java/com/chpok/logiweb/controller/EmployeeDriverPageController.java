@@ -1,27 +1,30 @@
 package com.chpok.logiweb.controller;
 
+import com.chpok.logiweb.dao.exception.DatabaseRuntimeException;
 import com.chpok.logiweb.dto.DriverDto;
 import com.chpok.logiweb.model.Driver;
 import com.chpok.logiweb.model.enums.DriverStatus;
 import com.chpok.logiweb.service.DriverService;
+import com.chpok.logiweb.service.LocationService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.server.ResponseStatusException;
 
 @Controller
 @RequestMapping("/employeeDriver")
 public class EmployeeDriverPageController {
     private static final String REDIRECT_TO_MAIN_PAGE = "redirect:/employeeDriver";
 
-    @Autowired
     private DriverService driverService;
+    private LocationService locationService;
+
+    public EmployeeDriverPageController(DriverService driverService, LocationService locationService) {
+        this.driverService = driverService;
+        this.locationService = locationService;
+    }
 
     @GetMapping
     public String getDrivers(Model model) {
@@ -29,19 +32,24 @@ public class EmployeeDriverPageController {
 
         model.addAttribute("driver", new DriverDto());
 
+        model.addAttribute("locations", locationService.getAllLocations());
+
         return "employeeDriverPage";
+    }
+
+    @GetMapping("/{id}")
+    @ResponseBody
+    public DriverDto getDriver(@PathVariable Long id) {
+        try {
+            return driverService.getDriverById(id);
+        } catch (DatabaseRuntimeException dre) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Driver not found", dre);
+        }
     }
 
     @PostMapping
     public String addDriver(@ModelAttribute DriverDto driverDto) {
-        final Driver addingDriver = Driver.builder()
-                .withFirstName(driverDto.getFirstName())
-                .withLastName(driverDto.getLastName())
-                .withPersonalNumber(driverDto.getPersonalNumber())
-                .withLocation(driverDto.getLocation())
-                .build();
-
-        driverService.saveDriver(addingDriver);
+        driverService.saveDriver(driverDto);
 
         return REDIRECT_TO_MAIN_PAGE;
     }
@@ -57,15 +65,7 @@ public class EmployeeDriverPageController {
 
     @PutMapping
     public String updateDriver(@ModelAttribute DriverDto driverDto) {
-        final Driver updatingDriver = Driver.builder()
-                .withId(driverDto.getId())
-                .withFirstName(driverDto.getFirstName())
-                .withLastName(driverDto.getLastName())
-                .withPersonalNumber(driverDto.getPersonalNumber())
-                .withLocation(driverDto.getLocation())
-                .withStatus(DriverStatus.fromInteger(driverDto.getStatus())).build();
-
-        driverService.updateDriver(updatingDriver);
+        driverService.updateDriver(driverDto);
 
         return REDIRECT_TO_MAIN_PAGE;
     }

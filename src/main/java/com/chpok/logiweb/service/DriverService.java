@@ -1,14 +1,15 @@
 package com.chpok.logiweb.service;
 
+import com.chpok.logiweb.dto.DriverDto;
 import com.chpok.logiweb.model.Driver;
-import com.chpok.logiweb.model.Truck;
-import org.springframework.stereotype.Component;
 
 import java.util.List;
 
 public interface DriverService {
-    List<Driver> getAllDrivers();
-    void updateDriver(Driver driver);
+    List<DriverDto> getAllDrivers();
+    void updateDriver(DriverDto driver);
     void deleteDriver(Long id);
-    void saveDriver(Driver driver);
+    void saveDriver(DriverDto driver);
+    DriverDto getDriverById(Long id);
+
 }

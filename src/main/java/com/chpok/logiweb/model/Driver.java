@@ -22,9 +22,6 @@ public class Driver extends AbstractModel{
     @Column(name = "last_name")
     private String lastName;
 
-    @Column(name = "personal_number")
-    private String personalNumber;
-
     @Column(name = "month_worked_hours")
     private Short monthWorkedHours;
 
@@ -33,12 +30,17 @@ public class Driver extends AbstractModel{
     @Type(type = "pgsql_enum")
     private DriverStatus status;
 
-    @Column(name = "location")
-    private String location;
+    @ManyToOne
+    @JoinColumn(name = "location_id")
+    private Location location;
 
     @ManyToOne
     @JoinColumn(name = "truck_id")
     private Truck currentTruck;
+
+    @ManyToOne
+    @JoinColumn(name = "order_id")
+    private Order currentOrder;
 
     public Driver() {
 
@@ -48,7 +50,6 @@ public class Driver extends AbstractModel{
         this.id = builder.id;
         this.firstName = builder.firstName;
         this.lastName = builder.lastName;
-        this.personalNumber = builder.personalNumber;
         this.monthWorkedHours = builder.monthWorkedHours;
         this.status = builder.status;
         this.location = builder.location;
@@ -71,10 +72,6 @@ public class Driver extends AbstractModel{
         return lastName;
     }
 
-    public String getPersonalNumber() {
-        return personalNumber;
-    }
-
     public Short getMonthWorkedHours() {
         return monthWorkedHours;
     }
@@ -83,7 +80,7 @@ public class Driver extends AbstractModel{
         return status;
     }
 
-    public String getLocation() {
+    public Location getLocation() {
         return location;
     }
 
@@ -98,7 +95,7 @@ public class Driver extends AbstractModel{
         private String personalNumber;
         private Short monthWorkedHours;
         private DriverStatus status;
-        private String location;
+        private Location location;
         private Truck currentTruck;
 
         private Builder(){
@@ -135,7 +132,7 @@ public class Driver extends AbstractModel{
             return this;
         }
 
-        public Builder withLocation(String location) {
+        public Builder withLocation(Location location) {
             this.location = location;
             return this;
         }
@@ -149,4 +146,6 @@ public class Driver extends AbstractModel{
             return new Driver(this);
         }
     }
+
+
 }

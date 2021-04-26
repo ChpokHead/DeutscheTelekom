@@ -1,15 +1,31 @@
 package com.chpok.logiweb.model;
 
 import com.chpok.logiweb.model.enums.WaypointType;
+import com.chpok.logiweb.util.PostgreSQLEnumType;
+import org.hibernate.annotations.Type;
+import org.hibernate.annotations.TypeDef;
 
+import javax.persistence.*;
 import java.util.List;
 
-public class Order {
-    private Long id;
+@Entity
+@Table(name = "customer_order")
+public class Order extends AbstractModel{
+    @Column(name = "is_completed")
     private Boolean isCompleted;
+
+    @OneToOne
+    @JoinColumn(name = "truck_id")
     private Truck truck;
+
+    @OneToMany(mappedBy = "currentOrder", fetch = FetchType.LAZY)
     private List<Driver> drivers;
+
+    @OneToMany(mappedBy = "order", fetch = FetchType.LAZY)
     private List<Waypoint> waypoints;
+
+    public Order() {
+    }
 
     private Order(Builder builder) {
         this.id = builder.id;
@@ -61,18 +77,42 @@ public class Order {
             return new Order(this);
         }
     }
-    public static class Waypoint {
-        private final String location;
-        private final Cargo cargo;
-        private final WaypointType type;
 
-        public Waypoint(String location, Cargo cargo, WaypointType type) {
+    @Entity
+    @Table(name = "waypoint")
+    @TypeDef(
+            name = "pgsql_enum",
+            typeClass = PostgreSQLEnumType.class
+    )
+    public static class Waypoint extends AbstractModel {
+        @OneToOne
+        @JoinColumn(name = "location_id")
+        private Location location;
+
+        @OneToOne
+        @JoinColumn(name = "cargo_id")
+        private Cargo cargo;
+
+        @Enumerated(EnumType.STRING)
+        @Column(name = "type", columnDefinition = "waypoint_type")
+        @Type(type="pgsql_enum")
+        private WaypointType type;
+
+        @ManyToOne
+        @JoinColumn(name = "order_id")
+        private Order order;
+
+        public Waypoint() {
+
+        }
+
+        public Waypoint(Location location, Cargo cargo, WaypointType type) {
             this.location = location;
             this.cargo = cargo;
             this.type = type;
         }
 
-        public String getLocation() {
+        public Location getLocation() {
             return location;
         }
 

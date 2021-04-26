@@ -2,6 +2,7 @@ package com.chpok.logiweb.controller;
 
 import com.chpok.logiweb.dao.exception.DatabaseRuntimeException;
 import com.chpok.logiweb.dto.TruckDto;
+import com.chpok.logiweb.service.LocationService;
 import com.chpok.logiweb.service.TruckService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -10,21 +11,27 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
-import java.util.NoSuchElementException;
 
 @Controller
 @RequestMapping("/employeeTruck")
 public class EmployeeTruckPageController {
     private static final String REDIRECT_TO_MAIN_PAGE = "redirect:/employeeTruck";
 
-    @Autowired
     private TruckService truckService;
+    private LocationService locationService;
+
+    public EmployeeTruckPageController(TruckService truckService, LocationService locationService) {
+        this.truckService = truckService;
+        this.locationService = locationService;
+    }
 
     @GetMapping
     public String getTrucks(Model model) {
         model.addAttribute("trucks", truckService.getAllTrucks());
 
         model.addAttribute("truck", new TruckDto());
+
+        model.addAttribute("locations", locationService.getAllLocations());
 
         return "employeeTruckPage";
     }

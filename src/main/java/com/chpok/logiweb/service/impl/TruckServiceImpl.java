@@ -6,9 +6,11 @@ import com.chpok.logiweb.model.Truck;
 import com.chpok.logiweb.service.TruckService;
 import com.chpok.logiweb.service.mapper.TruckMapper;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.NoSuchElementException;
+import java.util.stream.Collectors;
 
 @Service
 public class TruckServiceImpl implements TruckService {
@@ -22,8 +24,8 @@ public class TruckServiceImpl implements TruckService {
     }
 
     @Override
-    public List<Truck> getAllTrucks() {
-        return truckDao.findAll();
+    public List<TruckDto> getAllTrucks() {
+        return truckDao.findAll().stream().map(truckMapper::mapTruckToTruckDto).collect(Collectors.toList());
     }
 
     @Override

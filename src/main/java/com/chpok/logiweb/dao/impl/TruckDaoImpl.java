@@ -8,6 +8,7 @@ import org.hibernate.Hibernate;
 import org.hibernate.Session;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Objects;
@@ -15,6 +16,7 @@ import java.util.Optional;
 import java.util.Set;
 
 @Component
+@Transactional
 public class TruckDaoImpl implements TruckDao{
     private static final String FIND_ALL_QUERY = "SELECT t FROM Truck t";
 
@@ -43,7 +45,9 @@ public class TruckDaoImpl implements TruckDao{
             session.beginTransaction();
 
             final Truck truck = session.get(Truck.class, id);
+
             Hibernate.initialize(truck.getCurrentDrivers());
+
             session.getTransaction().commit();
 
             return Optional.of(truck);
@@ -59,7 +63,6 @@ public class TruckDaoImpl implements TruckDao{
             session.beginTransaction();
 
             final List<Truck> allTrucks = session.createQuery(FIND_ALL_QUERY, Truck.class).getResultList();
-
             session.getTransaction().commit();
 
             return allTrucks;

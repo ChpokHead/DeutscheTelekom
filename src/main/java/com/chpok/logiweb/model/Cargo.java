@@ -1,12 +1,32 @@
 package com.chpok.logiweb.model;
 
 import com.chpok.logiweb.model.enums.CargoStatus;
+import com.chpok.logiweb.util.PostgreSQLEnumType;
+import org.hibernate.annotations.Type;
+import org.hibernate.annotations.TypeDef;
 
-public class Cargo {
-    private Long id;
+import javax.persistence.*;
+
+@Entity
+@Table(name = "cargo")
+@TypeDef(
+        name = "pgsql_enum",
+        typeClass = PostgreSQLEnumType.class
+)
+public class Cargo extends AbstractModel {
+    @Column(name = "name")
     private String name;
+
+    @Column(name = "weight")
     private Integer weight;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "status", columnDefinition = "cargo_status")
+    @Type(type="pgsql_enum")
     private CargoStatus status;
+
+    public Cargo() {
+    }
 
     private Cargo(Builder builder) {
         this.id = builder.id;

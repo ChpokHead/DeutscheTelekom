@@ -4,9 +4,11 @@ import com.chpok.logiweb.dao.DriverDao;
 import com.chpok.logiweb.dao.exception.DatabaseRuntimeException;
 import com.chpok.logiweb.model.Driver;
 import com.chpok.logiweb.util.HibernateUtil;
+import org.hibernate.Hibernate;
 import org.hibernate.Session;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Objects;
@@ -14,6 +16,7 @@ import java.util.Optional;
 import java.util.Set;
 
 @Component
+@Transactional
 public class DriverDaoImpl implements DriverDao {
     private static final String FIND_ALL_QUERY = "SELECT d FROM Driver d";
 
@@ -37,7 +40,19 @@ public class DriverDaoImpl implements DriverDao {
 
     @Override
     public Optional<Driver> findById(Long id) {
-        return Optional.empty();
+        try (Session session = Objects.requireNonNull(hibernateUtil.sessionFactory().getObject()).openSession()){
+            session.beginTransaction();
+
+            final Driver driver = session.get(Driver.class, id);
+
+            Hibernate.initialize(driver.getCurrentTruck());
+
+            session.getTransaction().commit();
+
+            return Optional.of(driver);
+        } catch (NullPointerException npe) {
+            throw new DatabaseRuntimeException("DB find driver by id exception", npe);
+        }
     }
 
     @Override
@@ -47,6 +62,10 @@ public class DriverDaoImpl implements DriverDao {
             session.beginTransaction();
 
             final List<Driver> allDrivers = session.createQuery(FIND_ALL_QUERY, Driver.class).getResultList();
+
+            for (Driver driver : allDrivers) {
+                Hibernate.initialize(driver.getCurrentTruck());
+            }
 
             session.getTransaction().commit();
 

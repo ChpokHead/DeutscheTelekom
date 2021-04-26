@@ -1,22 +1,15 @@
 package com.chpok.logiweb.dto;
 
+import com.chpok.logiweb.model.Location;
+
 public class DriverDto {
-    private Long id;
     private String firstName;
     private String lastName;
-    private String personalNumber;
+    private Long personalNumber;
     private Short monthWorkedHours;
     private Integer status;
     private String location;
-    private Long truckId;
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
+    private String currentTruck;
 
     public String getFirstName() {
         return firstName;
@@ -34,11 +27,11 @@ public class DriverDto {
         this.lastName = lastName;
     }
 
-    public String getPersonalNumber() {
+    public Long getPersonalNumber() {
         return personalNumber;
     }
 
-    public void setPersonalNumber(String personalNumber) {
+    public void setPersonalNumber(Long personalNumber) {
         this.personalNumber = personalNumber;
     }
 
@@ -66,11 +59,11 @@ public class DriverDto {
         this.location = location;
     }
 
-    public Long getTruckId() {
-        return truckId;
+    public String getCurrentTruck() {
+        return currentTruck;
     }
 
-    public void setTruckId(Long truckId) {
-        this.truckId = truckId;
+    public void setCurrentTruck(String currentTruck) {
+        this.currentTruck = currentTruck;
     }
 }

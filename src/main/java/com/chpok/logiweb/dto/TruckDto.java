@@ -1,6 +1,6 @@
 package com.chpok.logiweb.dto;
 
-import java.util.List;
+import com.chpok.logiweb.model.Location;
 
 public class TruckDto {
     private Long id;
@@ -9,7 +9,7 @@ public class TruckDto {
     private Short capacity;
     private Integer status;
     private String location;
-    private List<Long> currentDrivers;
+    //private List<Long> currentDrivers;
 
     public TruckDto() {
 
@@ -43,9 +43,9 @@ public class TruckDto {
         return location;
     }
 
-    public List<Long> getCurrentDrivers() {
+   /* public List<Long> getCurrentDrivers() {
         return currentDrivers;
-    }
+    }*/
 
     public void setRegNumber(String regNumber) {
         this.regNumber = regNumber;
@@ -66,8 +66,8 @@ public class TruckDto {
     public void setLocation(String location) {
         this.location = location;
     }
-
+/*
     public void setCurrentDrivers(List<Long> currentDrivers) {
         this.currentDrivers = currentDrivers;
-    }
+    }*/
 }
