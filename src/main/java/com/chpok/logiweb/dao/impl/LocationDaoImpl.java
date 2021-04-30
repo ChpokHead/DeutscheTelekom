@@ -16,7 +16,6 @@ import java.util.Optional;
 import java.util.Set;
 
 @Component
-@Transactional
 public class LocationDaoImpl implements LocationDao {
     private static final String FIND_BY_NAME_QUERY = "SELECT l FROM Location l WHERE l.name = :name";
     private static final String FIND_ALL_QUERY = "SELECT l FROM Location l";
@@ -71,6 +70,7 @@ public class LocationDaoImpl implements LocationDao {
             session.beginTransaction();
 
             Query<Location> selectQuery = session.createQuery(FIND_BY_NAME_QUERY, Location.class);
+
             selectQuery.setParameter("name", name);
 
             final Optional<Location> result = Optional.of(selectQuery.getSingleResult());

@@ -13,10 +13,10 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
+@Transactional
 public class DriverServiceImpl implements DriverService {
-
-    DriverDao driverDao;
-    DriverMapper driverMapper;
+    private final DriverDao driverDao;
+    private final DriverMapper driverMapper;
 
     public DriverServiceImpl(DriverDao driverDao, DriverMapper driverMapper) {
         this.driverDao = driverDao;

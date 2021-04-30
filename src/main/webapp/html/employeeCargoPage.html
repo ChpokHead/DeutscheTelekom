@@ -16,7 +16,7 @@
                 </a>
                 <ul class="nav nav-pills flex-column mb-sm-auto mb-0 align-items-center align-items-sm-start" id="menu">
                     <li class="nav-item">
-                        <a href="employeePage" class="nav-link align-middle px-0">
+                        <a href="/employeePage" class="nav-link align-middle px-0">
                             <i class="fs-4 bi-house"></i> <span class="ms-1 d-none d-sm-inline">Личный кабинет</span>
                         </a>
                     </li>
@@ -35,24 +35,6 @@
                     <li>
                         <a href="/employeeCargo" class="nav-link px-0 align-middle">
                             <i class="fs-4 bi-table"></i> <span class="ms-1 d-none d-sm-inline">Грузы</span></a>
-                    </li>
-                    <li>
-                        <a href="#submenu3" data-bs-toggle="collapse" class="nav-link px-0 align-middle">
-                            <i class="fs-4 bi-grid"></i> <span class="ms-1 d-none d-sm-inline">Products</span> </a>
-                        <ul class="collapse nav flex-column ms-1" id="submenu3" data-bs-parent="#menu">
-                            <li class="w-100">
-                                <a href="#" class="nav-link px-0"> <span class="d-none d-sm-inline">Product</span> 1</a>
-                            </li>
-                            <li>
-                                <a href="#" class="nav-link px-0"> <span class="d-none d-sm-inline">Product</span> 2</a>
-                            </li>
-                            <li>
-                                <a href="#" class="nav-link px-0"> <span class="d-none d-sm-inline">Product</span> 3</a>
-                            </li>
-                            <li>
-                                <a href="#" class="nav-link px-0"> <span class="d-none d-sm-inline">Product</span> 4</a>
-                            </li>
-                        </ul>
                     </li>
                     <li>
                         <a href="#" class="nav-link px-0 align-middle">
@@ -81,21 +63,21 @@
             <div class="row">
                 <div class="d-flex w-100 justify-content-end">
                     <div class="py-1">
-                        <button id = "driver-add-btn" class="btn btn-primary btn-lg" data-bs-toggle="modal" data-bs-target="#addModal">Добавить водителя</button>
+                        <button id = "driver-add-btn" class="btn btn-primary btn-lg" data-bs-toggle="modal" data-bs-target="#addModal">Добавить груз</button>
                     </div>
                 </div>
             </div>
             <div class="row-1 py-1">
-                <div class="list-group py-2" th:each="driver : ${drivers}">
+                <div class="list-group py-2" th:each="cargo : ${cargos}">
                     <div class="list-group-item list-group-item-action" aria-current="true">
                         <div class="row">
                             <div class="d-flex w-100 justify-content-between">
                                 <div class="col py-3">
-                                    <h5 class="mb-1" th:text="${driver.firstName} + ' ' + ${driver.lastName} + ' #' + ${driver.personalNumber}"></h5>
+                                    <h5 class="mb-1" th:text="${cargo.name} + ' #' + ${cargo.id}"></h5>
                                 </div>
                                 <div class="d-flex justify-content-end">
                                     <div class="col py-3">
-                                        <button type="button" class="btn btn-primary rounded" data-bs-toggle="modal" data-bs-target="#exampleModal" th:id ="${driver.personalNumber}" name="update-item-btn">
+                                        <button type="button" class="btn btn-primary rounded" data-bs-toggle="modal" data-bs-target="#exampleModal" th:id ="${cargo.id}" name="update-item-btn">
                                             <i class="fa fa-edit"></i>
                                         </button>
                                     </div>
@@ -104,11 +86,10 @@
                         </div>
                         <div class="row">
                             <div class="d-flex w-100 justify-content-between">
-                                <p class="mb-1" th:text="${driver.location}"></p>
-                                <p class="mb-1" th:text="${driver?.currentTruck != null} ? ${driver.currentTruck} : 'Нет фуры'"></p>
+                                <p class="mb-1" th:text="${cargo.weight}"></p>
                                 <div class="d-flex justify-content-end">
                                     <div class="col py-3">
-                                        <button type="button" class="btn btn-primary rounded" data-bs-toggle="modal" data-bs-target="#delModal" th:id ="${driver.personalNumber}" name="del-item-btn">
+                                        <button type="button" class="btn btn-primary rounded" data-bs-toggle="modal" data-bs-target="#delModal" th:id ="${cargo.id}" name="del-item-btn">
                                             <i class="fa fa-trash"></i>
                                         </button>
                                     </div>
@@ -116,121 +97,104 @@
                             </div>
                         </div>
                         <div class="row">
-                            <div th:switch="${driver.status}">
-                                <small th:case='0'>Отдыхает</small>
-                                <small th:case='1'>В смене</small>
-                                <small th:case='2'>За рулем</small>
+                            <div th:switch="${cargo.status}">
+                                <small th:case='0'>Подготовлен</small>
+                                <small th:case='1'>Отгружен</small>
+                                <small th:case='2'>Доставлен</small>
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
-
         <div class="modal fade" id="addModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-            <form th:method="post" id="driverAdd" th:action="@{/employeeDriver}" th:object="${driver}">
+            <form th:method="post" id="addCargo" th:action="@{/employeeCargo}" th:object="${cargo}">
                 <div class="modal-dialog">
                     <div class="modal-content">
                         <div class="modal-header">
-                            <h5 class="modal-title" id="addModalLabel">Добавление водителя</h5>
+                            <h5 class="modal-title" id="addModalLabel">Добавление груза</h5>
                             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                         </div>
                         <div class="modal-body">
                             <div class="mb-3">
-                                <label for="inputAddDriverFirstName" class="form-label">Имя</label>
-                                <input type="text" class="form-control" id="inputAddDriverFirstName" th:field="*{firstName}"/>
+                                <label for="inputAddCargoName" class="form-label">Наименование</label>
+                                <input type="text" class="form-control" id="inputAddCargoName" th:field="*{name}"/>
                             </div>
                             <div class="mb-3">
-                                <label for="inputAddDriverShift" class="form-label">Фамилия</label>
-                                <input type="text" class="form-control" id="inputAddDriverShift" th:field="*{lastName}"/>
+                                <label for="inputAddCargoWeight" class="form-label">Масса</label>
+                                <input type="text" class="form-control" id="inputAddCargoWeight" aria-describedby="weightHelp" th:field="*{weight}"/>
+                                <div id="weightHelp" class="form-text">Укажите массу в килограммах</div>
                             </div>
                             <div class="mb-3">
-                                <label for="inputDriverStatus" class="form-label">Текущий город</label>
-                                <select class="form-select" aria-label="Текущий город" id="inputAddDriverLocation" th:field="*{location}">
-                                    <option th:each="location : ${locations}" th:value="${location}" th:text="${location}"></option>
-                                </select>
-                            </div>
-                            <div class="mb-3">
-                                <label for="inputDriverMonthWorkedHours" class="form-label">Отработано часов в месяце</label>
-                                <input type="number" class="form-control" id="inputDriverMonthWorkedHours" value='0' th:field="*{monthWorkedHours}"/>
-                            </div>
-                            <div class="mb-3">
-                                <label for="inputDriverStatus" class="form-label">Статус водителя</label>
-                                <select class="form-select" aria-label="Статус водителя" id="inputDriverStatus" th:field="*{status}">
-                                    <option value="0">Отдыхает</option>
-                                    <option value="1">В смене</option>
-                                    <option value="2">За рулем</option>
+                                <label for="inputAddCargoStatus" class="form-label">Статус груза</label>
+                                <select class="form-select" aria-label="Статус груза" id="inputAddCargoStatus" th:field="*{status}">
+                                    <option value="0">Подготовлен</option>
+                                    <option value="1">Отгружен</option>
+                                    <option value="2">Доставлен</option>
                                 </select>
                             </div>
                         </div>
                         <div class="modal-footer">
                             <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Закрыть</button>
-                            <button type="submit"  class="btn btn-primary" form="driverAdd">Добавить</button>
+                            <button type="submit"  class="btn btn-primary" form="addCargo">Добавить</button>
                         </div>
                     </div>
                 </div>
             </form>
         </div>
-        <div class="modal fade" id="delModal" tabindex="-1" aria-labelledby="delModalLabel" aria-hidden="true">
-            <form th:action="@{/employeeDriver}" th:method="delete" id="driverDelete">
+
+        <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+            <form th:method="put" id="cargoEdit" th:object="${cargo}" th:action="@{/employeeCargo}">
                 <div class="modal-dialog">
                     <div class="modal-content">
                         <div class="modal-header">
-                            <h5 class="modal-title" id="delModalLabel">Удаление водителя</h5>
+                            <h5 class="modal-title" id="exampleModalLabel">Редактирование груза</h5>
                             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                         </div>
                         <div class="modal-body">
-                            <input type="hidden" id="driver-id-delete" name="delete-driver-id"/>
+                            <input type="hidden" id="cargo-id-input" th:field = "*{id}"/>
+                            <div class="mb-3">
+                                <label for="inputEditCargoName" class="form-label">Наименование</label>
+                                <input type="text" class="form-control" id="inputEditCargoName" th:field="*{name}"/>
+                            </div>
+                            <div class="mb-3">
+                                <label for="inputEditCargoWeight" class="form-label">Масса</label>
+                                <input type="text" class="form-control" id="inputEditCargoWeight" aria-describedby="weightEditHelp" th:field="*{weight}"/>
+                                <div id="weightEditHelp" class="form-text">Укажите массу в килограммах</div>
+                            </div>
+                            <div class="mb-3">
+                                <label for="inputEditCargoStatus" class="form-label">Статус груза</label>
+                                <select class="form-select" aria-label="Статус груза" id="inputEditCargoStatus" th:field="*{status}">
+                                    <option value="0">Подготовлен</option>
+                                    <option value="1">Отгружен</option>
+                                    <option value="2">Доставлен</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Закрыть</button>
+                            <button type="submit"  class="btn btn-primary" form="cargoEdit">Сохранить</button>
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+
+        <div class="modal fade" id="delModal" tabindex="-1" aria-labelledby="delModalLabel" aria-hidden="true">
+            <form th:action="@{/employeeCargo}" th:method="delete" id="cargoDelete">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="delModalLabel">Удаление груза</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+                            <input type="hidden" id="cargo-id-delete" name="delete-cargo-id"/>
                             Пожалуйста, подтвердите удаление.
                         </div>
                         <div class="modal-footer">
                             <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Закрыть</button>
-                            <button type="submit"  class="btn btn-primary" form="driverDelete">Удалить</button>
-                        </div>
-                    </div>
-                </div>
-            </form>
-        </div>
-        <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-            <form th:method="put" id="driverEdit" th:object="${driver}" th:action="@{/employeeDriver}">
-                <div class="modal-dialog">
-                    <div class="modal-content">
-                        <div class="modal-header">
-                            <h5 class="modal-title" id="exampleModalLabel">Редактирование водителя</h5>
-                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                        </div>
-                        <div class="modal-body">
-                            <div class="modal-body">
-                                <input type="hidden" id="driver-id-input" th:field = "*{personalNumber}"/>
-                                <div class="mb-3">
-                                    <label for="inputUpdateDriverFirstName" class="form-label">Имя</label>
-                                    <input type="text" class="form-control" id="inputUpdateDriverFirstName" th:field="*{firstName}"/>
-                                </div>
-                                <div class="mb-3">
-                                    <label for="inputUpdateDriverLastName" class="form-label">Фамилия</label>
-                                    <input type="text" class="form-control" id="inputUpdateDriverLastName" th:field="*{lastName}"/>
-                                </div>
-                                <div class="mb-3">
-                                    <label for="inputUpdateDriverLocation" class="form-label">Текущий город</label>
-                                    <input type="text" class="form-control" id="inputUpdateDriverLocation" th:field="*{location}"/>
-                                </div>
-                                <div class="mb-3">
-                                    <label for="inputUpdateDriverMonthWorkedHours" class="form-label">Отработано часов в месяце</label>
-                                    <input type="text" class="form-control" id="inputUpdateDriverMonthWorkedHours" th:field="*{monthWorkedHours}"/>
-                                </div>
-                                <div class="mb-3">
-                                    <label for="inputUpdateDriverStatus" class="form-label">Статус водителя</label>
-                                    <select class="form-select" aria-label="Статус водителя" id="inputUpdateDriverStatus" th:field="*{status}">
-                                        <option value="0">Отдыхает</option>
-                                        <option value="1">В смене</option>
-                                        <option value="2">За рулем</option>
-                                    </select>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="modal-footer">
-                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Закрыть</button>
-                            <button type="submit"  class="btn btn-primary" form="driverEdit">Сохранить</button>
+                            <button type="submit"  class="btn btn-primary" form="cargoDelete">Удалить</button>
                         </div>
                     </div>
                 </div>
@@ -244,20 +208,18 @@
 <script th:inline="javascript" type="text/javascript">
     $("[name=update-item-btn]").click(function () {
         var passedID = $(this).attr('id');
-        $('#driver-id-input').val(passedID);
+        $('#cargo-id-input').val(passedID);
 
         $.ajax({
             type:"GET",
             contentType: "application/json",
-            url: "/employeeDriver/" + passedID,
+            url: "/employeeCargo/" + passedID,
             success: function (data) {
                 console.log(data);
 
-                $('#inputUpdateDriverFirstName').val(data["firstName"]);
-                $('#inputUpdateDriverLastName').val(data["lastName"]);
-                //$('#inputUpdateDriverLocation').val(data["location"]);
-                $('#inputUpdateDriverStatus').val(data["status"]);
-                $('#inputUpdateDriverMonthWorkedHours').val(data["monthWorkedHours"]);
+                $('#inputEditCargoName').val(data["name"]);
+                $('#inputEditCargoWeight').val(data["weight"]);
+                $('#inputEditCargoStatus').val(data["status"]);
             }
         });
     });
@@ -265,7 +227,7 @@
 <script th:inline="javascript" type="text/javascript">
     $("[name=del-item-btn]").click(function () {
         var passedID = $(this).attr('id');
-        $('#driver-id-delete').val(passedID);
+        $('#cargo-id-delete').val(passedID);
     });
 </script>
 </body>

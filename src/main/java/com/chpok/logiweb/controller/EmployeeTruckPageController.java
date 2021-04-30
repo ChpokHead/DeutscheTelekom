@@ -4,7 +4,6 @@ import com.chpok.logiweb.dao.exception.DatabaseRuntimeException;
 import com.chpok.logiweb.dto.TruckDto;
 import com.chpok.logiweb.service.LocationService;
 import com.chpok.logiweb.service.TruckService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -17,8 +16,8 @@ import org.springframework.web.server.ResponseStatusException;
 public class EmployeeTruckPageController {
     private static final String REDIRECT_TO_MAIN_PAGE = "redirect:/employeeTruck";
 
-    private TruckService truckService;
-    private LocationService locationService;
+    private final TruckService truckService;
+    private final LocationService locationService;
 
     public EmployeeTruckPageController(TruckService truckService, LocationService locationService) {
         this.truckService = truckService;

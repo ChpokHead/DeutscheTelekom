@@ -10,8 +10,9 @@ public enum TruckStatus {
                 return OK;
             case 1:
                 return BROKEN;
+            default:
+                return null;
         }
-        return null;
     }
 
 }

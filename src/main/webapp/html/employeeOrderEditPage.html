@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="ru" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-eOJMYsd53ii+scO/bJGFsiCZc+5NDVN2yr8+0RDqr0Ql0h+rP48ckxlpbzKgwra6" crossorigin="anonymous">
+    <link href="/css/employeeOrderPage.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
+</head>
+<body>
+    <div class="col py-1 px-4">
+        <div class="row py-1">
+            <div class="col">
+                <div class="d-flex w-100 justify-content-between">
+                    <h1 th:text="'Редактирование заказа #' + ${orderId}"></h1>
+                </div>
+            </div>
+            <div class="col">
+                <div class="d-flex w-100 justify-content-end">
+                    <button id = "waypoint-add" class="btn btn-primary btn-lg" data-bs-toggle="modal" data-bs-target="#addModal">Добавить маршрутные точки</button>
+                </div>
+            </div>
+        </div>
+        <div class="row-1 py-1">
+            <div class="list-group py-2" th:each="waypoint : ${waypoints}">
+                <div class="list-group-item list-group-item-action" aria-current="true">
+                    <div class="row">
+                        <div class="d-flex w-100 justify-content-between">
+                            <div class="col py-3">
+                                <h5 class="mb-1" th:text="'Груз: #' + ${waypoint.pair[0].cargoId} + ' ' + ${waypoint.pair[0].cargoName}"></h5>
+                            </div>
+                            <div class="d-flex justify-content-end">
+                                <div class="col py-3">
+                                    <button type="button" class="btn btn-primary rounded" data-bs-toggle="modal" data-bs-target="#exampleModal" th:id ="${waypoint.pair[0].id}" name="update-item-btn">
+                                        <i class="fa fa-edit"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="d-flex w-100 justify-content-between">
+                            <p class="mb-1" th:text="'Погрузка: ' + ${waypoint.pair[0].location}"></p>
+                            <div class="d-flex justify-content-end">
+                                <div class="col py-3">
+                                    <button type="button" class="btn btn-primary rounded" data-bs-toggle="modal" data-bs-target="#delModal" th:id ="${waypoint.pair[0].id}" name="del-item-btn">
+                                        <i class="fa fa-trash"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="d-flex w-100 justify-content-between">
+                            <p class="mb-1" th:text="'Выгрузка: ' + ${waypoint.pair[1].location}"></p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row py-1">
+            <div class="col">
+                <div class="d-flex w-100 justify-content-center">
+                    <a id = "waypoint-close" class="btn btn-primary btn-lg" th:href="@{/employeeOrder}">
+                        <span>Завершить редактирование</span>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="modal fade" id="addModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <form th:method="post" id="addWaypoint" th:action="@{/employeeOrder/edit/} + ${orderId}" th:object="${waypoint}">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="addModalLabel">Добавление маршрутных точек</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="mb-3">
+                            <input type="hidden" id="order-id" th:value="${orderId}"/>
+                            <input type="hidden" id="hidden-order-id-for-load" th:field = "*{pair[0].orderId}"/>
+                            <input type="hidden" id="hidden-order-id-for-ship" th:field = "*{pair[1].orderId}"/>
+                        </div>
+                        <div class="mb-3">
+                            <label for="inputAddWaypointCargo" class="form-label">Груз</label>
+                            <select class="form-select" aria-label="Груз" id="inputAddWaypointCargo" th:field="*{pair[0].cargoId}">
+                                <option th:each="cargo : ${cargos}" th:value="${cargo.id}" th:text="'#' + ${cargo.id} + ' ' + ${cargo.name}"></option>
+                            </select>
+                            <input type="hidden" id="hidden-cargo-id" th:field = "*{pair[1].cargoId}"/>
+                        </div>
+                        <div class="mb-3">
+                            <label for="inputAddWaypointLocationForLoading" class="form-label">Город погрузки</label>
+                            <select class="form-select" aria-label="Город погрузки" id="inputAddWaypointLocationForLoading" th:field="*{pair[0].location}">
+                                <option th:each="location : ${locations}" th:value="${location}" th:text="${location}"></option>
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label for="inputAddWaypointLocationForShipping" class="form-label">Город выгрузки</label>
+                            <select class="form-select" aria-label="Город выгрузки" id="inputAddWaypointLocationForShipping" th:field="*{pair[1].location}">
+                                <option th:each="location : ${locations}" th:value="${location}" th:text="${location}"></option>
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <input type="hidden" id="hidden-type-load" th:field = "*{pair[0].type}"/>
+                            <input type="hidden" id="hidden-type-ship" th:field = "*{pair[1].type}"/>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Закрыть</button>
+                        <button type="submit"  class="btn btn-primary" form="addWaypoint" id="waypoint-add-btn">Добавить</button>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+
+
+    <div class="modal fade" id="delModal" tabindex="-1" aria-labelledby="delModalLabel" aria-hidden="true">
+        <form th:action="@{/employeeOrder/edit/} + ${orderId}" th:method="delete" id="waypointDelete">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="delModalLabel">Удаление маршрутных точек</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <input type="hidden" id="first-waypoint-id-delete" name="delete-first-waypoint-id"/>
+                        <input type="hidden" id="second-waypoint-id-delete" name="delete-second-waypoint-id"/>
+                        Пожалуйста, подтвердите удаление.
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Закрыть</button>
+                        <button type="submit"  class="btn btn-primary" form="waypointDelete">Удалить</button>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta3/dist/js/bootstrap.bundle.min.js" integrity="sha384-JEW9xMcG8R+pH31jmWH6WWP0WintQrMb4s7ZOdauHnUtxwoG2vI5DkLtS3qm9Ekf" crossorigin="anonymous"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script th:inline="javascript" type="text/javascript">
+        $(document).ready(function() {
+            $("#waypoint-add-btn").click(function () {
+                var passedCargoId = $("#inputAddWaypointCargo").val();
+                $("#hidden-cargo-id").val(passedCargoId);
+                $('#hidden-type-load').val('0');
+                $('#hidden-type-ship').val('1');
+
+                var passedOrderId = $('#order-id').val();
+                $('#hidden-order-id-for-load').val(passedOrderId);
+                $('#hidden-order-id-for-ship').val(passedOrderId);
+            });
+        });
+    </script>
+    <script th:inline="javascript" type="text/javascript">
+        $("[name=del-item-btn]").click(function () {
+            var passedID = $(this).attr('id');
+            $('#first-waypoint-id-delete').val(passedID);
+            $('#second-waypoint-id-delete').val(parseInt(passedID) + 1);
+        });
+    </script>
+</body>
+</html>

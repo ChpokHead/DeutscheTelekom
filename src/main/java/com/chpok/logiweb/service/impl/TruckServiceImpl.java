@@ -13,8 +13,8 @@ import java.util.NoSuchElementException;
 import java.util.stream.Collectors;
 
 @Service
+@Transactional
 public class TruckServiceImpl implements TruckService {
-
     private final TruckDao truckDao;
     private final TruckMapper truckMapper;
 

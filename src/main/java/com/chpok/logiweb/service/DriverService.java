@@ -1,7 +1,6 @@
 package com.chpok.logiweb.service;
 
 import com.chpok.logiweb.dto.DriverDto;
-import com.chpok.logiweb.model.Driver;
 
 import java.util.List;
 
@@ -11,5 +10,4 @@ public interface DriverService {
     void deleteDriver(Long id);
     void saveDriver(DriverDto driver);
     DriverDto getDriverById(Long id);
-
 }

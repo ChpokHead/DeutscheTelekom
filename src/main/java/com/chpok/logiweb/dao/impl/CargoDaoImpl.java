@@ -1,12 +1,12 @@
 package com.chpok.logiweb.dao.impl;
 
-import com.chpok.logiweb.dao.DriverDao;
+import com.chpok.logiweb.dao.CargoDao;
 import com.chpok.logiweb.dao.exception.DatabaseRuntimeException;
+import com.chpok.logiweb.model.Cargo;
 import com.chpok.logiweb.model.Driver;
 import com.chpok.logiweb.util.HibernateUtil;
 import org.hibernate.Hibernate;
 import org.hibernate.Session;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
@@ -15,17 +15,22 @@ import java.util.Optional;
 import java.util.Set;
 
 @Component
-public class DriverDaoImpl implements DriverDao {
-    private static final String FIND_ALL_QUERY = "SELECT d FROM Driver d";
+public class CargoDaoImpl implements CargoDao {
+    private static final String FIND_ALL_QUERY = "SELECT c FROM Cargo c";
 
     private final HibernateUtil hibernateUtil;
 
-    public DriverDaoImpl(HibernateUtil hibernateUtil) {
+    public CargoDaoImpl(HibernateUtil hibernateUtil) {
         this.hibernateUtil = hibernateUtil;
     }
 
     @Override
-    public void save(Driver entity) {
+    public List<Cargo> findByName() {
+        return null;
+    }
+
+    @Override
+    public void save(Cargo entity) {
         try (Session session =
                      Objects.requireNonNull(hibernateUtil.sessionFactory().getObject()).openSession()) {
             session.beginTransaction();
@@ -34,49 +39,43 @@ public class DriverDaoImpl implements DriverDao {
 
             session.getTransaction().commit();
         } catch (NullPointerException npe) {
-            throw new DatabaseRuntimeException("DB driver saving exception", npe);
+            throw new DatabaseRuntimeException("DB cargo saving exception", npe);
         }
     }
 
     @Override
-    public Optional<Driver> findById(Long id) {
+    public Optional<Cargo> findById(Long id) {
         try (Session session = Objects.requireNonNull(hibernateUtil.sessionFactory().getObject()).openSession()){
             session.beginTransaction();
 
-            final Driver driver = session.get(Driver.class, id);
-
-            Hibernate.initialize(driver.getCurrentTruck());
+            final Cargo cargo = session.get(Cargo.class, id);
 
             session.getTransaction().commit();
 
-            return Optional.of(driver);
+            return Optional.of(cargo);
         } catch (NullPointerException npe) {
-            throw new DatabaseRuntimeException("DB find driver by id exception", npe);
+            throw new DatabaseRuntimeException("DB find cargo by id exception", npe);
         }
     }
 
     @Override
-    public List<Driver> findAll() {
+    public List<Cargo> findAll() {
         try (Session session =
                      Objects.requireNonNull(hibernateUtil.sessionFactory().getObject()).openSession()) {
             session.beginTransaction();
 
-            final List<Driver> allDrivers = session.createQuery(FIND_ALL_QUERY, Driver.class).getResultList();
-
-            for (Driver driver : allDrivers) {
-                Hibernate.initialize(driver.getCurrentTruck());
-            }
+            final List<Cargo> allCargos = session.createQuery(FIND_ALL_QUERY, Cargo.class).getResultList();
 
             session.getTransaction().commit();
 
-            return allDrivers;
+            return allCargos;
         } catch (NullPointerException npe) {
-            throw new DatabaseRuntimeException("DB getting all driver exception", npe);
+            throw new DatabaseRuntimeException("DB getting all cargos exception", npe);
         }
     }
 
     @Override
-    public void update(Driver entity) {
+    public void update(Cargo entity) {
         try(Session session =
                     Objects.requireNonNull(hibernateUtil.sessionFactory().getObject()).openSession()) {
             session.beginTransaction();
@@ -85,7 +84,7 @@ public class DriverDaoImpl implements DriverDao {
 
             session.getTransaction().commit();
         }  catch (NullPointerException npe) {
-            throw new DatabaseRuntimeException("DB driver updating exception", npe);
+            throw new DatabaseRuntimeException("DB cargo updating exception", npe);
         }
     }
 
@@ -95,23 +94,18 @@ public class DriverDaoImpl implements DriverDao {
                      Objects.requireNonNull(hibernateUtil.sessionFactory().getObject()).openSession()) {
             session.beginTransaction();
 
-            final Driver deletingDriver = session.load(Driver.class, id);
+            final Cargo deletingCargo= session.load(Cargo.class, id);
 
-            session.delete(deletingDriver);
+            session.delete(deletingCargo);
 
             session.getTransaction().commit();
         }  catch (NullPointerException npe) {
-            throw new DatabaseRuntimeException("DB driver deleting exception", npe);
+            throw new DatabaseRuntimeException("DB cargo deleting exception", npe);
         }
     }
 
     @Override
     public void deleteAllByIds(Set<Long> ids) {
 
-    }
-
-    @Override
-    public Optional<Driver> findByPersonalNumber(String personalNumber) {
-        return Optional.empty();
     }
 }

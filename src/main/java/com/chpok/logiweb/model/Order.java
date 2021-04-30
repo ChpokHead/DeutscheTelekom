@@ -2,6 +2,7 @@ package com.chpok.logiweb.model;
 
 import com.chpok.logiweb.model.enums.WaypointType;
 import com.chpok.logiweb.util.PostgreSQLEnumType;
+import org.hibernate.annotations.DynamicInsert;
 import org.hibernate.annotations.Type;
 import org.hibernate.annotations.TypeDef;
 
@@ -10,6 +11,7 @@ import java.util.List;
 
 @Entity
 @Table(name = "customer_order")
+@DynamicInsert
 public class Order extends AbstractModel{
     @Column(name = "is_completed")
     private Boolean isCompleted;
@@ -33,6 +35,22 @@ public class Order extends AbstractModel{
         this.truck = builder.truck;
         this.drivers = builder.drivers;
         this.waypoints = builder.waypoints;
+    }
+
+    public Boolean getCompleted() {
+        return isCompleted;
+    }
+
+    public Truck getTruck() {
+        return truck;
+    }
+
+    public List<Driver> getDrivers() {
+        return drivers;
+    }
+
+    public List<Waypoint> getWaypoints() {
+        return waypoints;
     }
 
     public static Builder builder() {
@@ -106,10 +124,11 @@ public class Order extends AbstractModel{
 
         }
 
-        public Waypoint(Location location, Cargo cargo, WaypointType type) {
+        public Waypoint(Location location, Cargo cargo, WaypointType type, Order order) {
             this.location = location;
             this.cargo = cargo;
             this.type = type;
+            this.order = order;
         }
 
         public Location getLocation() {
@@ -122,6 +141,10 @@ public class Order extends AbstractModel{
 
         public WaypointType getType() {
             return type;
+        }
+
+        public Order getOrder() {
+            return order;
         }
     }
 }

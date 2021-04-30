@@ -11,7 +11,8 @@ public enum DriverStatus {
                 return SHIFTING;
             case 2:
                 return DRIVING;
+            default:
+                return null;
         }
-        return null;
     }
 }

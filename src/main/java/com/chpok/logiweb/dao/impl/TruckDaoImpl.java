@@ -16,7 +16,6 @@ import java.util.Optional;
 import java.util.Set;
 
 @Component
-@Transactional
 public class TruckDaoImpl implements TruckDao{
     private static final String FIND_ALL_QUERY = "SELECT t FROM Truck t";
 
