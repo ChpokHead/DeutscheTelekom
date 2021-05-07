@@ -45,6 +45,8 @@ public class OrderDaoImpl implements OrderDao {
 
             final Order order = session.get(Order.class, id);
 
+            Hibernate.initialize(order.getTruck());
+
             session.getTransaction().commit();
 
             return Optional.of(order);
@@ -74,7 +76,16 @@ public class OrderDaoImpl implements OrderDao {
 
     @Override
     public void update(Order entity) {
+        try (Session session =
+                     Objects.requireNonNull(hibernateUtil.sessionFactory().getObject()).openSession()){
+            session.beginTransaction();
 
+            session.update(entity);
+
+            session.getTransaction().commit();
+        } catch (NullPointerException npe) {
+            throw new DatabaseRuntimeException("DB updating order exception", npe);
+        }
     }
 
     @Override

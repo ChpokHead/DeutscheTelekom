@@ -3,7 +3,7 @@ body {
     align-items: center;
     padding-top: 40px;
     padding-bottom: 40px;
-    background-image: url("/images/back.jpeg");
+    background-image: url("/static/images/back.jpeg");
     background-repeat: no-repeat;
     background-size: 105%;
 }

@@ -34,6 +34,15 @@ public class DriverServiceImpl implements DriverService {
     }
 
     @Override
+    public void updateDriverStatus(DriverDto driverDto) {
+        final DriverDto updatingDriver = getDriverById(driverDto.getPersonalNumber());
+
+        updatingDriver.setStatus(driverDto.getStatus());
+
+        updateDriver(updatingDriver);
+    }
+
+    @Override
     public void deleteDriver(Long id) {
         driverDao.deleteById(id);
     }
@@ -46,5 +55,14 @@ public class DriverServiceImpl implements DriverService {
     @Override
     public DriverDto getDriverById(Long id) {
         return driverMapper.mapDriverToDriverDto(driverDao.findById(id).get());
+    }
+
+    @Override
+    public void setDriverOrderToNull(Long id) {
+        final DriverDto updatingDriver = getDriverById(id);
+
+        updatingDriver.setCurrentOrder(null);
+
+        updateDriver(updatingDriver);
     }
 }

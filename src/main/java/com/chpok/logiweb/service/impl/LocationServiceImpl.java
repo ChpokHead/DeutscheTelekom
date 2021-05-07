@@ -1,9 +1,10 @@
 package com.chpok.logiweb.service.impl;
 
 import com.chpok.logiweb.dao.LocationDao;
+import com.chpok.logiweb.dto.LocationDto;
 import com.chpok.logiweb.model.Location;
 import com.chpok.logiweb.service.LocationService;
-import org.springframework.beans.factory.annotation.Autowired;
+import com.chpok.logiweb.service.mapper.LocationMapper;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -13,11 +14,16 @@ import java.util.stream.Collectors;
 @Service
 @Transactional
 public class LocationServiceImpl implements LocationService {
-    @Autowired
-    LocationDao locationDao;
+    private final LocationMapper locationMapper;
+    private final LocationDao locationDao;
+
+    public LocationServiceImpl(LocationDao locationDao, LocationMapper locationMapper) {
+        this.locationDao = locationDao;
+        this.locationMapper = locationMapper;
+    }
 
     @Override
-    public List<String> getAllLocations() {
-        return locationDao.findAll().stream().map(Location::getName).collect(Collectors.toList());
+    public List<LocationDto> getAllLocations() {
+        return locationDao.findAll().stream().map(locationMapper::mapLocationToLocationDto).collect(Collectors.toList());
     }
 }

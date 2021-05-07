@@ -41,7 +41,34 @@ public class WaypointDaoImpl implements WaypointDao {
 
     @Override
     public Optional<Order.Waypoint> findById(Long id) {
-        return Optional.empty();
+        try (Session session =
+                     Objects.requireNonNull(hibernateUtil.sessionFactory().getObject()).openSession()){
+            session.beginTransaction();
+
+            final Order.Waypoint waypoint = session.get(Order.Waypoint.class, id);
+
+            session.getTransaction().commit();
+
+            return Optional.of(waypoint);
+        } catch (NullPointerException npe) {
+            throw new DatabaseRuntimeException("DB waypoint finding by id exception", npe);
+        }
+    }
+
+    @Override
+    public void updateWaypoints(List<Order.Waypoint> waypoints) {
+        try (Session session =
+                     Objects.requireNonNull(hibernateUtil.sessionFactory().getObject()).openSession()){
+            session.beginTransaction();
+
+            for (Order.Waypoint waypoint : waypoints) {
+                session.update(waypoint);
+            }
+
+            session.getTransaction().commit();
+        } catch (NullPointerException npe) {
+            throw new DatabaseRuntimeException("DB updating waypoint exception", npe);
+        }
     }
 
     @Override
@@ -67,7 +94,16 @@ public class WaypointDaoImpl implements WaypointDao {
 
     @Override
     public void update(Order.Waypoint entity) {
+        try (Session session =
+                     Objects.requireNonNull(hibernateUtil.sessionFactory().getObject()).openSession()){
+            session.beginTransaction();
 
+            session.update(entity);
+
+            session.getTransaction().commit();
+        } catch (NullPointerException npe) {
+            throw new DatabaseRuntimeException("DB updating waypoint exception", npe);
+        }
     }
 
     @Override

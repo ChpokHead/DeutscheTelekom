@@ -3,6 +3,7 @@ package com.chpok.logiweb.service.impl;
 import com.chpok.logiweb.dao.WaypointDao;
 import com.chpok.logiweb.dto.WaypointDto;
 import com.chpok.logiweb.dto.WaypointsPair;
+import com.chpok.logiweb.model.Order;
 import com.chpok.logiweb.service.WaypointService;
 import com.chpok.logiweb.service.mapper.WaypointMapper;
 import org.springframework.stereotype.Component;
@@ -28,6 +29,11 @@ public class WaypointServiceImpl implements WaypointService {
     }
 
     @Override
+    public WaypointDto getWaypointById(Long id) {
+        return null;
+    }
+
+    @Override
     public void saveWaypoint(WaypointDto waypoint) {
         waypointDao.save(waypointMapper.mapWaypointDtoToWaypoint(waypoint));
     }
@@ -37,6 +43,11 @@ public class WaypointServiceImpl implements WaypointService {
         if (id != null) {
             waypointDao.deleteById(id);
         }
+    }
+
+    @Override
+    public void updateWaypoint(WaypointDto waypoint) {
+        waypointDao.update(waypointMapper.mapWaypointDtoToWaypoint(waypoint));
     }
 
     @Override
@@ -66,4 +77,38 @@ public class WaypointServiceImpl implements WaypointService {
 
         return waypointsPairs;
     }
+
+    @Override
+    public void updateWaypointsStatus(List<Order.Waypoint> waypoints) {
+        final List<Order.Waypoint> updatedWaypoints = new ArrayList<>();
+
+        for (Order.Waypoint waypoint : waypoints) {
+            final Order.Waypoint updatingWaypoint = waypointDao.findById(waypoint.getId()).get();
+
+            updatingWaypoint.setIsDone(waypoint.getIsDone());
+
+            updatedWaypoints.add(updatingWaypoint);
+        }
+
+        updateWaypoints(updatedWaypoints);
+    }
+
+    @Override
+    public void updateWaypoints(List<Order.Waypoint> waypoints) {
+        for (Order.Waypoint waypoint : waypoints) {
+            waypointDao.update(waypoint);
+        }
+    }
+
+    @Override
+    public boolean checkAllWaypointsComplete(List<Order.Waypoint> waypoints) {
+        for (Order.Waypoint waypoint : waypoints) {
+            if (Boolean.FALSE.equals(waypoint.getIsDone())) {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
 }

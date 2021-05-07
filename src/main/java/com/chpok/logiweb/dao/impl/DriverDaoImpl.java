@@ -3,9 +3,11 @@ package com.chpok.logiweb.dao.impl;
 import com.chpok.logiweb.dao.DriverDao;
 import com.chpok.logiweb.dao.exception.DatabaseRuntimeException;
 import com.chpok.logiweb.model.Driver;
+import com.chpok.logiweb.model.Order;
 import com.chpok.logiweb.util.HibernateUtil;
 import org.hibernate.Hibernate;
 import org.hibernate.Session;
+import org.hibernate.query.Query;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -17,6 +19,7 @@ import java.util.Set;
 @Component
 public class DriverDaoImpl implements DriverDao {
     private static final String FIND_ALL_QUERY = "SELECT d FROM Driver d";
+    private static final String FIND_ALL_BY_TRUCK_ID_QUERY = "SELECT d FROM Driver d WHERE d.currentTruck.id = :id";
 
     private final HibernateUtil hibernateUtil;
 
@@ -113,5 +116,25 @@ public class DriverDaoImpl implements DriverDao {
     @Override
     public Optional<Driver> findByPersonalNumber(String personalNumber) {
         return Optional.empty();
+    }
+
+    @Override
+    public List<Driver> findByCurrentTruckId(Long id) {
+        try (Session session =
+                     Objects.requireNonNull(hibernateUtil.sessionFactory().getObject()).openSession()){
+            session.beginTransaction();
+
+            Query<Driver> query = session.createQuery(FIND_ALL_BY_TRUCK_ID_QUERY, Driver.class);
+
+            query.setParameter("id", id);
+
+            List<Driver> drivers = query.getResultList();
+
+            session.getTransaction().commit();
+
+            return drivers;
+        } catch (NullPointerException npe) {
+            throw new DatabaseRuntimeException("DB finding drivers by truck id exception", npe);
+        }
     }
 }

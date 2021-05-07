@@ -2,6 +2,7 @@ package com.chpok.logiweb.dao.impl;
 
 import com.chpok.logiweb.dao.TruckDao;
 import com.chpok.logiweb.dao.exception.DatabaseRuntimeException;
+import com.chpok.logiweb.model.Driver;
 import com.chpok.logiweb.model.Truck;
 import com.chpok.logiweb.util.HibernateUtil;
 import org.hibernate.Hibernate;
@@ -62,6 +63,13 @@ public class TruckDaoImpl implements TruckDao{
             session.beginTransaction();
 
             final List<Truck> allTrucks = session.createQuery(FIND_ALL_QUERY, Truck.class).getResultList();
+
+//            for (Truck truck : allTrucks) {
+//                for (Driver driver : truck.getCurrentDrivers()) {
+//                    Hibernate.initialize(driver);
+//                }
+//            }
+
             session.getTransaction().commit();
 
             return allTrucks;

@@ -8,24 +8,6 @@
     color: white;
 }
 
-a[name=order-edit-btn] {
-    background-color: #2bc853;
-    color: white;
-    border: 0;
-}
-
-a[name=order-edit-btn]:hover {
-    background-color: #23a744;
-    color: white;
-    border: 0;
-}
-
-a[name=order-edit-btn]:focus {
-    background-color: #23a744;
-    color: white;
-    border: 0;
-}
-
 button[name=del-item-btn] {
     background-color: red;
     color: white;
@@ -73,6 +55,11 @@ button[name=update-item-btn]:focus {
 
 #navbar-header {
     color: #ff910a;
+}
+
+.nav-link-active{
+    color: white !important;
+    background-color: #ff910a !important;
 }
 
 .nav-link:active,

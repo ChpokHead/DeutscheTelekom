@@ -3,6 +3,7 @@ package com.chpok.logiweb.model;
 import com.chpok.logiweb.model.enums.DriverStatus;
 import com.chpok.logiweb.util.PostgreSQLEnumType;
 import org.hibernate.annotations.DynamicInsert;
+import org.hibernate.annotations.DynamicUpdate;
 import org.hibernate.annotations.Type;
 import org.hibernate.annotations.TypeDef;
 
@@ -54,6 +55,7 @@ public class Driver extends AbstractModel{
         this.status = builder.status;
         this.location = builder.location;
         this.currentTruck = builder.currentTruck;
+        this.currentOrder = builder.currentOrder;
     }
 
     public static Builder builder() {
@@ -88,15 +90,19 @@ public class Driver extends AbstractModel{
         return currentTruck;
     }
 
+    public Order getCurrentOrder() {
+        return currentOrder;
+    }
+
     public static class Builder {
         private Long id;
         private String firstName;
         private String lastName;
-        private String personalNumber;
         private Short monthWorkedHours;
         private DriverStatus status;
         private Location location;
         private Truck currentTruck;
+        private Order currentOrder;
 
         private Builder(){
 
@@ -117,11 +123,6 @@ public class Driver extends AbstractModel{
             return this;
         }
 
-        public Builder withPersonalNumber(String personalNumber) {
-            this.personalNumber = personalNumber;
-            return this;
-        }
-
         public Builder withMonthWorkedHours(Short monthWorkedHours) {
             this.monthWorkedHours = monthWorkedHours;
             return this;
@@ -139,6 +140,11 @@ public class Driver extends AbstractModel{
 
         public Builder withCurrentTruck(Truck truck) {
             this.currentTruck = truck;
+            return this;
+        }
+
+        public Builder withCurrentOrder(Order order) {
+            this.currentOrder = order;
             return this;
         }
 

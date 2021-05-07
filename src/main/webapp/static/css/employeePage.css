@@ -13,6 +13,11 @@
     color: #ff910a;
 }
 
+.nav-link-active{
+    color: white !important;
+    background-color: #ff910a !important;
+}
+
 .nav-link:active,
 .nav-link:focus {
     color: white;

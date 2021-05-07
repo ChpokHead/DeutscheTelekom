@@ -23,7 +23,7 @@ public class Order extends AbstractModel{
     @OneToMany(mappedBy = "currentOrder", fetch = FetchType.LAZY)
     private List<Driver> drivers;
 
-    @OneToMany(mappedBy = "order", fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "order", fetch = FetchType.EAGER)
     private List<Waypoint> waypoints;
 
     public Order() {
@@ -37,8 +37,12 @@ public class Order extends AbstractModel{
         this.waypoints = builder.waypoints;
     }
 
-    public Boolean getCompleted() {
+    public Boolean getIsCompleted() {
         return isCompleted;
+    }
+
+    public void setIsCompleted(Boolean isCompleted) {
+        this.isCompleted = isCompleted;
     }
 
     public Truck getTruck() {
@@ -51,6 +55,10 @@ public class Order extends AbstractModel{
 
     public List<Waypoint> getWaypoints() {
         return waypoints;
+    }
+
+    public void setWaypoints(List<Waypoint> waypoints) {
+        this.waypoints = waypoints;
     }
 
     public static Builder builder() {
@@ -120,15 +128,20 @@ public class Order extends AbstractModel{
         @JoinColumn(name = "order_id")
         private Order order;
 
+        @Column(name = "is_done")
+        private Boolean isDone;
+
         public Waypoint() {
 
         }
 
-        public Waypoint(Location location, Cargo cargo, WaypointType type, Order order) {
+        public Waypoint(Long id, Location location, Cargo cargo, WaypointType type, Order order, Boolean isDone) {
+            this.id = id;
             this.location = location;
             this.cargo = cargo;
             this.type = type;
             this.order = order;
+            this.isDone = isDone;
         }
 
         public Location getLocation() {
@@ -146,5 +159,15 @@ public class Order extends AbstractModel{
         public Order getOrder() {
             return order;
         }
+
+        public Boolean getIsDone() {
+            return isDone;
+        }
+
+        public void setIsDone(Boolean isDone) {
+            this.isDone = isDone;
+        }
+
+
     }
 }

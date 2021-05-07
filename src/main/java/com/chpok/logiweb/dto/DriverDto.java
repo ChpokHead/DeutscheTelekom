@@ -1,6 +1,8 @@
 package com.chpok.logiweb.dto;
 
 import com.chpok.logiweb.model.Location;
+import com.chpok.logiweb.model.Order;
+import com.chpok.logiweb.model.Truck;
 
 public class DriverDto {
     private String firstName;
@@ -8,8 +10,9 @@ public class DriverDto {
     private Long personalNumber;
     private Short monthWorkedHours;
     private Integer status;
-    private String location;
-    private String currentTruck;
+    private Location location;
+    private Truck currentTruck;
+    private Order currentOrder;
 
     public String getFirstName() {
         return firstName;
@@ -51,19 +54,27 @@ public class DriverDto {
         this.status = status;
     }
 
-    public String getLocation() {
+    public Location getLocation() {
         return location;
     }
 
-    public void setLocation(String location) {
+    public void setLocation(Location location) {
         this.location = location;
     }
 
-    public String getCurrentTruck() {
+    public Truck getCurrentTruck() {
         return currentTruck;
     }
 
-    public void setCurrentTruck(String currentTruck) {
+    public void setCurrentTruck(Truck currentTruck) {
         this.currentTruck = currentTruck;
+    }
+
+    public Order getCurrentOrder() {
+        return currentOrder;
+    }
+
+    public void setCurrentOrder(Order currentOrder) {
+        this.currentOrder = currentOrder;
     }
 }

@@ -1,5 +1,6 @@
 package com.chpok.logiweb.service;
 
+import com.chpok.logiweb.dto.DriverDto;
 import com.chpok.logiweb.dto.TruckDto;
 
 import java.util.List;
@@ -10,4 +11,5 @@ public interface TruckService {
     void deleteTruck(Long id);
     TruckDto getTruckById(Long id);
     void saveTruck(TruckDto truck);
+    List<DriverDto> getDriverShiftworkers(DriverDto driver);
 }

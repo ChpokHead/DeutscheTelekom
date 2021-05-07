@@ -1,42 +1,42 @@
-#driver-add-btn {
+#truck-add-btn {
     background-color: #ff910a;
     color: white;
     border: 0;
 }
-#driver-add-btn:hover {
+#truck-add-btn:hover {
     background-color: #ef8b05;
     color: white;
 }
 
-button[name=del-item-btn] {
+button[name=del-truck-btn] {
     background-color: red;
     color: white;
     border: 0;
 }
 
-button[name=update-item-btn] {
+button[name=update-truck-btn] {
     background-color: #2bc853;
     color: white;
     border: 0;
 }
 
-button[name=del-item-btn]:hover {
+button[name=del-truck-btn]:hover {
     background-color: #e50303;
     color: white;
 }
 
-button[name=del-item-btn]:focus {
+button[name=del-truck-btn]:focus {
     background-color: #e50303;
     color: white;
 }
 
-button[name=update-item-btn]:hover {
+button[name=update-truck-btn]:hover {
     background-color: #23a744;
     color: white;
     border: 0;
 }
 
-button[name=update-item-btn]:focus {
+button[name=update-truck-btn]:focus {
     background-color: #23a744;
     color: white;
     border: 0;
@@ -56,7 +56,10 @@ button[name=update-item-btn]:focus {
 #navbar-header {
     color: #ff910a;
 }
-
+.nav-link-active{
+    color: white !important;
+    background-color: #ff910a !important;
+}
 .nav-link:active,
 .nav-link:focus,
 .nav-link:hover{

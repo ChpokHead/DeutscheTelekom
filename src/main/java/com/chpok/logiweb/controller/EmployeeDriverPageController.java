@@ -2,11 +2,9 @@ package com.chpok.logiweb.controller;
 
 import com.chpok.logiweb.dao.exception.DatabaseRuntimeException;
 import com.chpok.logiweb.dto.DriverDto;
-import com.chpok.logiweb.model.Driver;
-import com.chpok.logiweb.model.enums.DriverStatus;
 import com.chpok.logiweb.service.DriverService;
 import com.chpok.logiweb.service.LocationService;
-import org.springframework.beans.factory.annotation.Autowired;
+import com.chpok.logiweb.service.TruckService;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -18,17 +16,21 @@ import org.springframework.web.server.ResponseStatusException;
 public class EmployeeDriverPageController {
     private static final String REDIRECT_TO_MAIN_PAGE = "redirect:/employeeDriver";
 
-    private DriverService driverService;
-    private LocationService locationService;
+    private final DriverService driverService;
+    private final LocationService locationService;
+    private final TruckService truckService;
 
-    public EmployeeDriverPageController(DriverService driverService, LocationService locationService) {
+    public EmployeeDriverPageController(DriverService driverService, LocationService locationService, TruckService truckService) {
         this.driverService = driverService;
         this.locationService = locationService;
+        this.truckService = truckService;
     }
 
     @GetMapping
     public String getDrivers(Model model) {
         model.addAttribute("drivers", driverService.getAllDrivers());
+
+        model.addAttribute("trucks", truckService.getAllTrucks());
 
         model.addAttribute("driver", new DriverDto());
 

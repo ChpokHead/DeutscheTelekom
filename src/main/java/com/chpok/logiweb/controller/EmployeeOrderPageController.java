@@ -64,6 +64,15 @@ public class EmployeeOrderPageController {
         return "redirect:/employeeOrder/edit/" + id;
     }
 
+    @PutMapping("/edit/{id}")
+    public String updateWaypoint(@PathVariable(name = "id") Long id, @ModelAttribute WaypointsPair waypoints) {
+        waypointService.updateWaypoint(waypoints.getPair().get(0));
+
+        waypointService.updateWaypoint(waypoints.getPair().get(1));
+
+        return "redirect:/employeeOrder/edit/" + id;
+    }
+
     @DeleteMapping("/edit/{id}")
     public String deleteWaypointPair(@PathVariable(name = "id") Long id,
                                      @RequestParam(name = "delete-first-waypoint-id") Long firstWaypointId,

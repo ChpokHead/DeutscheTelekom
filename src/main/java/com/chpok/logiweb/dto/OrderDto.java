@@ -1,13 +1,17 @@
 package com.chpok.logiweb.dto;
 
+import com.chpok.logiweb.model.Driver;
+import com.chpok.logiweb.model.Order;
+import com.chpok.logiweb.model.Truck;
+
 import java.util.List;
 
 public class OrderDto {
     private Long id;
     private Boolean isCompleted;
-    private String currentTruckRegNum;
-    private List<Long> currentDrivers;
-    private List<WaypointDto> waypoints;
+    private Truck currentTruck;
+    private List<Driver> currentDrivers;
+    private List<Order.Waypoint> waypoints;
 
     public Long getId() {
         return id;
@@ -25,27 +29,27 @@ public class OrderDto {
         isCompleted = completed;
     }
 
-    public String getCurrentTruckRegNum() {
-        return currentTruckRegNum;
+    public Truck getCurrentTruck() {
+        return currentTruck;
     }
 
-    public void setCurrentTruckRegNum(String currentTruckRegNum) {
-        this.currentTruckRegNum = currentTruckRegNum;
+    public void setCurrentTruck(Truck currentTruck) {
+        this.currentTruck = currentTruck;
     }
 
-    public List<Long> getCurrentDrivers() {
+    public List<Driver> getCurrentDrivers() {
         return currentDrivers;
     }
 
-    public void setCurrentDrivers(List<Long> currentDrivers) {
+    public void setCurrentDrivers(List<Driver> currentDrivers) {
         this.currentDrivers = currentDrivers;
     }
 
-    public List<WaypointDto> getWaypoints() {
+    public List<Order.Waypoint> getWaypoints() {
         return waypoints;
     }
 
-    public void setWaypoints(List<WaypointDto> waypoints) {
+    public void setWaypoints(List<Order.Waypoint> waypoints) {
         this.waypoints = waypoints;
     }
 }

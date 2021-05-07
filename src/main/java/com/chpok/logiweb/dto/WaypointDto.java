@@ -1,27 +1,39 @@
 package com.chpok.logiweb.dto;
 
+import com.chpok.logiweb.model.Cargo;
+import com.chpok.logiweb.model.Location;
+import com.chpok.logiweb.model.Order;
+
 public class WaypointDto {
     private Long id;
     private Integer type;
-    private String location;
-    private String cargoName;
-    private Long orderId;
-    private Long cargoId;
+    private Location location;
+    private Order order;
+    private Cargo cargo;
+    private Boolean isDone;
 
-    public Long getCargoId() {
-        return cargoId;
+    public Boolean getIsDone() {
+        return isDone;
     }
 
-    public void setCargoId(Long cargoId) {
-        this.cargoId = cargoId;
+    public void setIsDone(Boolean done) {
+        isDone = done;
     }
 
-    public Long getOrderId() {
-        return orderId;
+    public Cargo getCargo() {
+        return cargo;
     }
 
-    public void setOrderId(Long orderId) {
-        this.orderId = orderId;
+    public void setCargo(Cargo cargo) {
+        this.cargo = cargo;
+    }
+
+    public Order getOrder() {
+        return order;
+    }
+
+    public void setOrder(Order order) {
+        this.order = order;
     }
 
     public Long getId() {
@@ -40,19 +52,11 @@ public class WaypointDto {
         this.type = type;
     }
 
-    public String getCargoName() {
-        return cargoName;
-    }
-
-    public void setCargoName(String cargoName) {
-        this.cargoName = cargoName;
-    }
-
-    public String getLocation() {
-        return location;
-    }
-
-    public void setLocation(String location) {
+    public void setLocation(Location location) {
         this.location = location;
+    }
+
+    public Location getLocation() {
+        return location;
     }
 }

@@ -13,7 +13,8 @@ public class Location extends AbstractModel{
 
     }
 
-    public Location(String name) {
+    public Location(Long id, String name) {
+        this.id = id;
         this.name = name;
     }
 

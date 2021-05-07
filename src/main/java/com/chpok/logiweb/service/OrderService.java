@@ -9,4 +9,8 @@ public interface OrderService {
     List<OrderDto> getAllOrders();
     void saveOrder(OrderDto order);
     void deleteOrder(Long id);
+    void updateOrder(OrderDto order);
+    void updateOrderStatus(Order order);
+    OrderDto getOrderById(Long id);
+    boolean checkOrderCompleted(Order order);
 }
