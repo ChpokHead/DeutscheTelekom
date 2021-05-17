@@ -1,10 +1,15 @@
 package com.chpok.logiweb.dto;
 
+import com.chpok.logiweb.model.Order;
+
+import java.util.List;
+
 public class CargoDto {
     private Long id;
     private String name;
     private Integer weight;
     private Integer status;
+    private List<Order.Waypoint> waypoints;
 
     public Long getId() {
         return id;
@@ -36,5 +41,13 @@ public class CargoDto {
 
     public void setStatus(Integer status) {
         this.status = status;
+    }
+
+    public List<Order.Waypoint> getWaypoints() {
+        return waypoints;
+    }
+
+    public void setWaypoints(List<Order.Waypoint> waypoints) {
+        this.waypoints = waypoints;
     }
 }

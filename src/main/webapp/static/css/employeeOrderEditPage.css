@@ -1,0 +1,240 @@
+.separator{
+    display: flex;
+    align-items: center;
+}
+
+.separator p{
+    padding: 0 1.5rem;
+    font-size: 1.5rem;
+    color: #ff910a;
+}
+
+.separator .line{
+    flex: 1;
+    height: 3px;
+    background-color: #ff910a;
+}
+
+#waypoint-add {
+    background-color: #ff910a;
+    color: white;
+    border: 0;
+}
+#waypoint-add:hover {
+    background-color: #ef8b05;
+    color: white;
+}
+
+#waypoint-add-disabled {
+    background-color: #ff910a;
+    color: white;
+    border: 0;
+}
+#waypoint-add-disabled:hover {
+    background-color: #ef8b05;
+    color: white;
+}
+
+#truck-add {
+    background-color: #ff910a;
+    color: white;
+    border: 0;
+}
+#truck-add:hover {
+    background-color: #ef8b05;
+    color: white;
+}
+
+#truck-add-disabled {
+    background-color: #ff910a;
+    color: white;
+    border: 0;
+}
+#truck-add-disabled:hover {
+    background-color: #ef8b05;
+    color: white;
+}
+
+#driver-add {
+    background-color: #ff910a;
+    color: white;
+    border: 0;
+}
+#driver-add:hover {
+    background-color: #ef8b05;
+    color: white;
+}
+
+#driver-add-disabled {
+    background-color: #ff910a;
+    color: white;
+    border: 0;
+}
+#driver-add-disabled:hover {
+    background-color: #ef8b05;
+    color: white;
+}
+
+#date-add {
+    background-color: #ff910a;
+    color: white;
+    border: 0;
+}
+#date-add:hover {
+    background-color: #ef8b05;
+    color: white;
+}
+
+#date-add-disabled {
+    background-color: #ff910a;
+    color: white;
+    border: 0;
+}
+#date-add-disabled:hover {
+    background-color: #ef8b05;
+    color: white;
+}
+
+#driver-add-btn {
+    background-color: #ff910a;
+    color: white;
+    border: 0;
+}
+#driver-add-btn:hover {
+    background-color: #ef8b05;
+    color: white;
+}
+
+#waypoint-add-btn {
+    background-color: #ff910a;
+    color: white;
+    border: 0;
+}
+#waypoint-add-btn:hover {
+    background-color: #ef8b05;
+    color: white;
+}
+
+#truck-add-btn {
+    background-color: #ff910a;
+    color: white;
+    border: 0;
+}
+#truck-add-btn:hover {
+    background-color: #ef8b05;
+    color: white;
+}
+
+#driver-add-btn {
+    background-color: #ff910a;
+    color: white;
+    border: 0;
+}
+#driver-add-btn:hover {
+    background-color: #ef8b05;
+    color: white;
+}
+
+#date-add-btn {
+    background-color: #ff910a;
+    color: white;
+    border: 0;
+}
+#date-add-btn:hover {
+    background-color: #ef8b05;
+    color: white;
+}
+
+#waypoint-update-btn {
+    background-color: #ff910a;
+    color: white;
+    border: 0;
+}
+#waypoint-update-btn:hover {
+    background-color: #ef8b05;
+    color: white;
+}
+
+#truck-delete-btn {
+    background-color: #ff910a;
+    color: white;
+    border: 0;
+}
+#truck-delete-btn:hover {
+    background-color: #ef8b05;
+    color: white;
+}
+
+#driver-delete-btn {
+    background-color: #ff910a;
+    color: white;
+    border: 0;
+}
+
+#driver-delete-btn:hover {
+    background-color: #ef8b05;
+    color: white;
+}
+
+a[name=order-edit-btn] {
+    background-color: #2bc853;
+    color: white;
+    border: 0;
+}
+
+a[name=order-edit-btn]:hover {
+    background-color: #23a744;
+    color: white;
+    border: 0;
+}
+
+a[name=order-edit-btn]:focus {
+    background-color: #23a744;
+    color: white;
+    border: 0;
+}
+
+button[name=del-item-btn] {
+    background-color: red;
+    color: white;
+    border: 0;
+}
+
+button[name=update-item-btn] {
+    background-color: #2bc853;
+    color: white;
+    border: 0;
+}
+
+button[name=del-item-btn]:hover {
+    background-color: #e50303;
+    color: white;
+}
+
+button[name=del-item-btn]:focus {
+    background-color: #e50303;
+    color: white;
+}
+
+button[name=update-item-btn]:hover {
+    background-color: #23a744;
+    color: white;
+    border: 0;
+}
+
+button[name=update-item-btn]:focus {
+    background-color: #23a744;
+    color: white;
+    border: 0;
+}
+
+/* for main section */
+.active-cont {
+    margin-left: 180px;
+}
+
+#menu-btn {
+    background-color: #100901;
+    color: #d70000;
+    margin-left: -62px;
+}

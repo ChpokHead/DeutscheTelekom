@@ -11,46 +11,51 @@
 <div class="container-fluid">
     <div class="row flex-nowrap">
         <div class="col-auto col-md-3 col-xl-2 px-sm-2 px-0 bg-light">
-            <div class="d-flex flex-column align-items-center align-items-sm-start px-3 pt-2 text-white min-vh-100">
+            <div class="d-flex flex-column align-items-center align-items-sm-start pt-2 text-white min-vh-100 position-fixed bg-light" style="padding-left: 1rem !important; padding-right: 5rem !important;">
                 <a href="/employeePage" class="d-flex align-items-center pb-3 mb-md-0 me-md-auto text-decoration-none" id="navbar-header">
                     <span class="fs-5 d-none d-sm-inline">Меню</span>
                 </a>
                 <ul class="nav nav-pills flex-column mb-sm-auto mb-0 align-items-center align-items-sm-start" id="menu">
-                    <li class="nav-item">
-                        <a href="/employeePage" class="nav-link align-middle px-0">
-                            <i class="fs-4 bi-house"></i> <span class="ms-1 d-none d-sm-inline">Личный кабинет</span>
+                    <li class="nav-item py-1">
+                        <a href="employeePage" class="nav-link align-middle px-0">
+                            <span class="ms-1 d-none d-sm-inline">Личный кабинет</span>
                         </a>
                     </li>
-                    <li>
+                    <li class="py-1">
                         <a href="/employeeTruck" class="nav-link px-0 align-middle">
-                            <i class="fs-4 bi-speedometer2"></i> <span class="ms-1 d-none d-sm-inline">Фуры</span> </a>
+                            <span class="ms-1 d-none d-sm-inline">Фуры</span> </a>
                     </li>
-                    <li>
+                    <li class="py-1">
                         <a href="/employeeDriver" class="nav-link px-0 align-middle">
-                            <i class="fs-4 bi-table"></i> <span class="ms-1 d-none d-sm-inline">Водители</span></a>
+                            <span class="ms-1 d-none d-sm-inline">Водители</span></a>
                     </li>
-                    <li>
-                        <a href="/employeeOrder" class="nav-link-active nav-link px-0 align-middle">
-                            <i class="fs-4 bi-table"></i> <span class="ms-1 d-none d-sm-inline">Заказы</span></a>
+                    <li class="py-1">
+                        <a href="/employeeOrder" class="nav-link nav-link-active px-0 align-middle">
+                            <span class="ms-1 d-none d-sm-inline">Заказы</span></a>
                     </li>
-                    <li>
+                    <li class="py-1">
                         <a href="/employeeCargo" class="nav-link px-0 align-middle">
-                            <i class="fs-4 bi-table"></i> <span class="ms-1 d-none d-sm-inline">Грузы</span></a>
+                            <span class="ms-1 d-none d-sm-inline">Грузы</span></a>
                     </li>
                 </ul>
-                <row class="py-3">
+                <div class="py-3">
                     <a class="btn btn-lg btn-danger" href="/logout">
                         <span>Выйти</span>
                     </a>
-                </row>
+                </div>
             </div>
         </div>
         <div class="col py-1">
             <div class="row">
                 <div class="d-flex w-100 justify-content-end">
                     <div class="py-1">
-                        <button id = "order-add-btn" class="btn btn-primary btn-lg" data-bs-toggle="modal" data-bs-target="#addModal">Создать пустой заказ</button>
+                        <button id = "order-add-btn" class="btn btn-lg" data-bs-toggle="modal" data-bs-target="#addModal">Создать пустой заказ</button>
                     </div>
+                </div>
+            </div>
+            <div class="row-1 p-1 d-flex w-100 justify-content-md-center" style="padding-top: 20% !important; padding-bottom: 3rem !important;" th:if="${orders.isEmpty()}">
+                <div class="mb-3">
+                    <h4 style="color: gray; opacity: 0.8">Заказов пока нет</h4>
                 </div>
             </div>
             <div class="row-1 py-1">
@@ -64,22 +69,43 @@
                                 <div class="d-flex justify-content-end">
                                     <div class="col py-3">
                                         <a class="btn btn-primary rounded" name="order-edit-btn" th:id ="${order.id}" th:href="@{/employeeOrder/edit/} + ${order.id}">
-                                            <i class="fa fa-edit"></i>
+                                            <em class="fa fa-edit"></em>
                                         </a>
                                     </div>
                                 </div>
                             </div>
                         </div>
                         <div class="row">
-                            <div class="col py-3">
-                                <small th:text="${#bools.isTrue(order.isCompleted)} ? 'Выполнен' : 'Не выполнен'"></small>
+                            <div class="col py-1">
+                                <div th:if="${order.currentTruck != null}">
+                                    <p th:text="'Назначенная фура: #' + ${order.currentTruck.regNumber}"></p>
+                                </div>
+                                <div th:if="${order.currentTruck == null}">
+                                    <p th:text="'Фура не назначена'"></p>
+                                </div>
                             </div>
-                            <div class="col py-3">
+                            <div class="col py-1">
                                 <div class="d-flex justify-content-end">
                                     <button type="button" class="btn btn-primary rounded" data-bs-toggle="modal" data-bs-target="#delModal" th:id ="${order.id}" name="del-item-btn">
-                                        <i class="fa fa-trash"></i>
+                                        <em class="fa fa-trash"></em>
                                     </button>
                                 </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col py-1">
+                                <p th:text="'Дата создания: '+ ${order.creationDate.getDayOfMonth()} + '.' + ${T(java.lang.String).format('%02d', order.creationDate.getMonthValue())} + '.' + ${order.creationDate.getYear()}"></p>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col py-1">
+                                <p th:if="${order.startDate != null and order.endDate != null}" th:text="'Нужно выполнить с '+ ${order.startDate.getDayOfMonth()} + '.' + ${T(java.lang.String).format('%02d', order.startDate.getMonthValue())} + '.' + ${order.startDate.getYear()} + ' по ' + ${order.endDate.getDayOfMonth()} + '.' + ${T(java.lang.String).format('%02d', order.endDate.getMonthValue())} + '.' + ${order.endDate.getYear()}"></p>
+                                <p th:if="${order.startDate == null or order.endDate == null}" th:text="'Нужно выполнить с --- по ---'"></p>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col py-1">
+                                <small th:text="${#bools.isTrue(order.isCompleted)} ? 'Выполнен' : 'Не выполнен'"></small>
                             </div>
                         </div>
                     </div>
@@ -99,7 +125,7 @@
                         </div>
                         <div class="modal-footer">
                             <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Закрыть</button>
-                            <button type="submit"  class="btn btn-primary" form="addOrder">Добавить</button>
+                            <button type="submit"  class="btn btn-primary" form="addOrder" id="add-order">Добавить</button>
                         </div>
                     </div>
                 </div>
@@ -121,7 +147,7 @@
                         </div>
                         <div class="modal-footer">
                             <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Закрыть</button>
-                            <button type="submit"  class="btn btn-primary" form="orderDelete">Удалить</button>
+                            <button type="submit"  class="btn btn-primary" form="orderDelete" id="delete-order">Удалить</button>
                         </div>
                     </div>
                 </div>

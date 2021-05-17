@@ -3,11 +3,11 @@ package com.chpok.logiweb.model;
 import com.chpok.logiweb.model.enums.DriverStatus;
 import com.chpok.logiweb.util.PostgreSQLEnumType;
 import org.hibernate.annotations.DynamicInsert;
-import org.hibernate.annotations.DynamicUpdate;
 import org.hibernate.annotations.Type;
 import org.hibernate.annotations.TypeDef;
 
 import javax.persistence.*;
+import java.util.Objects;
 
 @Entity
 @Table(name = "driver")
@@ -36,11 +36,11 @@ public class Driver extends AbstractModel{
     private Location location;
 
     @ManyToOne
-    @JoinColumn(name = "truck_id")
+    @JoinColumn(name = "current_truck_id")
     private Truck currentTruck;
 
     @ManyToOne
-    @JoinColumn(name = "order_id")
+    @JoinColumn(name = "current_order_id")
     private Order currentOrder;
 
     public Driver() {
@@ -84,6 +84,14 @@ public class Driver extends AbstractModel{
 
     public Location getLocation() {
         return location;
+    }
+
+    public void setCurrentTruck(Truck currentTruck) {
+        this.currentTruck = currentTruck;
+    }
+
+    public void setCurrentOrder(Order currentOrder) {
+        this.currentOrder = currentOrder;
     }
 
     public Truck getCurrentTruck() {
@@ -153,5 +161,16 @@ public class Driver extends AbstractModel{
         }
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Driver driver = (Driver) o;
+        return firstName.equals(driver.firstName) && lastName.equals(driver.lastName) && monthWorkedHours.equals(driver.monthWorkedHours) && status == driver.status;
+    }
 
+    @Override
+    public int hashCode() {
+        return Objects.hash(firstName, lastName, monthWorkedHours, status, location, currentTruck, currentOrder);
+    }
 }

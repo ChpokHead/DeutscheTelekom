@@ -3,7 +3,10 @@ package com.chpok.logiweb.dto;
 import com.chpok.logiweb.model.Driver;
 import com.chpok.logiweb.model.Order;
 import com.chpok.logiweb.model.Truck;
+import org.springframework.format.annotation.DateTimeFormat;
 
+import javax.persistence.Column;
+import java.time.LocalDate;
 import java.util.List;
 
 public class OrderDto {
@@ -12,6 +15,9 @@ public class OrderDto {
     private Truck currentTruck;
     private List<Driver> currentDrivers;
     private List<Order.Waypoint> waypoints;
+    private LocalDate creationDate;
+    private LocalDate startDate;
+    private LocalDate endDate;
 
     public Long getId() {
         return id;
@@ -51,5 +57,29 @@ public class OrderDto {
 
     public void setWaypoints(List<Order.Waypoint> waypoints) {
         this.waypoints = waypoints;
+    }
+
+    public LocalDate getCreationDate() {
+        return creationDate;
+    }
+
+    public void setCreationDate(LocalDate creationDate) {
+        this.creationDate = creationDate;
+    }
+
+    public LocalDate getStartDate() {
+        return startDate;
+    }
+
+    public void setStartDate(LocalDate startDate) {
+        this.startDate = startDate;
+    }
+
+    public LocalDate getEndDate() {
+        return endDate;
+    }
+
+    public void setEndDate(LocalDate endDate) {
+        this.endDate = endDate;
     }
 }

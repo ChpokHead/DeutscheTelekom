@@ -1,0 +1,124 @@
+#cargo-add-btn {
+    background-color: #ff910a;
+    color: white;
+    border: 0;
+}
+#cargo-add-btn:hover {
+    background-color: #ef8b05;
+    color: white;
+}
+
+#cargo-delete-btn {
+    background-color: #ff910a;
+    color: white;
+    border: 0;
+}
+#cargo-delete-btn:hover {
+    background-color: #ef8b05;
+    color: white;
+}
+
+#cargo-edit-btn {
+    background-color: #ff910a;
+    color: white;
+    border: 0;
+}
+#cargo-edit-btn:hover {
+    background-color: #ef8b05;
+    color: white;
+}
+
+#cargo-add {
+    background-color: #ff910a;
+    color: white;
+    border: 0;
+}
+
+#cargo-add:hover {
+    background-color: #ef8b05;
+    color: white;
+}
+
+button[name=del-item-btn] {
+    background-color: red;
+    color: white;
+    border: 0;
+}
+
+button[name=update-item-btn] {
+    background-color: #2bc853;
+    color: white;
+    border: 0;
+}
+
+button[name=del-item-btn]:hover {
+    background-color: #e50303;
+    color: white;
+}
+
+button[name=del-item-btn]:focus {
+    background-color: #e50303;
+    color: white;
+}
+
+button[name=update-item-btn]:hover {
+    background-color: #23a744;
+    color: white;
+    border: 0;
+}
+
+button[name=update-item-btn]:focus {
+    background-color: #23a744;
+    color: white;
+    border: 0;
+}
+
+.side-navbar {
+    width: 180px;
+    height: 100%;
+    position: fixed;
+    margin-left: -300px;
+    background-color: #100901;
+    transition: 0.5s;
+    padding-left: 0;
+    padding-right: 0;
+}
+
+#navbar-header {
+    color: #ff910a;
+}
+
+.nav-link-active{
+    color: white !important;
+    background-color: #ff910a !important;
+}
+
+.nav-link:active,
+.nav-link:focus,
+.nav-link:hover{
+    color: white;
+    background-color: #ff910a;
+}
+
+.my-container {
+    transition: 0.4s;
+}
+
+.active-nav {
+    margin-left: 0;
+}
+
+.nav-link{
+    color: black;
+}
+
+/* for main section */
+.active-cont {
+    margin-left: 180px;
+}
+
+#menu-btn {
+    background-color: #100901;
+    color: #d70000;
+    margin-left: -62px;
+}

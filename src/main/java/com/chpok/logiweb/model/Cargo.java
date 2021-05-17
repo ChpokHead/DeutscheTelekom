@@ -6,6 +6,8 @@ import org.hibernate.annotations.Type;
 import org.hibernate.annotations.TypeDef;
 
 import javax.persistence.*;
+import java.util.List;
+import java.util.Objects;
 
 @Entity
 @Table(name = "cargo")
@@ -25,6 +27,9 @@ public class Cargo extends AbstractModel {
     @Type(type="pgsql_enum")
     private CargoStatus status;
 
+    @OneToMany(mappedBy = "cargo", fetch = FetchType.LAZY)
+    private List<Order.Waypoint> waypoints;
+
     public Cargo() {
     }
 
@@ -33,6 +38,7 @@ public class Cargo extends AbstractModel {
         this.name = builder.name;
         this.weight = builder.weight;
         this.status = builder.status;
+        this.waypoints = builder.waypoints;
     }
 
     public static Builder builder() {
@@ -55,11 +61,20 @@ public class Cargo extends AbstractModel {
         return status;
     }
 
+    public void setStatus(CargoStatus status) {
+        this.status = status;
+    }
+
+    public List<Order.Waypoint> getWaypoints() {
+        return waypoints;
+    }
+
     public static class Builder {
         private Long id;
         private String name;
         private Integer weight;
         private CargoStatus status;
+        private List<Order.Waypoint> waypoints;
 
         private Builder() {}
 
@@ -83,8 +98,26 @@ public class Cargo extends AbstractModel {
             return this;
         }
 
+        public Builder withWaypoints(List<Order.Waypoint> waypoints) {
+            this.waypoints = waypoints;
+            return this;
+        }
+
         public Cargo build() {
             return new Cargo(this);
         }
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Cargo cargo = (Cargo) o;
+        return name.equals(cargo.name) && weight.equals(cargo.weight) && status == cargo.status;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(name, weight, status);
     }
 }

@@ -17,4 +17,5 @@ public interface WaypointService {
     void updateWaypointsStatus(List<Order.Waypoint> waypoints);
     void updateWaypoints(List<Order.Waypoint> waypoints);
     boolean checkAllWaypointsComplete(List<Order.Waypoint> waypoints);
+    List<WaypointDto> getAllLoadingWaypointsByOrderId(Long orderId);
 }

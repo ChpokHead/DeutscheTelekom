@@ -2,9 +2,8 @@ package com.chpok.logiweb.service.impl;
 
 import com.chpok.logiweb.dao.LocationDao;
 import com.chpok.logiweb.dto.LocationDto;
-import com.chpok.logiweb.model.Location;
 import com.chpok.logiweb.service.LocationService;
-import com.chpok.logiweb.service.mapper.LocationMapper;
+import com.chpok.logiweb.mapper.impl.LocationMapper;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -24,6 +23,6 @@ public class LocationServiceImpl implements LocationService {
 
     @Override
     public List<LocationDto> getAllLocations() {
-        return locationDao.findAll().stream().map(locationMapper::mapLocationToLocationDto).collect(Collectors.toList());
+        return locationDao.findAll().stream().map(locationMapper::mapEntityToDto).collect(Collectors.toList());
     }
 }

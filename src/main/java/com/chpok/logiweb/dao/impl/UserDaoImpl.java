@@ -2,51 +2,57 @@ package com.chpok.logiweb.dao.impl;
 
 import com.chpok.logiweb.dao.UserDao;
 import com.chpok.logiweb.dao.exception.DatabaseRuntimeException;
-import com.chpok.logiweb.model.Order;
 import com.chpok.logiweb.model.User;
-import com.chpok.logiweb.util.HibernateUtil;
 import org.hibernate.Hibernate;
 import org.hibernate.Session;
+import org.hibernate.SessionFactory;
 import org.hibernate.query.Query;
 import org.springframework.stereotype.Component;
 
+import javax.persistence.PersistenceException;
 import java.util.*;
 
 @Component
 public class UserDaoImpl implements UserDao {
     private static final String FIND_BY_USERNAME_QUERY = "SELECT u FROM User u WHERE u.username = :username";
-    private static final String FIND_BY_ID_QUERY = "SELECT u FROM User u WHERE u.id = :id";
 
-    private final HibernateUtil hibernateUtil;
+    private final SessionFactory sessionFactory;
 
-    public UserDaoImpl(HibernateUtil hibernateUtil) {
-        this.hibernateUtil = hibernateUtil;
+    public UserDaoImpl(SessionFactory sessionFactory) {
+        this.sessionFactory = sessionFactory;
     }
 
     @Override
     public void save(User entity) {
+        try (Session session = sessionFactory.openSession()){
+            session.beginTransaction();
 
+            session.save(entity);
+
+            session.getTransaction().commit();
+        } catch (PersistenceException pe) {
+            throw new DatabaseRuntimeException("DB getting user by id exception", pe);
+        }
     }
 
     @Override
     public Optional<User> findById(Long id) {
-        try (Session session =
-                     Objects.requireNonNull(hibernateUtil.sessionFactory().getObject()).openSession()){
+        try (Session session = sessionFactory.openSession()){
             session.beginTransaction();
 
-            Query<User> query = session.createQuery(FIND_BY_ID_QUERY, User.class);
+            final User foundUser = session.get(User.class, id);
 
-            query.setParameter("id", id);
+            if (foundUser != null) {
+                Hibernate.initialize(foundUser.getDriver());
 
-            Optional<User> user = query.uniqueResultOptional();
-
-            Hibernate.initialize(user.get().getDriver());
+                Hibernate.initialize(foundUser.getEmployee());
+            }
 
             session.getTransaction().commit();
 
-            return user;
-        } catch (NullPointerException | NoSuchElementException npe) {
-            throw new DatabaseRuntimeException("DB getting user by id exception", npe);
+            return Optional.ofNullable(foundUser);
+        } catch (PersistenceException pe) {
+            throw new DatabaseRuntimeException("DB getting user by id exception", pe);
         }
     }
 
@@ -72,21 +78,20 @@ public class UserDaoImpl implements UserDao {
 
     @Override
     public Optional<User> findUserByUsername(String username) {
-        try (Session session =
-                     Objects.requireNonNull(hibernateUtil.sessionFactory().getObject()).openSession()){
+        try (Session session = sessionFactory.openSession()){
             session.beginTransaction();
 
             Query<User> query = session.createQuery(FIND_BY_USERNAME_QUERY, User.class);
 
             query.setParameter("username", username);
 
-            Optional<User> user = query.uniqueResultOptional();
+            final Optional<User> foundUser = query.uniqueResultOptional();
 
             session.getTransaction().commit();
 
-            return user;
-        } catch (NullPointerException npe) {
-            throw new DatabaseRuntimeException("DB getting user by username exception", npe);
+            return foundUser;
+        } catch (PersistenceException pe) {
+            throw new DatabaseRuntimeException("DB getting user by username exception", pe);
         }
     }
 }

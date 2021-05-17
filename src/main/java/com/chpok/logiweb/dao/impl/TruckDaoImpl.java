@@ -2,15 +2,13 @@ package com.chpok.logiweb.dao.impl;
 
 import com.chpok.logiweb.dao.TruckDao;
 import com.chpok.logiweb.dao.exception.DatabaseRuntimeException;
-import com.chpok.logiweb.model.Driver;
 import com.chpok.logiweb.model.Truck;
-import com.chpok.logiweb.util.HibernateUtil;
 import org.hibernate.Hibernate;
 import org.hibernate.Session;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.hibernate.SessionFactory;
 import org.springframework.stereotype.Component;
-import org.springframework.transaction.annotation.Transactional;
 
+import javax.persistence.PersistenceException;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -20,84 +18,75 @@ import java.util.Set;
 public class TruckDaoImpl implements TruckDao{
     private static final String FIND_ALL_QUERY = "SELECT t FROM Truck t";
 
-    @Autowired
-    private HibernateUtil hibernateUtil;
+    private final SessionFactory sessionFactory;
+
+    public TruckDaoImpl(SessionFactory sessionFactory) {
+        this.sessionFactory = sessionFactory;
+    }
 
     @Override
     public void save(Truck entity) {
-        try (Session session =
-                     Objects.requireNonNull(hibernateUtil.sessionFactory().getObject()).openSession()) {
+        try (Session session = sessionFactory.openSession()) {
             session.beginTransaction();
 
             session.save(entity);
 
             session.getTransaction().commit();
-        } catch (NullPointerException npe) {
-            throw new DatabaseRuntimeException("DB truck saving exception", npe);
+        } catch (PersistenceException pe) {
+            throw new DatabaseRuntimeException("DB truck saving exception", pe);
         }
-
     }
 
     @Override
     public Optional<Truck> findById(Long id) {
-        try (Session session =
-                Objects.requireNonNull(hibernateUtil.sessionFactory().getObject()).openSession()){
+        try (Session session = sessionFactory.openSession()){
             session.beginTransaction();
 
             final Truck truck = session.get(Truck.class, id);
 
-            Hibernate.initialize(truck.getCurrentDrivers());
+            if (truck != null) {
+                Hibernate.initialize(truck.getCurrentDrivers());
+            }
 
             session.getTransaction().commit();
 
-            return Optional.of(truck);
-        } catch (NullPointerException npe) {
-            throw new DatabaseRuntimeException("DB find truck by id exception", npe);
+            return Optional.ofNullable(truck);
+        } catch (PersistenceException pe) {
+            throw new DatabaseRuntimeException("DB find truck by id exception", pe);
         }
     }
 
     @Override
     public List<Truck> findAll() {
-        try (Session session =
-                     Objects.requireNonNull(hibernateUtil.sessionFactory().getObject()).openSession()) {
+        try (Session session = sessionFactory.openSession()) {
             session.beginTransaction();
 
             final List<Truck> allTrucks = session.createQuery(FIND_ALL_QUERY, Truck.class).getResultList();
 
-//            for (Truck truck : allTrucks) {
-//                for (Driver driver : truck.getCurrentDrivers()) {
-//                    Hibernate.initialize(driver);
-//                }
-//            }
-
             session.getTransaction().commit();
 
             return allTrucks;
-        }  catch (NullPointerException npe) {
-            throw new DatabaseRuntimeException("DB getting all trucks exception", npe);
+        }  catch (PersistenceException pe) {
+            throw new DatabaseRuntimeException("DB getting all trucks exception", pe);
         }
-
     }
 
     @Override
     public void update(Truck entity) {
-        try (Session session =
-                     Objects.requireNonNull(hibernateUtil.sessionFactory().getObject()).openSession()) {
+        try (Session session = sessionFactory.openSession()) {
             session.beginTransaction();
 
             session.update(entity);
 
             session.getTransaction().commit();
-        }  catch (NullPointerException npe) {
-            throw new DatabaseRuntimeException("DB truck updating exception", npe);
+        }  catch (PersistenceException pe) {
+            throw new DatabaseRuntimeException("DB truck updating exception", pe);
         }
-
     }
 
     @Override
     public void deleteById(Long id) {
-        try (Session session =
-                     Objects.requireNonNull(hibernateUtil.sessionFactory().getObject()).openSession()) {
+        try (Session session = sessionFactory.openSession()) {
             session.beginTransaction();
 
             final Truck deletingTruck = session.get(Truck.class, id);
@@ -105,10 +94,9 @@ public class TruckDaoImpl implements TruckDao{
             session.delete(deletingTruck);
 
             session.getTransaction().commit();
-        }  catch (NullPointerException npe) {
-            throw new DatabaseRuntimeException("DB driver deleting exception", npe);
+        }  catch (PersistenceException pe) {
+            throw new DatabaseRuntimeException("DB driver deleting exception", pe);
         }
-
     }
 
     @Override

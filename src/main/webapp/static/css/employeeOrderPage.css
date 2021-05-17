@@ -1,9 +1,29 @@
-#driver-add-btn {
+#order-add-btn {
     background-color: #ff910a;
     color: white;
     border: 0;
 }
-#driver-add-btn:hover {
+#order-add-btn:hover {
+    background-color: #ef8b05;
+    color: white;
+}
+
+#add-order {
+    background-color: #ff910a;
+    color: white;
+    border: 0;
+}
+#add-order:hover {
+    background-color: #ef8b05;
+    color: white;
+}
+
+#delete-order {
+    background-color: #ff910a;
+    color: white;
+    border: 0;
+}
+#delete-order:hover {
     background-color: #ef8b05;
     color: white;
 }

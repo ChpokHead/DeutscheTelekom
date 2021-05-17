@@ -3,9 +3,9 @@ package com.chpok.logiweb.dao.impl;
 import com.chpok.logiweb.dao.WaypointDao;
 import com.chpok.logiweb.dao.exception.DatabaseRuntimeException;
 import com.chpok.logiweb.model.Order;
-import com.chpok.logiweb.util.HibernateUtil;
 import org.hibernate.Hibernate;
 import org.hibernate.Session;
+import org.hibernate.SessionFactory;
 import org.hibernate.query.Query;
 import org.springframework.stereotype.Component;
 
@@ -19,16 +19,15 @@ public class WaypointDaoImpl implements WaypointDao {
     private static final String FIND_ALL_QUERY = "SELECT w FROM com.chpok.logiweb.model.Order$Waypoint w";
     private static final String FIND_ALL_BY_ORDER_ID_QUERY = "SELECT w FROM com.chpok.logiweb.model.Order$Waypoint w WHERE w.order.id = :id";
 
-    private final HibernateUtil hibernateUtil;
+    private final SessionFactory sessionFactory;
 
-    public WaypointDaoImpl(HibernateUtil hibernateUtil) {
-        this.hibernateUtil = hibernateUtil;
+    public WaypointDaoImpl(SessionFactory sessionFactory) {
+        this.sessionFactory = sessionFactory;
     }
 
     @Override
     public void save(Order.Waypoint entity) {
-        try (Session session =
-                     Objects.requireNonNull(hibernateUtil.sessionFactory().getObject()).openSession()){
+        try (Session session = sessionFactory.openSession()){
             session.beginTransaction();
 
             session.save(entity);
@@ -41,15 +40,14 @@ public class WaypointDaoImpl implements WaypointDao {
 
     @Override
     public Optional<Order.Waypoint> findById(Long id) {
-        try (Session session =
-                     Objects.requireNonNull(hibernateUtil.sessionFactory().getObject()).openSession()){
+        try (Session session = sessionFactory.openSession()){
             session.beginTransaction();
 
             final Order.Waypoint waypoint = session.get(Order.Waypoint.class, id);
 
             session.getTransaction().commit();
 
-            return Optional.of(waypoint);
+            return Optional.ofNullable(waypoint);
         } catch (NullPointerException npe) {
             throw new DatabaseRuntimeException("DB waypoint finding by id exception", npe);
         }
@@ -57,8 +55,7 @@ public class WaypointDaoImpl implements WaypointDao {
 
     @Override
     public void updateWaypoints(List<Order.Waypoint> waypoints) {
-        try (Session session =
-                     Objects.requireNonNull(hibernateUtil.sessionFactory().getObject()).openSession()){
+        try (Session session = sessionFactory.openSession()){
             session.beginTransaction();
 
             for (Order.Waypoint waypoint : waypoints) {
@@ -73,17 +70,19 @@ public class WaypointDaoImpl implements WaypointDao {
 
     @Override
     public List<Order.Waypoint> findAll() {
-        try (Session session =
-                     Objects.requireNonNull(hibernateUtil.sessionFactory().getObject()).openSession()){
+        try (Session session = sessionFactory.openSession()){
             session.beginTransaction();
 
             final List<Order.Waypoint> waypoints = session.createQuery(FIND_ALL_QUERY, Order.Waypoint.class).getResultList();
 
-            for (Order.Waypoint waypoint : waypoints) {
-                Hibernate.initialize(waypoint.getCargo());
-                Hibernate.initialize(waypoint.getOrder());
-                Hibernate.initialize(waypoint.getLocation());
+            if (!waypoints.isEmpty()) {
+                for (Order.Waypoint waypoint : waypoints) {
+                    Hibernate.initialize(waypoint.getCargo());
+                    Hibernate.initialize(waypoint.getOrder());
+                    Hibernate.initialize(waypoint.getLocation());
+                }
             }
+
             session.getTransaction().commit();
 
             return waypoints;
@@ -94,8 +93,7 @@ public class WaypointDaoImpl implements WaypointDao {
 
     @Override
     public void update(Order.Waypoint entity) {
-        try (Session session =
-                     Objects.requireNonNull(hibernateUtil.sessionFactory().getObject()).openSession()){
+        try (Session session = sessionFactory.openSession()){
             session.beginTransaction();
 
             session.update(entity);
@@ -108,11 +106,10 @@ public class WaypointDaoImpl implements WaypointDao {
 
     @Override
     public void deleteById(Long id) {
-        try (Session session =
-                     Objects.requireNonNull(hibernateUtil.sessionFactory().getObject()).openSession()){
+        try (Session session = sessionFactory.openSession()){
             session.beginTransaction();
 
-            final Order.Waypoint deletingWaypoint = session.load(Order.Waypoint.class, id);
+            final Order.Waypoint deletingWaypoint = session.get(Order.Waypoint.class, id);
 
             session.delete(deletingWaypoint);
 
@@ -129,8 +126,7 @@ public class WaypointDaoImpl implements WaypointDao {
 
     @Override
     public List<Order.Waypoint> findAllByOrderId(Long orderId) {
-        try (Session session =
-                     Objects.requireNonNull(hibernateUtil.sessionFactory().getObject()).openSession()){
+        try (Session session = sessionFactory.openSession()){
             session.beginTransaction();
 
             Query<Order.Waypoint> query = session.createQuery(FIND_ALL_BY_ORDER_ID_QUERY, Order.Waypoint.class);

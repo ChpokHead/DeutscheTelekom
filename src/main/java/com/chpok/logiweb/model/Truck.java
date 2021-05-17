@@ -7,6 +7,7 @@ import org.hibernate.annotations.TypeDef;
 
 import javax.persistence.*;
 import java.util.List;
+import java.util.Objects;
 
 @Entity
 @Table(name = "truck")
@@ -36,6 +37,10 @@ public class Truck extends AbstractModel{
     @OneToMany(mappedBy = "currentTruck", fetch = FetchType.LAZY)
     private List<Driver> currentDrivers;
 
+    @OneToOne
+    @JoinColumn(name = "current_order_id")
+    private Order currentOrder;
+
     public Truck() {
 
     }
@@ -48,6 +53,7 @@ public class Truck extends AbstractModel{
         this.status = builder.status;
         this.location = builder.location;
         this.currentDrivers = builder.currentDrivers;
+        this.currentOrder = builder.currentOrder;
     }
 
     public static Builder builder() {
@@ -82,6 +88,14 @@ public class Truck extends AbstractModel{
         return currentDrivers;
     }
 
+    public Order getCurrentOrder() {
+        return currentOrder;
+    }
+
+    public void setCurrentOrder(Order currentOrder) {
+        this.currentOrder = currentOrder;
+    }
+
     public static class Builder {
         private Long id;
         private String regNumber;
@@ -90,6 +104,7 @@ public class Truck extends AbstractModel{
         private TruckStatus status;
         private Location location;
         private List<Driver> currentDrivers;
+        private Order currentOrder;
 
         private Builder() {}
 
@@ -128,8 +143,26 @@ public class Truck extends AbstractModel{
             return this;
         }
 
+        public Builder withCurrentOrder(Order currentOrder) {
+            this.currentOrder = currentOrder;
+            return this;
+        }
+
         public Truck build() {
             return new Truck(this);
         }
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Truck truck = (Truck) o;
+        return Objects.equals(regNumber, truck.regNumber) && Objects.equals(driversShift, truck.driversShift) && Objects.equals(capacity, truck.capacity) && status == truck.status && Objects.equals(location, truck.location) && Objects.equals(currentOrder, truck.currentOrder);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(regNumber, driversShift, capacity, status, location, currentOrder);
     }
 }

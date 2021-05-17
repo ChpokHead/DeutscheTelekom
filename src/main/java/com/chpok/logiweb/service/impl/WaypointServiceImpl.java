@@ -4,8 +4,12 @@ import com.chpok.logiweb.dao.WaypointDao;
 import com.chpok.logiweb.dto.WaypointDto;
 import com.chpok.logiweb.dto.WaypointsPair;
 import com.chpok.logiweb.model.Order;
+import com.chpok.logiweb.model.enums.CargoStatus;
+import com.chpok.logiweb.model.enums.WaypointType;
+import com.chpok.logiweb.service.CargoService;
 import com.chpok.logiweb.service.WaypointService;
-import com.chpok.logiweb.service.mapper.WaypointMapper;
+import com.chpok.logiweb.mapper.impl.WaypointMapper;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
@@ -18,6 +22,9 @@ public class WaypointServiceImpl implements WaypointService {
     private final WaypointDao waypointDao;
     private final WaypointMapper waypointMapper;
 
+    @Autowired
+    private CargoService cargoService;
+
     public WaypointServiceImpl(WaypointDao waypointDao, WaypointMapper waypointMapper) {
         this.waypointDao = waypointDao;
         this.waypointMapper = waypointMapper;
@@ -25,7 +32,7 @@ public class WaypointServiceImpl implements WaypointService {
 
     @Override
     public List<WaypointDto> getAllWaypoints() {
-        return waypointDao.findAll().stream().map(waypointMapper::mapWaypointToWaypointDto).collect(Collectors.toList());
+        return waypointDao.findAll().stream().map(waypointMapper::mapEntityToDto).collect(Collectors.toList());
     }
 
     @Override
@@ -35,25 +42,23 @@ public class WaypointServiceImpl implements WaypointService {
 
     @Override
     public void saveWaypoint(WaypointDto waypoint) {
-        waypointDao.save(waypointMapper.mapWaypointDtoToWaypoint(waypoint));
+        waypointDao.save(waypointMapper.mapDtoToEntity(waypoint));
     }
 
     @Override
     public void deleteWaypoint(Long id) {
-        if (id != null) {
-            waypointDao.deleteById(id);
-        }
+        waypointDao.deleteById(id);
     }
 
     @Override
     public void updateWaypoint(WaypointDto waypoint) {
-        waypointDao.update(waypointMapper.mapWaypointDtoToWaypoint(waypoint));
+        waypointDao.update(waypointMapper.mapDtoToEntity(waypoint));
     }
 
     @Override
     public List<WaypointDto> getAllWaypointsByOrderId(Long id) {
         if (id != null) {
-            return waypointDao.findAllByOrderId(id).stream().map(waypointMapper::mapWaypointToWaypointDto).collect(Collectors.toList());
+            return waypointDao.findAllByOrderId(id).stream().map(waypointMapper::mapEntityToDto).collect(Collectors.toList());
         } else {
             return Collections.emptyList();
         }
@@ -87,10 +92,25 @@ public class WaypointServiceImpl implements WaypointService {
 
             updatingWaypoint.setIsDone(waypoint.getIsDone());
 
+            updateWaypointCargoStatus(waypoint);
+
             updatedWaypoints.add(updatingWaypoint);
         }
 
         updateWaypoints(updatedWaypoints);
+    }
+
+    private void updateWaypointCargoStatus(Order.Waypoint waypoint) {
+        if (waypoint.getIsDone()) {
+            if (waypoint.getType().equals(WaypointType.LOADING)) {
+                cargoService.updateCargoStatus(waypoint.getCargo().getId(), CargoStatus.SHIPPED);
+            } else {
+                cargoService.updateCargoStatus(waypoint.getCargo().getId(), CargoStatus.DELIVERED);
+            }
+        } else {
+            cargoService.updateCargoStatus(waypoint.getCargo().getId(), CargoStatus.PREPARED);
+        }
+
     }
 
     @Override
@@ -109,6 +129,23 @@ public class WaypointServiceImpl implements WaypointService {
         }
 
         return true;
+    }
+
+    @Override
+    public List<WaypointDto> getAllLoadingWaypointsByOrderId(Long orderId) {
+        if (orderId != null) {
+            List<Order.Waypoint> orderWaypoints = waypointDao.findAllByOrderId(orderId);
+
+            if (orderWaypoints.isEmpty()) {
+                return Collections.emptyList();
+            } else {
+                return orderWaypoints.stream()
+                        .filter(waypoint -> waypoint.getType() == WaypointType.LOADING)
+                        .map(waypointMapper::mapEntityToDto).collect(Collectors.toList());
+            }
+        } else {
+            return Collections.emptyList();
+        }
     }
 
 }

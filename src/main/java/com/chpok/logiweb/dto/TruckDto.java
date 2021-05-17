@@ -2,6 +2,7 @@ package com.chpok.logiweb.dto;
 
 import com.chpok.logiweb.model.Driver;
 import com.chpok.logiweb.model.Location;
+import com.chpok.logiweb.model.Order;
 
 import java.util.List;
 
@@ -13,6 +14,8 @@ public class TruckDto {
     private Integer status;
     private Location location;
     private List<Driver> currentDrivers;
+
+    private Order currentOrder;
 
     public TruckDto() {
 
@@ -72,5 +75,13 @@ public class TruckDto {
 
     public void setCurrentDrivers(List<Driver> currentDrivers) {
         this.currentDrivers = currentDrivers;
+    }
+
+    public Order getCurrentOrder() {
+        return currentOrder;
+    }
+
+    public void setCurrentOrder(Order currentOrder) {
+        this.currentOrder = currentOrder;
     }
 }

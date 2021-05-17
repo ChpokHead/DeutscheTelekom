@@ -10,38 +10,38 @@
 <div class="container-fluid">
     <div class="row flex-nowrap">
         <div class="col-auto col-md-3 col-xl-2 px-sm-2 px-0 bg-light">
-            <div class="d-flex flex-column align-items-center align-items-sm-start px-3 pt-2 text-white min-vh-100">
+            <div class="d-flex flex-column align-items-center align-items-sm-start pt-2 text-white min-vh-100 position-fixed bg-light" style="padding-left: 1rem !important; padding-right: 5rem !important;">
                 <a href="/employeePage" class="d-flex align-items-center pb-3 mb-md-0 me-md-auto text-decoration-none" id="navbar-header">
                     <span class="fs-5 d-none d-sm-inline">Меню</span>
                 </a>
                 <ul class="nav nav-pills flex-column mb-sm-auto mb-0 align-items-center align-items-sm-start" id="menu">
-                    <li class="nav-item">
+                    <li class="nav-item py-1">
                         <a href="employeePage" class="nav-link align-middle px-0">
-                            <i class="fs-4 bi-house"></i> <span class="ms-1 d-none d-sm-inline">Личный кабинет</span>
+                            <span class="ms-1 d-none d-sm-inline">Личный кабинет</span>
                         </a>
                     </li>
-                    <li>
+                    <li class="py-1">
                         <a href="/employeeTruck" class="nav-link px-0 align-middle">
-                            <i class="fs-4 bi-speedometer2"></i> <span class="ms-1 d-none d-sm-inline">Фуры</span> </a>
+                            <span class="ms-1 d-none d-sm-inline">Фуры</span> </a>
                     </li>
-                    <li>
-                        <a href="/employeeDriver" class="nav-link-active nav-link px-0 align-middle">
-                            <i class="fs-4 bi-table"></i> <span class="ms-1 d-none d-sm-inline">Водители</span></a>
+                    <li class="py-1">
+                        <a href="/employeeDriver" class="nav-link nav-link-active px-0 align-middle">
+                           <span class="ms-1 d-none d-sm-inline">Водители</span></a>
                     </li>
-                    <li>
+                    <li class="py-1">
                         <a href="/employeeOrder" class="nav-link px-0 align-middle">
-                            <i class="fs-4 bi-table"></i> <span class="ms-1 d-none d-sm-inline">Заказы</span></a>
+                            <span class="ms-1 d-none d-sm-inline">Заказы</span></a>
                     </li>
-                    <li>
+                    <li class="py-1">
                         <a href="/employeeCargo" class="nav-link px-0 align-middle">
-                            <i class="fs-4 bi-table"></i> <span class="ms-1 d-none d-sm-inline">Грузы</span></a>
+                            <span class="ms-1 d-none d-sm-inline">Грузы</span></a>
                     </li>
                 </ul>
-                <row class="py-3">
+                <div class="py-3">
                     <a class="btn btn-lg btn-danger" href="/logout">
                         <span>Выйти</span>
                     </a>
-                </row>
+                </div>
             </div>
         </div>
         <div class="col py-1">
@@ -50,6 +50,11 @@
                     <div class="py-1">
                         <button id = "driver-add-btn" class="btn btn-primary btn-lg" data-bs-toggle="modal" data-bs-target="#addModal">Добавить водителя</button>
                     </div>
+                </div>
+            </div>
+            <div class="row-1 p-1 d-flex w-100 justify-content-md-center" style="padding-top: 20% !important; padding-bottom: 3rem !important;" th:if="${drivers.isEmpty()}">
+                <div class="mb-3">
+                    <h4 style="color: gray; opacity: 0.8">Водителей пока нет</h4>
                 </div>
             </div>
             <div class="row-1 py-1">
@@ -63,7 +68,7 @@
                                 <div class="d-flex justify-content-end">
                                     <div class="col py-3">
                                         <button type="button" class="btn btn-primary rounded" data-bs-toggle="modal" data-bs-target="#exampleModal" th:id ="${driver.personalNumber}" name="update-item-btn">
-                                            <i class="fa fa-edit"></i>
+                                            <em class="fa fa-edit"></em>
                                         </button>
                                     </div>
                                 </div>
@@ -71,22 +76,31 @@
                         </div>
                         <div class="row">
                             <div class="d-flex w-100 justify-content-between">
-                                <p class="mb-1" th:text="${driver.location.name}"></p>
-                                <p class="mb-1" th:text="${driver?.currentTruck.id != null} ? ${driver.currentTruck.regNumber} : 'Нет фуры'"></p>
+                                <p class="mb-1" th:text="'Текущий город: ' + ${driver.location.name}"></p>
                                 <div class="d-flex justify-content-end">
-                                    <div class="col py-3">
+                                    <div class="col py-1">
                                         <button type="button" class="btn btn-primary rounded" data-bs-toggle="modal" data-bs-target="#delModal" th:id ="${driver.personalNumber}" name="del-item-btn">
-                                            <i class="fa fa-trash"></i>
+                                            <em class="fa fa-trash"></em>
                                         </button>
                                     </div>
                                 </div>
                             </div>
                         </div>
-                        <div class="row">
+                        <div class="row py-2">
+                            <div class="d-flex w-100 justify-content-between">
+                                <p class="mb-1" th:text="${driver.currentTruck != null} ? 'Текущая фура: ' + ${driver.currentTruck.regNumber} : 'Нет фуры'"></p>
+                            </div>
+                        </div>
+                        <div class="row py-2">
+                            <div class="d-flex w-100 justify-content-between">
+                                <p class="mb-1" th:text="'Отработано в месяце: ' + ${driver.monthWorkedHours} + ' ч'"></p>
+                            </div>
+                        </div>
+                        <div class="row py-2">
                             <div th:switch="${driver.status}">
-                                <small th:case='0'>Отдыхает</small>
-                                <small th:case='1'>В смене</small>
-                                <small th:case='2'>За рулем</small>
+                                <small th:case='0'>Статус: Отдыхает</small>
+                                <small th:case='1'>Статус: В смене</small>
+                                <small th:case='2'>Статус: За рулем</small>
                             </div>
                         </div>
                     </div>
@@ -232,8 +246,6 @@
             contentType: "application/json",
             url: "/employeeDriver/" + passedID,
             success: function (data) {
-                console.log(data);
-
                 $('#inputUpdateDriverFirstName').val(data["firstName"]);
                 $('#inputUpdateDriverLastName').val(data["lastName"]);
                 $('#inputUpdateDriverLocation').val(data["location"]["id"]);

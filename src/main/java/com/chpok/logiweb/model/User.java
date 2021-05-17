@@ -6,6 +6,7 @@ import org.hibernate.annotations.Type;
 import org.hibernate.annotations.TypeDef;
 
 import javax.persistence.*;
+import java.util.Objects;
 
 @Entity
 @Table(name = "users")
@@ -29,35 +30,50 @@ public class User extends AbstractModel {
     @JoinColumn(name = "driver_id")
     private Driver driver;
 
-    public String getUsername() {
-        return username;
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "employee_id")
+    private Employee employee;
+
+    public User() {
     }
 
-    public void setUsername(String username) {
+    public User(String username, String password, UserRole role) {
         this.username = username;
+        this.password = password;
+        this.role = role;
+    }
+
+    public String getUsername() {
+        return username;
     }
 
     public String getPassword() {
         return password;
     }
 
-    public void setPassword(String password) {
-        this.password = password;
-    }
-
     public UserRole getRole() {
         return role;
-    }
-
-    public void setRole(UserRole role) {
-        this.role = role;
     }
 
     public Driver getDriver() {
         return driver;
     }
 
-    public void setDriver(Driver driver) {
-        this.driver = driver;
+    public Employee getEmployee() {
+        return employee;
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        User user = (User) o;
+        return username.equals(user.username) && password.equals(user.password) && role == user.role && Objects.equals(driver, user.driver) && Objects.equals(employee, user.employee);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(username, password, role, driver, employee);
+    }
+
 }

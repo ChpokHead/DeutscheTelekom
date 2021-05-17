@@ -10,38 +10,38 @@
 <div class="container-fluid">
     <div class="row flex-nowrap">
         <div class="col-auto col-md-3 col-xl-2 px-sm-2 px-0 bg-light">
-            <div class="d-flex flex-column align-items-center align-items-sm-start px-3 pt-2 text-white min-vh-100">
+            <div class="d-flex flex-column align-items-center align-items-sm-start pt-2 text-white min-vh-100 position-fixed bg-light" style="padding-left: 1rem !important; padding-right: 5rem !important;">
                 <a href="/employeePage" class="d-flex align-items-center pb-3 mb-md-0 me-md-auto text-decoration-none" id="navbar-header">
                     <span class="fs-5 d-none d-sm-inline">Меню</span>
                 </a>
                 <ul class="nav nav-pills flex-column mb-sm-auto mb-0 align-items-center align-items-sm-start" id="menu">
-                    <li class="nav-item">
+                    <li class="nav-item py-1">
                         <a href="employeePage" class="nav-link align-middle px-0">
-                            <i class="fs-4 bi-house"></i> <span class="ms-1 d-none d-sm-inline">Личный кабинет</span>
+                            <span class="ms-1 d-none d-sm-inline">Личный кабинет</span>
                         </a>
                     </li>
-                    <li>
-                        <a href="/employeeTruck" data-bs-toggle="collapse" class="nav-link-active nav-link px-0 align-middle">
-                            <i class="fs-4 bi-speedometer2"></i> <span class="ms-1 d-none d-sm-inline">Фуры</span> </a>
+                    <li class="py-1">
+                        <a href="/employeeTruck" class="nav-link-active nav-link px-0 align-middle">
+                            <span class="ms-1 d-none d-sm-inline">Фуры</span> </a>
                     </li>
-                    <li>
+                    <li class="py-1">
                         <a href="/employeeDriver" class="nav-link px-0 align-middle">
-                            <i class="fs-4 bi-table"></i> <span class="ms-1 d-none d-sm-inline">Водители</span></a>
+                            <span class="ms-1 d-none d-sm-inline">Водители</span></a>
                     </li>
-                    <li>
+                    <li class="py-1">
                         <a href="/employeeOrder" class="nav-link px-0 align-middle">
-                            <i class="fs-4 bi-table"></i> <span class="ms-1 d-none d-sm-inline">Заказы</span></a>
+                            <span class="ms-1 d-none d-sm-inline">Заказы</span></a>
                     </li>
-                    <li>
+                    <li class="py-1">
                         <a href="/employeeCargo" class="nav-link px-0 align-middle">
-                            <i class="fs-4 bi-table"></i> <span class="ms-1 d-none d-sm-inline">Грузы</span></a>
+                            <span class="ms-1 d-none d-sm-inline">Грузы</span></a>
                     </li>
                 </ul>
-                <row class="py-3">
+                <div class="py-3">
                     <a class="btn btn-lg btn-danger" href="/logout">
                         <span>Выйти</span>
                     </a>
-                </row>
+                </div>
             </div>
         </div>
         <div class="col py-1">
@@ -52,42 +52,51 @@
                     </div>
                 </div>
             </div>
+            <div class="row-1 p-1 d-flex w-100 justify-content-md-center" style="padding-top: 20% !important; padding-bottom: 3rem !important;" th:if="${trucks.isEmpty()}">
+                <div class="mb-3">
+                    <h4 style="color: gray; opacity: 0.8">Фур пока нет</h4>
+                </div>
+            </div>
             <div class="row-1 py-1">
                 <div class="list-group py-2" th:each="truck : ${trucks}">
                     <div class="list-group-item list-group-item-action" aria-current="true">
                         <div class="row">
-                            <div class="d-flex w-100 justify-content-between">
+                            <div class="d-flex w-100 justify-content-end">
                                 <div class="col py-3">
                                     <h5 class="mb-1" th:text="${truck.regNumber}"></h5>
                                 </div>
-                                <div class="d-flex justify-content-end">
-                                    <div class="col py-3">
-                                        <button type="button" class="btn btn-primary rounded" data-bs-toggle="modal" data-bs-target="#exampleModal" th:id ="${truck.id}" name="update-truck-btn">
-                                            <i class="fa fa-edit"></i>
-                                        </button>
-                                    </div>
+                                <div class="col-0 py-3">
+                                    <button type="button" class="btn btn-primary rounded" data-bs-toggle="modal" data-bs-target="#exampleModal" th:id ="${truck.id}" name="update-truck-btn">
+                                        <em class="fa fa-edit"></em>
+                                    </button>
                                 </div>
                             </div>
                         </div>
-                        <div class="row">
+                        <div class="row py-1">
+                            <div class="d-flex w-100 justify-content-end">
+                                <div class="col">
+                                    <p class="mb-1" th:text="'Текущий город: ' + ${truck.location.name}"></p>
+                                </div>
+                                <div class="col-0">
+                                    <button type="button" class="btn btn-primary rounded" data-bs-toggle="modal" data-bs-target="#delModal" th:id ="${truck.id}" name="del-truck-btn">
+                                        <em class="fa fa-trash"></em>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row py-1">
+                            <div class="d-flex w-100 justify-content-end">
+                                <div class="col">
+                                    <p class="mb-1" th:text="'Вместимость: ' + ${truck.capacity} + ' т'"></p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row py-1">
                             <div class="d-flex w-100 justify-content-between">
-                                <p class="mb-1" th:text="${truck.location.name}"></p>
-                                <div th:switch="${truck.currentDrivers.size()}">
-                                    <p th:case="0"></p>
-                                    <p class="mb-1" th:case="1" th:text="'#' + ${truck.currentDrivers[0].id} + ' ' + ${truck.currentDrivers[0].firstName} + ' ' + ${truck.currentDrivers[0].lastName}"></p>
-                                    <p class="mb-1" th:case="2" th:text="'#' + ${truck.currentDrivers[0].id} + ' ' + ${truck.currentDrivers[0].firstName} + ' ' + ${truck.currentDrivers[0].lastName}
-                                    + ' ' + '#' + ${truck.currentDrivers[1].id} + ' ' + ${truck.currentDrivers[1].firstName} + ' ' + ${truck.currentDrivers[1].lastName}"></p>
-                                </div>
-                                <div class="d-flex justify-content-end">
-                                    <div class="col py-3">
-                                        <button type="button" class="btn btn-primary rounded" data-bs-toggle="modal" data-bs-target="#delModal" th:id ="${truck.id}" name="del-truck-btn">
-                                            <i class="fa fa-trash"></i>
-                                        </button>
-                                    </div>
-                                </div>
+                                <p class="mb-1" th:text="'Размер смены водителей: ' + ${truck.driversShift} + ' чел'"></p>
                             </div>
                         </div>
-                        <div class="row">
+                        <div class="row py-1">
                             <div th:switch="${truck.status}">
                                 <small th:case='0'>Исправен</small>
                                 <small th:case='1'>Неисправен</small>
@@ -96,7 +105,6 @@
                     </div>
                 </div>
             </div>
-
         </div>
 
         <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
@@ -138,7 +146,7 @@
                         </div>
                         <div class="modal-footer">
                             <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Закрыть</button>
-                            <button type="submit"  class="btn btn-primary" form="truckEdit">Сохранить</button>
+                            <button type="submit"  class="btn btn-primary" form="truckEdit" id="truck-edit">Сохранить</button>
                         </div>
                     </div>
                 </div>
@@ -154,8 +162,8 @@
                         </div>
                         <div class="modal-body">
                             <div class="mb-3">
-                                <label for="inputRegNum" class="form-label">Регистрационный номер</label>
-                                <input type="text" class="form-control" id="addInputRegNum" aria-describedby="regNumHelp" th:field="*{regNumber}"/>
+                                <label for="addInputRegNum" class="form-label">Регистрационный номер</label>
+                                <input type="text" class="form-control" id="addInputRegNum" aria-describedby="regNumHelp" pattern="[A-Z]{2}[0-9]{5}" th:field="*{regNumber}"/>
                                 <div id="addRegNumHelp" class="form-text">В формате 2 лат. буквы + 5 цифр, например, АA12345</div>
                             </div>
                             <div class="mb-3">
@@ -182,7 +190,7 @@
                         </div>
                         <div class="modal-footer">
                             <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Закрыть</button>
-                            <button type="submit"  class="btn btn-primary" form="truckAdd">Добавить</button>
+                            <button type="submit"  class="btn btn-primary" form="truckAdd" id="truck-add">Добавить</button>
                         </div>
                     </div>
                 </div>
@@ -202,7 +210,7 @@
                         </div>
                         <div class="modal-footer">
                             <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Закрыть</button>
-                            <button type="submit"  class="btn btn-primary" form="truckDelete">Удалить</button>
+                            <button type="submit"  class="btn btn-primary" form="truckDelete" id="truck-delete">Удалить</button>
                         </div>
                     </div>
                 </div>

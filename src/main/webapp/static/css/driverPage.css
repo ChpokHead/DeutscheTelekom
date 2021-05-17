@@ -1,0 +1,16 @@
+.separator{
+    display: flex;
+    align-items: center;
+}
+
+.separator p{
+    padding: 0 1.5rem;
+    font-size: 1.5rem;
+    color: #ff910a;
+}
+
+.separator .line{
+    flex: 1;
+    height: 3px;
+    background-color: #ff910a;
+}

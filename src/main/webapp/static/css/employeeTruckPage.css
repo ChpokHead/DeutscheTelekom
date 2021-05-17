@@ -8,6 +8,36 @@
     color: white;
 }
 
+#truck-edit {
+    background-color: #ff910a;
+    color: white;
+    border: 0;
+}
+#truck-edit:hover {
+    background-color: #ef8b05;
+    color: white;
+}
+
+#truck-add {
+    background-color: #ff910a;
+    color: white;
+    border: 0;
+}
+#truck-add:hover {
+    background-color: #ef8b05;
+    color: white;
+}
+
+#truck-delete {
+    background-color: #ff910a;
+    color: white;
+    border: 0;
+}
+#truck-delete:hover {
+    background-color: #ef8b05;
+    color: white;
+}
+
 button[name=del-truck-btn] {
     background-color: red;
     color: white;
@@ -56,10 +86,12 @@ button[name=update-truck-btn]:focus {
 #navbar-header {
     color: #ff910a;
 }
+
 .nav-link-active{
     color: white !important;
     background-color: #ff910a !important;
 }
+
 .nav-link:active,
 .nav-link:focus,
 .nav-link:hover{

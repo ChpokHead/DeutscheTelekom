@@ -9,43 +9,46 @@
 <body>
 <div class="container-fluid">
     <div class="row flex-nowrap">
-        <div class="col-auto col-md-3 col-xl-2 px-sm-2 px-0 bg-light">
-            <div class="d-flex flex-column align-items-center align-items-sm-start px-3 pt-2 text-white min-vh-100">
+        <div class="col-auto col-md-3 col-xl-2 px-sm-2 px-0">
+            <div class="d-flex flex-column align-items-center align-items-sm-start pt-2 text-white min-vh-100 position-fixed bg-light" style="padding-left: 1rem !important; padding-right: 5rem !important;">
                 <a href="/employeePage" class="d-flex align-items-center pb-3 mb-md-0 me-md-auto text-decoration-none" id="navbar-header">
                     <span class="fs-5 d-none d-sm-inline">Меню</span>
                 </a>
                 <ul class="nav nav-pills flex-column mb-sm-auto mb-0 align-items-center align-items-sm-start" id="menu">
-                    <li class="nav-item">
-                        <a href="/employeePage" class="nav-link-active nav-link align-middle px-0">
-                            <i class="fs-4 bi-house"></i> <span class="ms-1 d-none d-sm-inline">Личный кабинет</span>
+                    <li class="nav-item py-1">
+                        <a href="employeePage" class="nav-link nav-link-active align-middle px-0">
+                            <span class="ms-1 d-none d-sm-inline">Личный кабинет</span>
                         </a>
                     </li>
-                    <li>
+                    <li class="py-1">
                         <a href="/employeeTruck" class="nav-link px-0 align-middle">
-                            <i class="fs-4 bi-speedometer2"></i><span class="ms-1 d-none d-sm-inline">Фуры</span> </a>
+                            <span class="ms-1 d-none d-sm-inline">Фуры</span> </a>
                     </li>
-                    <li>
+                    <li class="py-1">
                         <a href="/employeeDriver" class="nav-link px-0 align-middle">
-                            <i class="fs-4 bi-table"></i> <span class="ms-1 d-none d-sm-inline">Водители</span></a>
+                            <span class="ms-1 d-none d-sm-inline">Водители</span></a>
                     </li>
-                    <li>
+                    <li class="py-1">
                         <a href="/employeeOrder" class="nav-link px-0 align-middle">
-                            <i class="fs-4 bi-table"></i> <span class="ms-1 d-none d-sm-inline">Заказы</span></a>
+                            <span class="ms-1 d-none d-sm-inline">Заказы</span></a>
                     </li>
-                    <li>
-                        <a href="/employeeCargo" class="nav-link px-0 align-middle">
-                            <i class="fs-4 bi-table"></i> <span class="ms-1 d-none d-sm-inline">Грузы</span></a>
+                    <li class="py-1">
+                        <a href="/employeeCargo" class="nav-link  px-0 align-middle">
+                            <span class="ms-1 d-none d-sm-inline">Грузы</span></a>
                     </li>
                 </ul>
-                <row class="py-3">
+                <div class="py-3">
                     <a class="btn btn-lg btn-danger" href="/logout">
                         <span>Выйти</span>
                     </a>
-                </row>
+                </div>
             </div>
         </div>
-        <div class="col py-3">
+        <div class="col col-auto">
             <h1>Личный кабинет</h1>
+            <p th:text = "${currentEmployee.firstName} + ' ' + ${currentEmployee.lastName}"></p>
+            <p th:text = "'Текущая должность: ' + ${currentEmployee.currentPosition}"></p>
+
         </div>
     </div>
 </div>

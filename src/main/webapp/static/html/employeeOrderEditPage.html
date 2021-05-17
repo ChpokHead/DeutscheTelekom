@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <title>Title</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-eOJMYsd53ii+scO/bJGFsiCZc+5NDVN2yr8+0RDqr0Ql0h+rP48ckxlpbzKgwra6" crossorigin="anonymous">
-    <link href="/static/css/employeeOrderPage.css" rel="stylesheet">
+    <link href="/static/css/employeeOrderEditPage.css" rel="stylesheet">
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
 </head>
 <body>
@@ -12,16 +12,79 @@
         <div class="row py-1">
             <div class="col">
                 <div class="d-flex w-100 justify-content-between">
-                    <h1 th:text="'Редактирование заказа #' + ${orderId}"></h1>
-                </div>
-            </div>
-            <div class="col">
-                <div class="d-flex w-100 justify-content-end">
-                    <button id = "waypoint-add" class="btn btn-primary btn-lg" data-bs-toggle="modal" data-bs-target="#addModal">Добавить маршрутные точки</button>
+                    <h1 style="color: #ff910a" th:text="'Редактирование заказа #' + ${order.id}"></h1>
                 </div>
             </div>
         </div>
-        <div class="row-1 py-1">
+        <div class="row py-1 mb-2">
+            <div class="col">
+                <div class="d-flex w-100 justify-content-center">
+                    <div th:if="${order.currentTruck == null and not #lists.isEmpty(order.waypoints)}">
+                        <button id = "truck-add" class="btn btn-primary btn-lg" data-bs-toggle="modal" data-bs-target="#addTruckModal">Назначить фуру</button>
+                    </div>
+                    <div th:if="${order.currentTruck != null or #lists.isEmpty(order.waypoints)}">
+                        <button id = "truck-add-disabled" class="btn btn-primary btn-lg" data-bs-toggle="modal" data-bs-target="#addTruckModal" disabled>Назначить фуру</button>
+                    </div>
+                </div>
+            </div>
+            <div class="col">
+                <div class="d-flex w-100 justify-content-center">
+                    <div th:if="${not #lists.isEmpty(order.waypoints) and order.currentTruck != null and order.currentDrivers.size() < order.currentTruck.driversShift}">
+                        <button id = "driver-add" class="btn btn-primary btn-lg" data-bs-toggle="modal" data-bs-target="#addDriverModal">Назначить водителя</button>
+                    </div>
+                    <div th:if="${#lists.isEmpty(order.waypoints) or order.currentTruck == null or order.currentDrivers.size() == order.currentTruck.driversShift}">
+                        <button id = "driver-add-disabled" class="btn btn-primary btn-lg" data-bs-toggle="modal" data-bs-target="#addDriverModal" disabled>Назначить водителя</button>
+                    </div>
+                </div>
+            </div>
+            <div class="col">
+                <div class="d-flex w-100 justify-content-center">
+                    <div th:if="${order.currentTruck == null and #lists.isEmpty(order.currentDrivers)}">
+                        <button id = "waypoint-add" class="btn btn-lg" data-bs-toggle="modal" data-bs-target="#addModal">Добавить маршрутные точки</button>
+                    </div>
+                    <div th:if="${order.currentTruck != null or not #lists.isEmpty(order.currentDrivers)}">
+                        <button id = "waypoint-add-disabled" class="btn btn-primary btn-lg disabled" data-bs-toggle="modal" data-bs-target="#addModal">Добавить маршрутные точки</button>
+                    </div>
+                </div>
+            </div>
+            <div class="col">
+                <div class="d-flex w-100 justify-content-center">
+                    <div th:if="${not #lists.isEmpty(order.waypoints) and order.currentTruck != null and not #lists.isEmpty(order.currentDrivers) and order.startDate == null and order.endDate == null}">
+                        <button id = "date-add" class="btn btn-primary btn-lg" data-bs-toggle="modal" data-bs-target="#addDateModal">Назначить даты заказа</button>
+                    </div>
+                    <div th:if="${#lists.isEmpty(order.waypoints) or order.currentTruck == null or #lists.isEmpty(order.currentDrivers)}">
+                        <button id = "date-add-disabled" class="btn btn-primary btn-lg" data-bs-toggle="modal" data-bs-target="#addDateModal" disabled>Назначить даты заказа</button>
+                    </div>
+                    <div th:if="${order.startDate != null and order.endDate != null}">
+                        <button id = "date-delete" class="btn btn-danger btn-lg" data-bs-toggle="modal" data-bs-target="#deleteDateModal">Удалить даты заказа</button>
+                    </div>
+                </div>
+            </div>
+            <div class="col">
+                <div class="d-flex w-100 justify-content-center">
+                    <div th:if="${not #lists.isEmpty(order.waypoints) and order.currentTruck != null and not #lists.isEmpty(order.currentDrivers) and order.startDate != null and order.endDate != null and order.isCompleted}">
+                        <button id = "order-complete" class="btn btn-success btn-lg" data-bs-toggle="modal" data-bs-target="#completeOrderModal">Завершить заказ</button>
+                    </div>
+                    <div th:if="${#lists.isEmpty(order.waypoints) or order.currentTruck == null or #lists.isEmpty(order.currentDrivers) or not order.isCompleted or order.startDate == null or order.endDate == null}">
+                        <button id = "order-complete-disabled" class="btn btn-success btn-lg" data-bs-toggle="modal" data-bs-target="#completeOrderModal" disabled>Завершить заказ</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="separator">
+            <div class="line"></div>
+            <p>Маршрутные точки</p>
+            <div class="line"></div>
+        </div>
+
+        <div class="row-1 p-1 d-flex w-100 justify-content-md-center" th:if="${#lists.isEmpty(waypoints)}">
+            <div class="mb-3">
+                <h5 style="color: gray; opacity: 0.8">Маршрутные точки не добавлены</h5>
+            </div>
+        </div>
+
+        <div class="row-1 py-1" th:if="${not #lists.isEmpty(waypoints)}">
             <div class="list-group py-2" th:each="waypoint : ${waypoints}">
                 <div class="list-group-item list-group-item-action" aria-current="true">
                     <div class="row">
@@ -30,21 +93,14 @@
                                 <h5 class="mb-1" th:text="'Груз: #' + ${waypoint.pair[0].cargo.id} + ' ' + ${waypoint.pair[0].cargo.name}"></h5>
                             </div>
                             <div class="d-flex justify-content-end">
-                                <div class="col py-3">
+                                <!--<div class="col py-3 px-3">
                                     <button type="button" class="btn btn-primary rounded" data-bs-toggle="modal" data-bs-target="#updateModal" th:id ="${waypoint.pair[0].id}" name="update-item-btn">
-                                        <i class="fa fa-edit"></i>
+                                        <em class="fa fa-edit"></em>
                                     </button>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="row">
-                        <div class="d-flex w-100 justify-content-between">
-                            <p class="mb-1" th:text="'Погрузка: ' + ${waypoint.pair[0].location.name}"></p>
-                            <div class="d-flex justify-content-end">
-                                <div class="col py-3">
+                                </div>-->
+                                <div class="col-0 py-3">
                                     <button type="button" class="btn btn-primary rounded" data-bs-toggle="modal" data-bs-target="#delModal" th:id ="${waypoint.pair[0].id}" name="del-item-btn">
-                                        <i class="fa fa-trash"></i>
+                                        <em class="fa fa-trash"></em>
                                     </button>
                                 </div>
                             </div>
@@ -52,16 +108,115 @@
                     </div>
                     <div class="row">
                         <div class="d-flex w-100 justify-content-between">
-                            <p class="mb-1" th:text="'Выгрузка: ' + ${waypoint.pair[1].location.name}"></p>
+                                <div class="col py-3">
+                                    <p class="mb-1" th:text="'Погрузка: ' + ${waypoint.pair[0].location.name}"></p>
+                                </div>
+                                <div class="col-10 py-3">
+                                    <p class="mb-1" th:text="${waypoint.pair[0].isDone} ? 'Статус: Выполнено' : 'Статус: Не выполнено'"></p>
+                                </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="d-flex w-100 justify-content-between">
+                            <div class="col py-3">
+                                <p class="mb-1" th:text="'Выгрузка: ' + ${waypoint.pair[1].location.name}"></p>
+                            </div>
+                            <div class="col-10 py-3">
+                                <p class="mb-1" th:text="${waypoint.pair[1].isDone} ? 'Статус: Выполнено' : 'Статус: Не выполнено'"></p>
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
-        <div class="row py-1">
+
+        <div class="separator">
+            <div class="line"></div>
+            <p>Водители</p>
+            <div class="line"></div>
+        </div>
+
+        <div class="row-1 p-1 d-flex w-100 justify-content-md-center" th:if="${#lists.isEmpty(order.currentDrivers)}">
+            <div class="mb-3">
+                <h5 style="color: gray; opacity: 0.8">Водители не назначены</h5>
+            </div>
+        </div>
+
+        <div class="row-1 py-1" th:if="${not #lists.isEmpty(order.currentDrivers)}">
+            <div class="list-group py-2" th:each="driver : ${order.currentDrivers}">
+                <div class="list-group-item list-group-item-action" aria-current="true">
+                    <div class="row">
+                        <div class="d-flex w-100 justify-content-end">
+                            <div class="col py-3">
+                                <h5 class="mb-1" th:text="${driver.firstName} + ' ' + ${driver.lastName} + ' #' + ${driver.id}"></h5>
+                            </div>
+                            <div class="col-0 py-3 justify-content-end">
+                                <button type="button" class="btn btn-primary rounded" data-bs-toggle="modal" data-bs-target="#delDriverModal" th:id ="${driver.id}" name="del-item-btn">
+                                    <em class="fa fa-trash"></em>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="separator">
+            <div class="line"></div>
+            <p>Фура</p>
+            <div class="line"></div>
+        </div>
+
+        <div class="row-1 p-1 d-flex w-100 justify-content-md-center" th:if="${order.currentTruck == null}">
+            <div class="mb-3">
+                <h5 style="color: gray; opacity: 0.8">Фура не назначена</h5>
+            </div>
+        </div>
+
+        <div class="row-1 py-1" th:if="${order.currentTruck != null}">
+            <div class="list-group py-2">
+                <div class="list-group-item list-group-item-action" aria-current="true">
+                    <div class="row">
+                        <div class="d-flex w-100 justify-content-between">
+                            <div class="col py-3">
+                                <h5 class="mb-1" th:text="${order.currentTruck.regNumber}"></h5>
+                            </div>
+                            <div class="d-flex justify-content-end">
+                                <div class="col py-3">
+                                    <button type="button" class="btn btn-primary rounded" data-bs-toggle="modal" data-bs-target="#deleteTruckModal" th:id ="${order.currentTruck.id}" name="del-item-btn">
+                                        <em class="fa fa-trash"></em>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="d-flex w-100 justify-content-between">
+                            <p class="mb-1" th:text="'Текущий город: ' + ${order.currentTruck.location.name}"></p>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="d-flex w-100 justify-content-between">
+                            <p class="mb-1" th:text="'Размер смены: ' + ${order.currentTruck.driversShift} + ' чел.'"></p>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="d-flex w-100 justify-content-between">
+                            <p class="mb-1" th:text="'Вместимость: ' + ${order.currentTruck.capacity} + ' т.'"></p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="separator">
+            <div class="line"></div>
+        </div>
+
+        <div class="row py-3">
             <div class="col">
                 <div class="d-flex w-100 justify-content-center">
-                    <a id = "waypoint-close" class="btn btn-primary btn-lg" th:href="@{/employeeOrder}">
+                    <a id = "waypoint-close" class="btn btn-danger btn-lg" th:href="@{/employeeOrder}">
                         <span>Завершить редактирование</span>
                     </a>
                 </div>
@@ -69,7 +224,7 @@
         </div>
     </div>
     <div class="modal fade" id="addModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-        <form th:method="post" id="addWaypoint" th:action="@{/employeeOrder/edit/} + ${orderId}" th:object="${waypoint}">
+        <form th:method="post" id="addWaypoint" th:action="@{/employeeOrder/edit/} + ${order.id}" th:object="${waypoint}">
             <div class="modal-dialog">
                 <div class="modal-content">
                     <div class="modal-header">
@@ -78,7 +233,8 @@
                     </div>
                     <div class="modal-body">
                         <div class="mb-3">
-                            <input type="hidden" id="order-id" th:value="${orderId}"/>
+                            <input th:if="${not #lists.isEmpty(waypoints)}" type="hidden" id="last-shipping-id" th:value="${waypoints.get(waypoints.size() - 1).getPair().get(1).getLocation().getId()}">
+                            <input type="hidden" id="order-id" th:value="${order.id}"/>
                             <input type="hidden" id="hidden-order-id-for-load" th:field = "*{pair[0].order.id}"/>
                             <input type="hidden" id="hidden-order-id-for-ship" th:field = "*{pair[1].order.id}"/>
                         </div>
@@ -94,6 +250,9 @@
                             <select class="form-select" aria-label="Город погрузки" id="inputAddWaypointLocationForLoading" th:field="*{pair[0].location.id}">
                                 <option th:each="location : ${locations}" th:value="${location.id}" th:text="${location.name}"></option>
                             </select>
+                            <div id="invalid-waypoint" class="form-text" style="display: none; color: red">
+                                Город погрузки должен соответствовать городу последней разгрузки.
+                            </div>
                         </div>
                         <div class="mb-3">
                             <label for="inputAddWaypointLocationForShipping" class="form-label">Город выгрузки</label>
@@ -115,8 +274,8 @@
         </form>
     </div>
 
-    <div class="modal fade" id="delModal" tabindex="-1" aria-labelledby="delModalLabel" aria-hidden="true">
-        <form th:action="@{/employeeOrder/edit/} + ${orderId}" th:method="delete" id="waypointDelete">
+    <div th:if="${not #lists.isEmpty(waypoints)}" class="modal fade" id="delModal" tabindex="-1" aria-labelledby="delModalLabel" aria-hidden="true">
+        <form th:action="@{/employeeOrder/edit/} + ${order.id}" th:method="delete" id="waypointDelete">
             <div class="modal-dialog">
                 <div class="modal-content">
                     <div class="modal-header">
@@ -137,8 +296,8 @@
         </form>
     </div>
 
-    <div class="modal fade" id="updateModal" tabindex="-1" aria-labelledby="updateModalLabel" aria-hidden="true">
-        <form th:method="put" id="updateWaypoint" th:action="@{/employeeOrder/edit/} + ${orderId}" th:object="${waypoint}">
+    <div th:if="${not #lists.isEmpty(waypoints)}" class="modal fade" id="updateModal" tabindex="-1" aria-labelledby="updateModalLabel" aria-hidden="true">
+        <form th:method="put" id="updateWaypoint" th:action="@{/employeeOrder/edit/} + ${order.id}" th:object="${waypoint}">
             <div class="modal-dialog">
                 <div class="modal-content">
                     <div class="modal-header">
@@ -147,7 +306,7 @@
                     </div>
                     <div class="modal-body">
                         <div class="mb-3">
-                            <input type="hidden" id="order-update-id" th:value="${orderId}"/>
+                            <input type="hidden" id="order-update-id" th:value="${order.id}"/>
                             <input type="hidden" id="waypoint-first-update-id" th:field="*{pair[0].id}"/>
                             <input type="hidden" id="waypoint-second-update-id" th:field="*{pair[1].id}"/>
                             <input type="hidden" id="hidden-order-update-id-for-load" th:field = "*{pair[0].order.id}"/>
@@ -180,6 +339,182 @@
                     <div class="modal-footer">
                         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Закрыть</button>
                         <button type="submit"  class="btn btn-primary" form="updateWaypoint" id="waypoint-update-btn">Завершить редактирование</button>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+
+    <div class="modal fade" id="addTruckModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <form id="addTruck" method="post">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
+                        <h5 class="modal-title" id="addTruckModalLabel">Назначение фуры</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="mb-3">
+                            <input type="hidden" id="add-truck-order-id" th:value="${order.id}"/>
+                        </div>
+                        <div class="mb-3">
+                            <label for="inputAddOrderTruck" class="form-label">Подходящие фуры</label>
+                            <select class="form-select" aria-label="Подходящие фуры" id="inputAddOrderTruck">
+                                <option th:each="truck : ${suitableTrucks}" th:value="${truck.id}" th:text="${truck.regNumber}"></option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Закрыть</button>
+                        <button type="submit"  class="btn btn-primary" form="addTruck" id="truck-add-btn">Назначить</button>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+
+    <div class="modal fade" id="deleteTruckModal" tabindex="-1" aria-labelledby="deleteTruckModalLabel" aria-hidden="true">
+        <form id="deleteTruck" th:method="delete" th:action="@{/employeeOrder/edit/} + ${order.id} + @{/deleteCurrentTruck}">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="deleteTruckModalLabel">Удаление текущей фуры</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="mb-3">
+                            Внимание! Назначенная фура будет удалена вместе с назначенными водителями!
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Закрыть</button>
+                        <button type="submit"  class="btn btn-primary" form="deleteTruck" id="truck-delete-btn">Удалить</button>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+
+    <div class="modal fade" id="addDriverModal" tabindex="-1" aria-labelledby="addDriverModalLabel" aria-hidden="true">
+        <form id="addDriver" method="post">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
+                        <h5 class="modal-title" id="addDriverModalLabel">Назначение водителя</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="mb-3">
+                            <input type="hidden" id="add-driver-order-id" th:value="${order.id}"/>
+                        </div>
+                        <div class="mb-3">
+                            <label for="inputAddOrderDriver" class="form-label">Подходящие водители</label>
+                            <select class="form-select" aria-label="Подходящие водители" id="inputAddOrderDriver">
+                                <option th:each="driver : ${suitableDrivers}" th:value="${driver.personalNumber}" th:text="'#' + ${driver.personalNumber} + ' ' + ${driver.firstName} + ' ' + ${driver.lastName}"></option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Закрыть</button>
+                        <button type="submit"  class="btn btn-primary" form="addDriver" id="driver-add-btn">Назначить</button>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+
+    <div class="modal fade" id="delDriverModal" tabindex="-1" aria-labelledby="delDriverModalLabel" aria-hidden="true">
+        <form th:method="delete" id="deleteDriver">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
+                        <h5 class="modal-title" id="delDriverModalLabel">Удаление водителя</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <input type="hidden" id="del-driver-order-id" th:value="${order.id}"/>
+                        <input type="hidden" id="driver-id-delete" name="delete-driver-id"/>
+                        <div class="mb-3">
+                            Внимание! При удалении водителя назначенные даты заказа будут удалены!
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Закрыть</button>
+                        <button type="submit"  class="btn btn-primary" form="deleteDriver" id="driver-delete-btn">Удалить</button>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+
+    <div th:if="${not #lists.isEmpty(order.waypoints) and order.currentTruck != null and not #lists.isEmpty(order.currentDrivers)}" class="modal fade" id="addDateModal" tabindex="-1" aria-labelledby="addDateModalLabel" aria-hidden="true">
+        <form th:action="@{/employeeOrder/edit/} + ${order.id} + @{/addStartAndEndDates}" th:method="post" id="dateAdd">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="addDateModalLabel">Установка времени на выполнение заказа</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="mb-3">
+                            <input type="hidden" id="add-date-order-id" th:value="${order.id}"/>
+                            <label for="start">Дата начала выполнения заказа:</label>
+                            <input type="date" id="start" name="travel-start" required>
+                            <label for="end">Дата завершения выполнения заказа:</label>
+                            <input type="date" id="end" name="travel-end" required>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Закрыть</button>
+                        <button type="submit" class="btn btn-primary" form="dateAdd" id="date-add-btn">Установить</button>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+
+    <div class="modal fade" id="deleteDateModal" tabindex="-1" aria-labelledby="deleteDateModalLabel" aria-hidden="true">
+        <form id="deleteDate" th:method="delete" th:action="@{/employeeOrder/edit/} + ${order.id} + @{/deleteStartAndEndDates}">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="deleteDateModalLabel">Удаление дат на выполнение заказа</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="mb-3">
+                            <input type="hidden" id="delete-date-order-id" th:value="${order.id}"/>
+                            Внимание! При удалении назначенных дат назначенные водители будут удалены!
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Закрыть</button>
+                        <button type="submit"  class="btn btn-primary" form="deleteDate" id="date-delete-btn">Удалить</button>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+
+    <div class="modal fade" id="completeOrderModal" tabindex="-1" aria-labelledby="completeOrderModalLabel" aria-hidden="true">
+        <form id="completeOrder" th:method="delete" th:action="@{/employeeOrder/complete/} + ${order.id}">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="completeOrderModalLabel">Завершение заказа</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="mb-3">
+                            Внимание! При подтверждении заказ будет удален!
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Закрыть</button>
+                        <button type="submit"  class="btn btn-primary" form="completeOrder" id="order-complete-btn">Подтвердить</button>
                     </div>
                 </div>
             </div>
@@ -226,6 +561,99 @@
             var passedID = $(this).attr('id');
             $('#first-waypoint-id-delete').val(passedID);
             $('#second-waypoint-id-delete').val(parseInt(passedID) + 1);
+        });
+    </script>
+    <script th:inline="javascript" type="text/javascript">
+        $('#inputAddWaypointLocationForLoading').show(function() {
+            if (document.getElementById('last-shipping-id')) {
+                var lastShippingId = $('#last-shipping-id').val();
+                var chosenId = $('#inputAddWaypointLocationForLoading').val();
+
+                if (chosenId !== lastShippingId) {
+                    $('#waypoint-add-btn').attr('disabled', true);
+                    $('#invalid-waypoint').show();
+                } else {
+                    $('#waypoint-add-btn').attr('disabled', false);
+                    $('#invalid-waypoint').hide();
+                }
+            }
+
+        });
+        $('#inputAddWaypointLocationForLoading').change(function() {
+            if (document.getElementById('last-shipping-id')) {
+                var lastShippingId = $('#last-shipping-id').val();
+                var chosenId = $('#inputAddWaypointLocationForLoading').val();
+
+                if (chosenId !== lastShippingId) {
+                    $('#waypoint-add-btn').attr('disabled', true);
+                    $('#invalid-waypoint').show();
+                } else {
+                    $('#waypoint-add-btn').attr('disabled', false);
+                    $('#invalid-waypoint').hide();
+                }
+            }
+
+        });
+    </script>
+    <script th:inline="javascript" type="text/javascript">
+        $('#truck-add-btn').on('click', function (e) {
+            e.preventDefault();
+
+            var chosenTruckId = $('#inputAddOrderTruck').val();
+            var orderId = $('#add-truck-order-id').val();
+            var url = "/employeeOrder/edit/" + orderId + "/addTruck/" + chosenTruckId;
+
+            $('#addTruck').attr('action', url).submit();
+        });
+    </script>
+    <script th:inline="javascript" type="text/javascript">
+        $('#driver-add-btn').on('click', function (e) {
+            e.preventDefault();
+
+            var chosenDriverId = $('#inputAddOrderDriver').val();
+            var orderId = $('#add-driver-order-id').val();
+            var url = "/employeeOrder/edit/" + orderId + "/addDriver/" + chosenDriverId;
+
+            $('#addDriver').attr('action', url).submit();
+        });
+    </script>
+    <script th:inline="javascript" type="text/javascript">
+        $("[name=del-item-btn]").click(function () {
+            var passedID = $(this).attr('id');
+            $('#driver-id-delete').val(passedID);
+        });
+    </script>
+    <script th:inline="javascript" type="text/javascript">
+        $('#driver-delete-btn').on('click', function (e) {
+            e.preventDefault();
+
+            var driverId = $('#driver-id-delete').val();
+            var orderId = $('#del-driver-order-id').val();
+            var url = "/employeeOrder/edit/" + orderId + "/deleteCurrentDriver/" + driverId;
+
+            $('#deleteDriver').attr('action', url).submit();
+        });
+    </script>
+    <script th:inline="javascript" type="text/javascript">
+        $('#addDateModal').on('shown.bs.modal', function (e) {
+            Date.prototype.addDays = function(days) {
+                var date = new Date(this.valueOf());
+                date.setDate(date.getDate() + days);
+                return date;
+            };
+
+            var currentDate = new Date().toISOString().split("T")[0];
+            var start = $('#start');
+            var end = $('#end');
+            var numOfDrivers = [[${order.currentDrivers.size()}]];
+            var orderTravelHours = [[${orderTravelHours}]];
+            var minDays = (orderTravelHours / (9 * numOfDrivers)) + 1;
+
+            start.attr('value', currentDate);
+            start.attr('min', currentDate);
+
+            end.attr('value', new Date().addDays(minDays).toISOString().split("T")[0]);
+            end.attr('min', new Date().addDays(minDays).toISOString().split("T")[0]);
         });
     </script>
 </body>
