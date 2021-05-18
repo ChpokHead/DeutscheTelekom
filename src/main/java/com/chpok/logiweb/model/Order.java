@@ -26,6 +26,7 @@ public class Order extends AbstractModel{
     private List<Driver> drivers;
 
     @OneToMany(mappedBy = "order", fetch = FetchType.EAGER)
+    @OrderBy("id ASC")
     private List<Waypoint> waypoints;
 
     @Column(name = "creation_date")

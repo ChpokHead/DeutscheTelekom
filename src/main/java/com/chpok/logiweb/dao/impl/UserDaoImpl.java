@@ -1,7 +1,6 @@
 package com.chpok.logiweb.dao.impl;
 
 import com.chpok.logiweb.dao.UserDao;
-import com.chpok.logiweb.dao.exception.DatabaseRuntimeException;
 import com.chpok.logiweb.model.User;
 import org.hibernate.Hibernate;
 import org.hibernate.Session;
@@ -9,7 +8,6 @@ import org.hibernate.SessionFactory;
 import org.hibernate.query.Query;
 import org.springframework.stereotype.Component;
 
-import javax.persistence.PersistenceException;
 import java.util.*;
 
 @Component
@@ -30,8 +28,6 @@ public class UserDaoImpl implements UserDao {
             session.save(entity);
 
             session.getTransaction().commit();
-        } catch (PersistenceException pe) {
-            throw new DatabaseRuntimeException("DB getting user by id exception", pe);
         }
     }
 
@@ -51,14 +47,12 @@ public class UserDaoImpl implements UserDao {
             session.getTransaction().commit();
 
             return Optional.ofNullable(foundUser);
-        } catch (PersistenceException pe) {
-            throw new DatabaseRuntimeException("DB getting user by id exception", pe);
         }
     }
 
     @Override
     public List<User> findAll() {
-        return null;
+        return Collections.emptyList();
     }
 
     @Override
@@ -90,8 +84,6 @@ public class UserDaoImpl implements UserDao {
             session.getTransaction().commit();
 
             return foundUser;
-        } catch (PersistenceException pe) {
-            throw new DatabaseRuntimeException("DB getting user by username exception", pe);
         }
     }
 }

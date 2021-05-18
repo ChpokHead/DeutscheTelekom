@@ -16,6 +16,8 @@ import java.util.Objects;
         typeClass = PostgreSQLEnumType.class
 )
 public class Truck extends AbstractModel{
+    public static final short TRUCK_AVERAGE_SPEED_IN_KMH = 70;
+
     @Column(name = "reg_number")
     private String regNumber;
 

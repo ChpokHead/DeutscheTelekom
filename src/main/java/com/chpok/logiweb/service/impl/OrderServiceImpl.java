@@ -2,25 +2,30 @@ package com.chpok.logiweb.service.impl;
 
 import com.chpok.logiweb.dao.OrderDao;
 import com.chpok.logiweb.dto.*;
+import com.chpok.logiweb.exception.InvalidEntityException;
 import com.chpok.logiweb.model.Driver;
 import com.chpok.logiweb.model.Order;
 import com.chpok.logiweb.model.Truck;
 import com.chpok.logiweb.service.*;
-import com.chpok.logiweb.mapper.impl.DriverMapper;
 import com.chpok.logiweb.mapper.impl.OrderMapper;
 import com.chpok.logiweb.mapper.impl.TruckMapper;
+import com.chpok.logiweb.service.validation.ValidationProvider;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.hibernate.HibernateException;
 import org.springframework.stereotype.Component;
 
+import javax.persistence.EntityNotFoundException;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.stream.Collectors;
 
 @Component
 public class OrderServiceImpl implements OrderService {
-    private static final short TRUCK_AVERAGE_SPEED_IN_KMH = 70;
-    private static final short DRIVERS_MONTH_WORKING_LIMIT = 176;
+    private static final Logger LOGGER = LogManager.getLogger(OrderServiceImpl.class);
 
     private final WaypointService waypointService;
     private final TruckService truckService;
@@ -30,9 +35,8 @@ public class OrderServiceImpl implements OrderService {
     private final OrderDao orderDao;
     private final OrderMapper orderMapper;
     private final TruckMapper truckMapper;
-    private final DriverMapper driverMapper;
 
-    public OrderServiceImpl(WaypointService waypointService, DriverService driverService, CargoService cargoService, LocationMapService locationMapService, OrderDao orderDao, OrderMapper orderMapper, TruckService truckService, TruckMapper truckMapper, DriverMapper driverMapper) {
+    public OrderServiceImpl(WaypointService waypointService, DriverService driverService, CargoService cargoService, LocationMapService locationMapService, OrderDao orderDao, OrderMapper orderMapper, TruckService truckService, TruckMapper truckMapper) {
         this.waypointService = waypointService;
         this.driverService = driverService;
         this.cargoService = cargoService;
@@ -41,233 +45,342 @@ public class OrderServiceImpl implements OrderService {
         this.orderMapper = orderMapper;
         this.truckService = truckService;
         this.truckMapper = truckMapper;
-        this.driverMapper = driverMapper;
     }
 
     @Override
     public List<OrderDto> getAllOrders() {
-        return orderDao.findAll().stream().map(orderMapper::mapEntityToDto).collect(Collectors.toList());
+        try {
+            return orderDao.findAll().stream().map(orderMapper::mapEntityToDto).collect(Collectors.toList());
+        } catch (HibernateException | NoSuchElementException e) {
+            LOGGER.error("getting all orders exception");
+
+            throw new EntityNotFoundException();
+        }
     }
 
     @Override
     public void saveOrder(OrderDto order) {
-        orderDao.save(orderMapper.mapDtoToEntity(order));
+        try {
+            orderDao.save(orderMapper.mapDtoToEntity(order));
+        } catch (HibernateException | NoSuchElementException | IllegalArgumentException e) {
+            LOGGER.error("saving order exception");
+
+            throw new InvalidEntityException();
+        }
     }
 
     @Override
     public void updateOrder(OrderDto order) {
-        orderDao.update(orderMapper.mapDtoToEntity(order));
+        try {
+            orderDao.update(orderMapper.mapDtoToEntity(order));
+        } catch (HibernateException | NoSuchElementException | IllegalArgumentException e) {
+            LOGGER.error("updating order exception");
+
+            throw new InvalidEntityException();
+        }
     }
 
     @Override
     public void updateOrderCurrentTruck(Long orderId, TruckDto newTruck) {
-        final OrderDto updatingOrder = getOrderById(orderId);
+        try {
+            final OrderDto updatingOrder = getOrderById(orderId);
 
-        truckService.updateTruckCurrentOrder(newTruck.getId(), null);
+            truckService.updateTruckCurrentOrder(newTruck.getId(), updatingOrder);
 
-        updatingOrder.setCurrentTruck(truckMapper.mapDtoToEntity(newTruck));
+            updatingOrder.setCurrentTruck(truckMapper.mapDtoToEntity(newTruck));
 
-        updateOrder(updatingOrder);
+            updateOrder(updatingOrder);
+        } catch (HibernateException | NoSuchElementException | IllegalArgumentException e) {
+            LOGGER.error("updating order current truck by order id exception");
+
+            throw new InvalidEntityException();
+        }
     }
 
     @Override
     public void deleteOrderCurrentTruckWithCurrentDriversAndDates(Long orderId) {
-        final OrderDto updatingOrder = getOrderById(orderId);
+        try {
+            final OrderDto updatingOrder = getOrderById(orderId);
 
-        truckService.updateTruckCurrentOrder(updatingOrder.getCurrentTruck().getId(), null);
+            truckService.updateTruckCurrentOrder(updatingOrder.getCurrentTruck().getId(), null);
 
-        deleteOrderStartAndEndDatesWithDrivers(orderId);
+            deleteOrderStartAndEndDatesWithDrivers(orderId);
 
-        deleteOrderCurrentTruck(orderId);
+            deleteOrderCurrentTruck(orderId);
+        } catch (HibernateException | NoSuchElementException e) {
+            LOGGER.error("deleting order current truck with current drivers and dates by order id exception");
+
+            throw new EntityNotFoundException();
+        }
     }
 
     private void deleteOrderCurrentTruck(Long orderId) {
-        final OrderDto updatingOrder = getOrderById(orderId);
+        try {
+            final OrderDto updatingOrder = getOrderById(orderId);
 
-        truckService.updateTruckCurrentOrder(updatingOrder.getCurrentTruck().getId(), null);
+            truckService.updateTruckCurrentOrder(updatingOrder.getCurrentTruck().getId(), null);
 
-        updatingOrder.setCurrentTruck(null);
+            updatingOrder.setCurrentTruck(null);
 
-        updateOrder(updatingOrder);
+            updateOrder(updatingOrder);
+        } catch (HibernateException | NoSuchElementException e) {
+            LOGGER.error("deleting order current truck by order id exception");
+
+            throw new EntityNotFoundException();
+        }
     }
 
     @Override
     public void updateOrderStatus(Order order) {
-        final OrderDto updatingOrder = getOrderById(order.getId());
+        try {
+            final OrderDto updatingOrder = getOrderById(order.getId());
 
-        updatingOrder.setIsCompleted(order.getIsCompleted());
+            updatingOrder.setIsCompleted(order.getIsCompleted());
 
-        updateOrder(updatingOrder);
+            updateOrder(updatingOrder);
+        } catch (HibernateException | NoSuchElementException | IllegalArgumentException e) {
+            LOGGER.error("updating order status exception");
+
+            throw new InvalidEntityException();
+        }
     }
 
     @Override
     public void updateOrderStartAndEndDates(Long orderId, LocalDate orderStartDate, LocalDate orderEndDate) {
-        final OrderDto updatingOrder = getOrderById(orderId);
+        try {
+            final OrderDto updatingOrder = getOrderById(orderId);
 
-        updatingOrder.setStartDate(orderStartDate);
-        updatingOrder.setEndDate(orderEndDate);
+            updatingOrder.setStartDate(orderStartDate);
+            updatingOrder.setEndDate(orderEndDate);
 
-        updateOrder(updatingOrder);
+            updateOrder(updatingOrder);
+        } catch (HibernateException | NoSuchElementException | IllegalArgumentException e) {
+            LOGGER.error("updating order start and end dates by order id exception");
+
+            throw new InvalidEntityException();
+        }
     }
 
     @Override
     public void deleteOrderStartAndEndDatesWithDrivers(Long orderId) {
-        final OrderDto updatingOrder = getOrderById(orderId);
+        try {
+            final OrderDto updatingOrder = getOrderById(orderId);
 
-        for (Driver driver: updatingOrder.getCurrentDrivers()) {
-            driverService.updateDriverCurrentOrder(driver.getId(), null);
+            for (Driver driver: updatingOrder.getCurrentDrivers()) {
+                driverService.updateDriverCurrentOrder(driver.getId(), null);
+            }
+
+            updateOrderStartAndEndDates(orderId, null, null);
+        } catch (HibernateException | NoSuchElementException e) {
+            LOGGER.error("deleting order start and end dates with drivers by order id exception");
+
+            throw new EntityNotFoundException();
         }
-
-        updateOrderStartAndEndDates(orderId, null, null);
     }
 
     @Override
     public OrderDto getOrderById(Long id) {
-        return orderMapper.mapEntityToDto(orderDao.findById(id).get());
+        try {
+            return orderMapper.mapEntityToDto(orderDao.findById(id).get());
+        } catch (HibernateException | NoSuchElementException e) {
+            LOGGER.error("getting order by id exception");
+
+            throw new EntityNotFoundException();
+        }
     }
 
     @Override
     public boolean checkOrderIsCompleted(Order order) {
-        return order != null && order.getWaypoints() != null && waypointService.checkAllWaypointsComplete(order.getWaypoints());
+        try {
+            return order != null && order.getWaypoints() != null && waypointService.checkAllWaypointsComplete(order.getWaypoints());
+        } catch (HibernateException | NoSuchElementException | IllegalArgumentException e) {
+            LOGGER.error("checking order is completed exception");
+
+            throw new InvalidEntityException();
+        }
     }
 
     @Override
     public List<TruckDto> getSuitableTrucksForOrder(Long orderId) {
-        if (getOrderById(orderId).getWaypoints().isEmpty()) {
-            return Collections.emptyList();
-        }
+        try {
+            if (getOrderById(orderId).getWaypoints().isEmpty()) {
+                return Collections.emptyList();
+            }
 
-        final List<TruckDto> suitableTrucks = new ArrayList<>();
-        final List<TruckDto> trucksWithOKStatusAndWithoutCurrentOrder = truckService.getTrucksWithOKStatusAndWithoutCurrentOrder();
-        final List<WaypointDto> loadingWaypoints = waypointService.getAllLoadingWaypointsByOrderId(orderId);
+            final List<TruckDto> suitableTrucks = new ArrayList<>();
+            final List<TruckDto> trucksWithOKStatusAndWithoutCurrentOrder = truckService.getTrucksWithOKStatusAndWithoutCurrentOrder();
+            final List<WaypointDto> loadingWaypoints = waypointService.getAllLoadingWaypointsByOrderId(orderId);
 
-        boolean isTruckSuitable;
+            boolean isTruckSuitable;
 
-        for (TruckDto truck : trucksWithOKStatusAndWithoutCurrentOrder) {
-            isTruckSuitable = true;
+            for (TruckDto truck : trucksWithOKStatusAndWithoutCurrentOrder) {
+                isTruckSuitable = true;
 
-            for (WaypointDto waypoint : loadingWaypoints) {
-                if (waypoint.getCargo().getWeight() > truck.getCapacity() * 1000 || !loadingWaypoints.get(0).getLocation().equals(truck.getLocation())) {
-                    isTruckSuitable = false;
-                    break;
+                for (WaypointDto waypoint : loadingWaypoints) {
+                    if (waypoint.getCargo().getWeight() > truck.getCapacity() * 1000 || !loadingWaypoints.get(0).getLocation().equals(truck.getLocation())) {
+                        isTruckSuitable = false;
+                        break;
+                    }
+                }
+
+                if (isTruckSuitable) {
+                    suitableTrucks.add(truck);
                 }
             }
 
-            if (isTruckSuitable) {
-                suitableTrucks.add(truck);
-            }
-        }
+            return suitableTrucks;
+        } catch (HibernateException | NoSuchElementException e) {
+            LOGGER.error("getting suitable truck for order by order id exception");
 
-        return suitableTrucks;
+            throw new EntityNotFoundException();
+        }
     }
 
     @Override
     public Short getOrderDistance(Long orderId) {
-        final List<WaypointsPair> waypointsPairs = waypointService.getAllWaypointsPairByOrderId(orderId);
+        try {
+            final List<WaypointsPair> waypointsPairs = waypointService.getAllWaypointsPairByOrderId(orderId);
 
-        short orderDistance = 0;
+            short orderDistance = 0;
 
-        for (WaypointsPair pair : waypointsPairs) {
-            final List<WaypointDto> orderWaypoints = pair.getPair();
+            for (WaypointsPair pair : waypointsPairs) {
+                final List<WaypointDto> orderWaypoints = pair.getPair();
 
-            orderDistance +=
-                    locationMapService.getDistanceBetweenLocationsByIds(orderWaypoints.get(0).getLocation().getId(), orderWaypoints.get(1).getLocation().getId());
+                orderDistance +=
+                        locationMapService.getDistanceBetweenLocationsByIds(orderWaypoints.get(0).getLocation().getId(), orderWaypoints.get(1).getLocation().getId());
+            }
+
+            return orderDistance;
+        } catch (HibernateException | NoSuchElementException e) {
+            LOGGER.error("getting order distance by id exception");
+
+            throw new EntityNotFoundException();
         }
-
-        return orderDistance;
     }
 
     @Override
     public Short getOrderTravelHours(Long orderId) {
-        return (short)(Math.round((double)getOrderDistance(orderId) / TRUCK_AVERAGE_SPEED_IN_KMH));
+        try {
+            return (short)(Math.round((double)getOrderDistance(orderId) / Truck.TRUCK_AVERAGE_SPEED_IN_KMH));
+        } catch (HibernateException | NoSuchElementException e) {
+            LOGGER.error("getting order travel hours by order id exception");
+
+            throw new EntityNotFoundException();
+        }
     }
 
     @Override
     public List<DriverDto> getSuitableDriversForOrder(Long orderId) {
-        final OrderDto order = getOrderById(orderId);
+        try {
+            final OrderDto order = getOrderById(orderId);
 
-        if (order.getWaypoints().isEmpty() || order.getCurrentTruck() == null) {
-            return Collections.emptyList();
-        }
-
-        final List<DriverDto> driversWithoutCurrentOrder = driverService.getAllDriversWithoutCurrentOrder();
-        final Short orderTravelHours = getOrderTravelHours(orderId);
-        final List<DriverDto> suitableDrivers = new ArrayList<>();
-
-        for (DriverDto driver : driversWithoutCurrentOrder) {
-            if (isDriverAndOrderCurrentTruckHasSameLocation(driver, order) && !isDriverOverworking(driver, orderTravelHours)) {
-                suitableDrivers.add(driver);
+            if (order.getWaypoints().isEmpty() || order.getCurrentTruck() == null) {
+                return Collections.emptyList();
             }
-        }
 
-        return suitableDrivers;
+            final List<DriverDto> driversWithoutCurrentOrder = driverService.getAllDriversWithoutCurrentOrder();
+            final Short orderTravelHours = getOrderTravelHours(orderId);
+            final List<DriverDto> suitableDrivers = new ArrayList<>();
+
+            for (DriverDto driver : driversWithoutCurrentOrder) {
+                if (isDriverAndOrderCurrentTruckHasSameLocation(driver, order) && !isDriverOverworking(driver, orderTravelHours)) {
+                    suitableDrivers.add(driver);
+                }
+            }
+
+            return suitableDrivers;
+        } catch (HibernateException | NoSuchElementException e) {
+            LOGGER.error("getting suitable drivers for order by order id exception");
+
+            throw new EntityNotFoundException();
+        }
     }
 
     @Override
-    public void updateOrderCurrentDriver(Long orderId, DriverDto driver) {
-        final OrderDto updatingOrder = getOrderById(orderId);
+    public void updateOrderCurrentDriver(Long orderId, DriverDto newDriver) {
+        try {
+            final OrderDto updatingOrder = getOrderById(orderId);
 
-        driver.setCurrentOrder(orderMapper.mapDtoToEntity(updatingOrder));
-        driver.setCurrentTruck(updatingOrder.getCurrentTruck());
+            newDriver.setCurrentOrder(orderMapper.mapDtoToEntity(updatingOrder));
+            newDriver.setCurrentTruck(updatingOrder.getCurrentTruck());
 
-        driverService.updateDriver(driver);
+            driverService.updateDriver(newDriver);
+        } catch (HibernateException | NoSuchElementException | IllegalArgumentException e) {
+            LOGGER.error("updating order current drivers exception");
+
+            throw new InvalidEntityException();
+        }
     }
 
     @Override
     public void completeOrder(Long orderId) {
-        final OrderDto completingOrder = getOrderById(orderId);
-        final List<Order.Waypoint> orderWaypoints = completingOrder.getWaypoints();
-        final List<Driver> orderDrivers = completingOrder.getCurrentDrivers();
+        try {
+            final OrderDto completingOrder = getOrderById(orderId);
+            final List<Order.Waypoint> orderWaypoints = completingOrder.getWaypoints();
+            final List<Driver> orderDrivers = completingOrder.getCurrentDrivers();
 
-        deleteCurrentOrderFromCurrentTruck(completingOrder);
-
-        if (!orderDrivers.isEmpty()) {
-            for (Driver driver : orderDrivers) {
-                driverService.updateDriversMonthWorkedHours(driver.getId(), (short)(driver.getMonthWorkedHours() + getOrderTravelHours(completingOrder.getId())));
-                driverService.deleteDriverCurrentOrderWithCurrentTruck(driver.getId());
+            if (completingOrder.getCurrentTruck() != null) {
+                truckService.updateTruckLocation(completingOrder.getCurrentTruck().getId(), orderWaypoints.get(orderWaypoints.size() - 1).getLocation());
+                truckService.updateTruckCurrentOrder(completingOrder.getCurrentTruck().getId(), null);
             }
-        }
 
-        if (!orderWaypoints.isEmpty()) {
-            for (int i = 0; i < orderWaypoints.size(); i+=2) {
-                cargoService.deleteCargo(orderWaypoints.get(i).getCargo().getId());
+            if (!orderDrivers.isEmpty()) {
+                for (Driver driver : orderDrivers) {
+                    driverService.updateDriverMonthWorkedHours(driver.getId(), (short)(driver.getMonthWorkedHours() + getOrderTravelHours(completingOrder.getId())));
+                    driverService.updateDriverLocation(driver.getId(), orderWaypoints.get(orderWaypoints.size() - 1).getLocation());
+                    driverService.updateDriverCurrentTruck(driver.getId(), null);
+                    driverService.updateDriverCurrentOrder(driver.getId(), null);
+                }
             }
-        }
 
-        orderDao.deleteById(orderId);
+            if (!orderWaypoints.isEmpty()) {
+                for (int i = 0; i < orderWaypoints.size(); i+=2) {
+                    cargoService.deleteCargo(orderWaypoints.get(i).getCargo().getId());
+                }
+            }
+
+            orderDao.deleteById(orderId);
+        } catch (HibernateException | NoSuchElementException e) {
+            LOGGER.error("completing order by order id exception");
+
+            throw new EntityNotFoundException();
+        }
     }
 
     @Override
     public void deleteOrder(Long id) {
-        final OrderDto deletingOrder = getOrderById(id);
-        final List<Order.Waypoint> ordersWaypoints = deletingOrder.getWaypoints();
-        final List<Driver> ordersDrivers = deletingOrder.getCurrentDrivers();
+        try {
+            final OrderDto deletingOrder = getOrderById(id);
+            final List<Order.Waypoint> ordersWaypoints = deletingOrder.getWaypoints();
+            final List<Driver> ordersDrivers = deletingOrder.getCurrentDrivers();
 
-        deleteCurrentOrderFromCurrentTruck(deletingOrder);
-
-        if (!ordersDrivers.isEmpty()) {
-            for (Driver driver : ordersDrivers) {
-                driverService.deleteDriverCurrentOrderWithCurrentTruck(driver.getId());
+            if (deletingOrder.getCurrentTruck() != null) {
+                truckService.updateTruckCurrentOrder(deletingOrder.getCurrentTruck().getId(), null);
             }
-        }
 
-        if (!ordersWaypoints.isEmpty()) {
-            for (Order.Waypoint waypoint : deletingOrder.getWaypoints()) {
-                waypointService.deleteWaypoint(waypoint.getId());
+            if (!ordersDrivers.isEmpty()) {
+                for (Driver driver : ordersDrivers) {
+                    driverService.updateDriverCurrentTruck(driver.getId(), null);
+                    driverService.updateDriverCurrentOrder(driver.getId(), null);
+                }
             }
-        }
 
-        orderDao.deleteById(id);
-    }
+            if (!ordersWaypoints.isEmpty()) {
+                for (Order.Waypoint waypoint : deletingOrder.getWaypoints()) {
+                    waypointService.deleteWaypoint(waypoint.getId());
+                }
+            }
 
-    private void deleteCurrentOrderFromCurrentTruck(OrderDto deletingOrder) {
-        if (deletingOrder.getCurrentTruck() != null) {
-            truckService.updateTruckCurrentOrder(deletingOrder.getCurrentTruck().getId(), null);
+            orderDao.deleteById(id);
+        } catch (HibernateException | NoSuchElementException e) {
+            LOGGER.error("deleting order by order id exception");
+
+            throw new EntityNotFoundException();
         }
     }
 
     private boolean isDriverOverworking(DriverDto driver, Short orderTravelHours) {
-        return driver.getMonthWorkedHours() + orderTravelHours > DRIVERS_MONTH_WORKING_LIMIT;
+        return driver.getMonthWorkedHours() + orderTravelHours > Driver.DRIVERS_MONTH_WORKING_LIMIT;
     }
 
     private boolean isDriverAndOrderCurrentTruckHasSameLocation(DriverDto driver, OrderDto order) {

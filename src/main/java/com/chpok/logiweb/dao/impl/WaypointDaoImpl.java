@@ -1,7 +1,6 @@
 package com.chpok.logiweb.dao.impl;
 
 import com.chpok.logiweb.dao.WaypointDao;
-import com.chpok.logiweb.dao.exception.DatabaseRuntimeException;
 import com.chpok.logiweb.model.Order;
 import org.hibernate.Hibernate;
 import org.hibernate.Session;
@@ -10,14 +9,13 @@ import org.hibernate.query.Query;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
-import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 
 @Component
 public class WaypointDaoImpl implements WaypointDao {
     private static final String FIND_ALL_QUERY = "SELECT w FROM com.chpok.logiweb.model.Order$Waypoint w";
-    private static final String FIND_ALL_BY_ORDER_ID_QUERY = "SELECT w FROM com.chpok.logiweb.model.Order$Waypoint w WHERE w.order.id = :id";
+    private static final String FIND_ALL_BY_ORDER_ID_QUERY = "SELECT w FROM com.chpok.logiweb.model.Order$Waypoint w WHERE w.order.id = :id ORDER BY w.id";
 
     private final SessionFactory sessionFactory;
 
@@ -33,8 +31,6 @@ public class WaypointDaoImpl implements WaypointDao {
             session.save(entity);
 
             session.getTransaction().commit();
-        } catch (NullPointerException npe) {
-            throw new DatabaseRuntimeException("DB waypoint saving exception", npe);
         }
     }
 
@@ -48,8 +44,6 @@ public class WaypointDaoImpl implements WaypointDao {
             session.getTransaction().commit();
 
             return Optional.ofNullable(waypoint);
-        } catch (NullPointerException npe) {
-            throw new DatabaseRuntimeException("DB waypoint finding by id exception", npe);
         }
     }
 
@@ -63,8 +57,6 @@ public class WaypointDaoImpl implements WaypointDao {
             }
 
             session.getTransaction().commit();
-        } catch (NullPointerException npe) {
-            throw new DatabaseRuntimeException("DB updating waypoint exception", npe);
         }
     }
 
@@ -86,8 +78,6 @@ public class WaypointDaoImpl implements WaypointDao {
             session.getTransaction().commit();
 
             return waypoints;
-        } catch (NullPointerException npe) {
-            throw new DatabaseRuntimeException("DB getting all waypoints exception", npe);
         }
     }
 
@@ -99,8 +89,6 @@ public class WaypointDaoImpl implements WaypointDao {
             session.update(entity);
 
             session.getTransaction().commit();
-        } catch (NullPointerException npe) {
-            throw new DatabaseRuntimeException("DB updating waypoint exception", npe);
         }
     }
 
@@ -114,8 +102,6 @@ public class WaypointDaoImpl implements WaypointDao {
             session.delete(deletingWaypoint);
 
             session.getTransaction().commit();
-        } catch (NullPointerException npe) {
-            throw new DatabaseRuntimeException("DB delete waypoint by id exception", npe);
         }
     }
 
@@ -138,8 +124,6 @@ public class WaypointDaoImpl implements WaypointDao {
             session.getTransaction().commit();
 
             return waypoints;
-        } catch (NullPointerException npe) {
-            throw new DatabaseRuntimeException("DB finding waypoint by order id exception", npe);
         }
     }
 }

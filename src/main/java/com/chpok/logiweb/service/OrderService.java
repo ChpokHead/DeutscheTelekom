@@ -24,6 +24,6 @@ public interface OrderService {
     Short getOrderDistance(Long orderId);
     Short getOrderTravelHours(Long orderId);
     List<DriverDto> getSuitableDriversForOrder(Long orderId);
-    void updateOrderCurrentDriver(Long orderId, DriverDto driver);
+    void updateOrderCurrentDriver(Long orderId, DriverDto newDriver);
     void completeOrder(Long orderId);
 }

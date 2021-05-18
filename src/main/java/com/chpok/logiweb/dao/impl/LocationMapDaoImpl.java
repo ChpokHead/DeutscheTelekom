@@ -1,14 +1,12 @@
 package com.chpok.logiweb.dao.impl;
 
 import com.chpok.logiweb.dao.LocationMapDao;
-import com.chpok.logiweb.dao.exception.DatabaseRuntimeException;
 import com.chpok.logiweb.model.LocationMap;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.query.Query;
 import org.springframework.stereotype.Component;
 
-import javax.persistence.PersistenceException;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -32,8 +30,6 @@ public class LocationMapDaoImpl implements LocationMapDao {
             session.save(entity);
 
             session.getTransaction().commit();
-        } catch (PersistenceException pe) {
-            throw new DatabaseRuntimeException("DB locationMap saving exception", pe);
         }
     }
 
@@ -47,8 +43,6 @@ public class LocationMapDaoImpl implements LocationMapDao {
             session.getTransaction().commit();
 
             return Optional.ofNullable(foundLocationMap);
-        } catch (PersistenceException pe) {
-            throw new DatabaseRuntimeException("DB locationMap finding by id exception", pe);
         }
     }
 
@@ -87,9 +81,7 @@ public class LocationMapDaoImpl implements LocationMapDao {
 
             session.getTransaction().commit();
 
-            return Optional.of(findingLocationMap);
-        } catch (PersistenceException pe) {
-            throw new DatabaseRuntimeException("DB locationMap finding by start and ending locations ids exception", pe);
+            return Optional.ofNullable(findingLocationMap);
         }
     }
 }

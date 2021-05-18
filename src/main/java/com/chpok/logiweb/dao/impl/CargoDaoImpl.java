@@ -1,7 +1,6 @@
 package com.chpok.logiweb.dao.impl;
 
 import com.chpok.logiweb.dao.CargoDao;
-import com.chpok.logiweb.dao.exception.DatabaseRuntimeException;
 import com.chpok.logiweb.model.Cargo;
 import com.chpok.logiweb.model.Order;
 import org.hibernate.Hibernate;
@@ -9,9 +8,7 @@ import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.springframework.stereotype.Component;
 
-import javax.persistence.PersistenceException;
 import java.util.List;
-import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 
@@ -44,8 +41,6 @@ public class CargoDaoImpl implements CargoDao {
             session.getTransaction().commit();
 
             return foundCargos;
-        } catch (PersistenceException pe) {
-            throw new DatabaseRuntimeException("DB cargo saving exception", pe);
         }
     }
 
@@ -57,8 +52,6 @@ public class CargoDaoImpl implements CargoDao {
             session.save(entity);
 
             session.getTransaction().commit();
-        } catch (PersistenceException pe) {
-            throw new DatabaseRuntimeException("DB cargo saving exception", pe);
         }
     }
 
@@ -78,8 +71,6 @@ public class CargoDaoImpl implements CargoDao {
             session.getTransaction().commit();
 
             return Optional.ofNullable(cargo);
-        } catch (PersistenceException pe) {
-            throw new DatabaseRuntimeException("DB find cargo by id exception", pe);
         }
     }
 
@@ -101,8 +92,6 @@ public class CargoDaoImpl implements CargoDao {
             session.getTransaction().commit();
 
             return allCargos;
-        } catch (PersistenceException pe) {
-            throw new DatabaseRuntimeException("DB getting all cargos exception", pe);
         }
     }
 
@@ -114,8 +103,6 @@ public class CargoDaoImpl implements CargoDao {
             session.update(entity);
 
             session.getTransaction().commit();
-        }  catch (PersistenceException pe) {
-            throw new DatabaseRuntimeException("DB cargo updating exception", pe);
         }
     }
 
@@ -129,8 +116,6 @@ public class CargoDaoImpl implements CargoDao {
             session.delete(deletingCargo);
 
             session.getTransaction().commit();
-        }  catch (PersistenceException pe) {
-            throw new DatabaseRuntimeException("DB cargo deleting exception", pe);
         }
     }
 

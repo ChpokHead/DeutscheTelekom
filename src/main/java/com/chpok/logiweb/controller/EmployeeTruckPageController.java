@@ -1,6 +1,6 @@
 package com.chpok.logiweb.controller;
 
-import com.chpok.logiweb.dao.exception.DatabaseRuntimeException;
+import com.chpok.logiweb.exception.MyException;
 import com.chpok.logiweb.dto.TruckDto;
 import com.chpok.logiweb.service.LocationService;
 import com.chpok.logiweb.service.TruckService;
@@ -40,7 +40,7 @@ public class EmployeeTruckPageController {
     public TruckDto getTruck(@PathVariable Long id) {
         try {
             return truckService.getTruckById(id);
-        } catch (DatabaseRuntimeException dre) {
+        } catch (MyException dre) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Truck not found", dre);
         }
     }

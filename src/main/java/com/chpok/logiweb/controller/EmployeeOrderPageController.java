@@ -90,7 +90,8 @@ public class EmployeeOrderPageController {
     public String deleteOrderCurrentDriver(@PathVariable(name = "orderId") Long orderId, @PathVariable(name = "driverId") Long driverId) {
         orderService.updateOrderStartAndEndDates(orderId, null, null);
 
-        driverService.deleteDriverCurrentOrderWithCurrentTruck(driverId);
+        driverService.updateDriverCurrentOrder(driverId, null);
+        driverService.updateDriverCurrentTruck(driverId, null);
 
         return String.format(REDIRECT_TO_ORDER_EDIT_PAGE, orderId);
     }

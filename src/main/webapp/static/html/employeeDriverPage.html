@@ -119,11 +119,11 @@
                         <div class="modal-body">
                             <div class="mb-3">
                                 <label for="inputAddDriverFirstName" class="form-label">Имя</label>
-                                <input type="text" class="form-control" id="inputAddDriverFirstName" th:field="*{firstName}"/>
+                                <input type="text" class="form-control" id="inputAddDriverFirstName" th:field="*{firstName}" pattern="[\u0400-\u04ff]{3,30}" required/>
                             </div>
                             <div class="mb-3">
                                 <label for="inputAddDriverShift" class="form-label">Фамилия</label>
-                                <input type="text" class="form-control" id="inputAddDriverShift" th:field="*{lastName}"/>
+                                <input type="text" class="form-control" id="inputAddDriverShift" th:field="*{lastName}" pattern="[\u0400-\u04ff]{3,30}" required/>
                             </div>
                             <div class="mb-3">
                                 <label for="inputAddDriverLocation" class="form-label">Текущий город</label>
@@ -133,7 +133,7 @@
                             </div>
                             <div class="mb-3">
                                 <label for="inputDriverMonthWorkedHours" class="form-label">Отработано часов в месяце</label>
-                                <input type="number" class="form-control" id="inputDriverMonthWorkedHours" value='0' th:field="*{monthWorkedHours}"/>
+                                <input type="number" class="form-control" id="inputDriverMonthWorkedHours" value='0' min="0" max="176" th:field="*{monthWorkedHours}" required/>
                             </div>
                             <div class="mb-3">
                                 <label for="inputAddDriverTruck" class="form-label">Текущая фура</label>

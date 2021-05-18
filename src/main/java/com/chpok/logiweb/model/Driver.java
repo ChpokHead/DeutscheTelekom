@@ -16,7 +16,9 @@ import java.util.Objects;
         name = "pgsql_enum",
         typeClass = PostgreSQLEnumType.class
 )
-public class Driver extends AbstractModel{
+public class Driver extends AbstractModel {
+    public static final short DRIVERS_MONTH_WORKING_LIMIT = 176;
+
     @Column(name = "first_name")
     private String firstName;
 

@@ -3,6 +3,7 @@ package com.chpok.logiweb.service;
 import com.chpok.logiweb.dto.DriverDto;
 import com.chpok.logiweb.dto.OrderDto;
 import com.chpok.logiweb.dto.TruckDto;
+import com.chpok.logiweb.model.Location;
 
 import java.util.List;
 
@@ -15,4 +16,5 @@ public interface TruckService {
     List<DriverDto> getDriverShiftworkers(DriverDto driver);
     List<TruckDto> getTrucksWithOKStatusAndWithoutCurrentOrder();
     void updateTruckCurrentOrder(Long truckId, OrderDto newOrder);
+    void updateTruckLocation(Long truckId, Location newLocation);
 }

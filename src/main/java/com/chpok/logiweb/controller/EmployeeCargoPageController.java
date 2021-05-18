@@ -1,6 +1,6 @@
 package com.chpok.logiweb.controller;
 
-import com.chpok.logiweb.dao.exception.DatabaseRuntimeException;
+import com.chpok.logiweb.exception.MyException;
 import com.chpok.logiweb.dto.CargoDto;
 import com.chpok.logiweb.service.CargoService;
 import org.springframework.http.HttpStatus;
@@ -33,7 +33,7 @@ public class EmployeeCargoPageController {
     public CargoDto getTruck(@PathVariable Long id) {
         try {
             return cargoService.getCargoById(id);
-        } catch (DatabaseRuntimeException dre) {
+        } catch (MyException dre) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Cargo not found", dre);
         }
     }

@@ -1,18 +1,14 @@
 package com.chpok.logiweb.dao.impl;
 
 import com.chpok.logiweb.dao.OrderDao;
-import com.chpok.logiweb.dao.exception.DatabaseRuntimeException;
 import com.chpok.logiweb.model.Driver;
 import com.chpok.logiweb.model.Order;
 import org.hibernate.Hibernate;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
-import org.springframework.orm.hibernate5.LocalSessionFactoryBean;
 import org.springframework.stereotype.Component;
 
-import javax.persistence.PersistenceException;
 import java.util.List;
-import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 
@@ -34,8 +30,6 @@ public class OrderDaoImpl implements OrderDao {
             session.save(entity);
 
             session.getTransaction().commit();
-        } catch (PersistenceException pe) {
-            throw new DatabaseRuntimeException("DB order saving exception", pe);
         }
     }
 
@@ -53,11 +47,10 @@ public class OrderDaoImpl implements OrderDao {
                     Hibernate.initialize(driver);
                 }
             }
+
             session.getTransaction().commit();
 
             return Optional.ofNullable(order);
-        } catch (PersistenceException pe) {
-            throw new DatabaseRuntimeException("DB find driver by id exception", pe);
         }
     }
 
@@ -80,8 +73,6 @@ public class OrderDaoImpl implements OrderDao {
             session.getTransaction().commit();
 
             return orders;
-        } catch (PersistenceException pe) {
-            throw new DatabaseRuntimeException("DB getting all orders exception", pe);
         }
     }
 
@@ -94,8 +85,6 @@ public class OrderDaoImpl implements OrderDao {
             session.update(entity);
 
             session.getTransaction().commit();
-        } catch (PersistenceException pe) {
-            throw new DatabaseRuntimeException("DB updating order exception", pe);
         }
     }
 
@@ -105,13 +94,11 @@ public class OrderDaoImpl implements OrderDao {
                      sessionFactory.openSession()){
             session.beginTransaction();
 
-            final Order deletingOrder = session.load(Order.class, id);
+            final Order deletingOrder = session.get(Order.class, id);
 
             session.delete(deletingOrder);
 
             session.getTransaction().commit();
-        } catch (PersistenceException pe) {
-            throw new DatabaseRuntimeException("DB delete order by id exception", pe);
         }
     }
 

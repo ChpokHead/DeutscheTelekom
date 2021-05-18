@@ -19,7 +19,7 @@
                     <button id = "order-status-change-btn" class="btn btn-primary btn-lg" th:disabled="${driver.currentOrder == null or isOrderCompleted}" data-bs-toggle="modal" data-bs-target="#changeOrderModal">Изменить статус заказа</button>
                 </div>
                 <div class="col py-3">
-                    <button id = "order-completion-change-btn" class="btn btn-success btn-lg" th:disabled="${driver.currentOrder == null or not driver.currentOrder.isCompleted}" data-bs-toggle="modal" data-bs-target="#changeOrderCompletionModal">Завершить заказ</button>
+                    <button id = "order-completion-change-btn" class="btn btn-success btn-lg" th:disabled="${driver.currentOrder == null or not isOrderCompleted or driver.currentOrder.isCompleted}" data-bs-toggle="modal" data-bs-target="#changeOrderCompletionModal">Завершить заказ</button>
                 </div>
                 <div class="col py-3">
                     <a class="btn btn-lg btn-danger" href="/logout">
@@ -276,7 +276,7 @@
                                         </div>
                                         <div class="col">
                                             <div th:switch="${waypoint.type.toString()}">
-                                                <p th:case="'SHIPPING'">Тип: Отправка</p>
+                                                <p th:case="'SHIPPING'">Тип: Выгрузка</p>
                                                 <p th:case="'LOADING'">Тип: Погрузка</p>
                                             </div>
                                         </div>

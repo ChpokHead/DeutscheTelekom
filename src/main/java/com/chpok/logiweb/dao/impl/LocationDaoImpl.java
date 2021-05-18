@@ -1,17 +1,13 @@
 package com.chpok.logiweb.dao.impl;
 
 import com.chpok.logiweb.dao.LocationDao;
-import com.chpok.logiweb.dao.exception.DatabaseRuntimeException;
 import com.chpok.logiweb.model.Location;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.query.Query;
-import org.springframework.orm.hibernate5.LocalSessionFactoryBean;
 import org.springframework.stereotype.Component;
 
-import javax.persistence.PersistenceException;
 import java.util.List;
-import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 
@@ -34,8 +30,6 @@ public class LocationDaoImpl implements LocationDao {
             session.save(entity);
 
             session.getTransaction().commit();
-        } catch (PersistenceException pe) {
-            throw new DatabaseRuntimeException("DB getting all locations exception", pe);
         }
     }
 
@@ -49,8 +43,6 @@ public class LocationDaoImpl implements LocationDao {
             session.getTransaction().commit();
 
             return Optional.ofNullable(foundLocation);
-        } catch (PersistenceException pe) {
-            throw new DatabaseRuntimeException("DB getting all locations exception", pe);
         }
     }
 
@@ -64,8 +56,6 @@ public class LocationDaoImpl implements LocationDao {
             session.getTransaction().commit();
 
             return locations;
-        } catch (PersistenceException pe) {
-            throw new DatabaseRuntimeException("DB getting all locations exception", pe);
         }
     }
 
@@ -93,13 +83,11 @@ public class LocationDaoImpl implements LocationDao {
 
             selectQuery.setParameter("name", name);
 
-            final Optional<Location> result = Optional.of(selectQuery.getSingleResult());
+            final Optional<Location> result = selectQuery.uniqueResultOptional();
 
             session.getTransaction().commit();
 
             return result;
-        } catch (PersistenceException pe) {
-            throw new DatabaseRuntimeException("DB find location by name exception", pe);
         }
     }
 }

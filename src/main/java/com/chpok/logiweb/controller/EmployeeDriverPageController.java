@@ -1,6 +1,6 @@
 package com.chpok.logiweb.controller;
 
-import com.chpok.logiweb.dao.exception.DatabaseRuntimeException;
+import com.chpok.logiweb.exception.MyException;
 import com.chpok.logiweb.dto.DriverDto;
 import com.chpok.logiweb.service.DriverService;
 import com.chpok.logiweb.service.LocationService;
@@ -44,7 +44,7 @@ public class EmployeeDriverPageController {
     public DriverDto getDriver(@PathVariable Long id) {
         try {
             return driverService.getDriverById(id);
-        } catch (DatabaseRuntimeException dre) {
+        } catch (MyException dre) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Driver not found", dre);
         }
     }

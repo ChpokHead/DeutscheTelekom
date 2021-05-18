@@ -1,16 +1,13 @@
 package com.chpok.logiweb.dao.impl;
 
 import com.chpok.logiweb.dao.TruckDao;
-import com.chpok.logiweb.dao.exception.DatabaseRuntimeException;
 import com.chpok.logiweb.model.Truck;
 import org.hibernate.Hibernate;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.springframework.stereotype.Component;
 
-import javax.persistence.PersistenceException;
 import java.util.List;
-import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 
@@ -32,8 +29,6 @@ public class TruckDaoImpl implements TruckDao{
             session.save(entity);
 
             session.getTransaction().commit();
-        } catch (PersistenceException pe) {
-            throw new DatabaseRuntimeException("DB truck saving exception", pe);
         }
     }
 
@@ -51,8 +46,6 @@ public class TruckDaoImpl implements TruckDao{
             session.getTransaction().commit();
 
             return Optional.ofNullable(truck);
-        } catch (PersistenceException pe) {
-            throw new DatabaseRuntimeException("DB find truck by id exception", pe);
         }
     }
 
@@ -66,8 +59,6 @@ public class TruckDaoImpl implements TruckDao{
             session.getTransaction().commit();
 
             return allTrucks;
-        }  catch (PersistenceException pe) {
-            throw new DatabaseRuntimeException("DB getting all trucks exception", pe);
         }
     }
 
@@ -79,8 +70,6 @@ public class TruckDaoImpl implements TruckDao{
             session.update(entity);
 
             session.getTransaction().commit();
-        }  catch (PersistenceException pe) {
-            throw new DatabaseRuntimeException("DB truck updating exception", pe);
         }
     }
 
@@ -94,8 +83,6 @@ public class TruckDaoImpl implements TruckDao{
             session.delete(deletingTruck);
 
             session.getTransaction().commit();
-        }  catch (PersistenceException pe) {
-            throw new DatabaseRuntimeException("DB driver deleting exception", pe);
         }
     }
 

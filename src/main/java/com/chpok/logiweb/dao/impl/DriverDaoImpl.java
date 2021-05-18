@@ -1,7 +1,6 @@
 package com.chpok.logiweb.dao.impl;
 
 import com.chpok.logiweb.dao.DriverDao;
-import com.chpok.logiweb.dao.exception.DatabaseRuntimeException;
 import com.chpok.logiweb.model.Driver;
 import org.hibernate.Hibernate;
 import org.hibernate.Session;
@@ -9,7 +8,6 @@ import org.hibernate.SessionFactory;
 import org.hibernate.query.Query;
 import org.springframework.stereotype.Component;
 
-import javax.persistence.PersistenceException;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -35,8 +33,6 @@ public class DriverDaoImpl implements DriverDao {
             session.save(entity);
 
             session.getTransaction().commit();
-        } catch (PersistenceException pe) {
-            throw new DatabaseRuntimeException("DB driver saving exception", pe);
         }
     }
 
@@ -54,8 +50,6 @@ public class DriverDaoImpl implements DriverDao {
             session.getTransaction().commit();
 
             return Optional.ofNullable(driver);
-        } catch (PersistenceException pe) {
-            throw new DatabaseRuntimeException("DB find driver by id exception", pe);
         }
     }
 
@@ -75,8 +69,6 @@ public class DriverDaoImpl implements DriverDao {
             session.getTransaction().commit();
 
             return allDrivers;
-        } catch (PersistenceException pe) {
-            throw new DatabaseRuntimeException("DB getting all driver exception", pe);
         }
     }
 
@@ -88,8 +80,6 @@ public class DriverDaoImpl implements DriverDao {
             session.update(entity);
 
             session.getTransaction().commit();
-        } catch (PersistenceException pe) {
-            throw new DatabaseRuntimeException("DB driver updating exception", pe);
         }
     }
 
@@ -103,8 +93,6 @@ public class DriverDaoImpl implements DriverDao {
             session.delete(deletingDriver);
 
             session.getTransaction().commit();
-        } catch (PersistenceException pe) {
-            throw new DatabaseRuntimeException("DB driver deleting exception", pe);
         }
     }
 
@@ -127,8 +115,6 @@ public class DriverDaoImpl implements DriverDao {
             session.getTransaction().commit();
 
             return drivers;
-        } catch (PersistenceException pe) {
-            throw new DatabaseRuntimeException("DB finding drivers by truck id exception", pe);
         }
     }
 
@@ -144,8 +130,6 @@ public class DriverDaoImpl implements DriverDao {
             session.getTransaction().commit();
 
             return foundDrivers;
-        } catch (PersistenceException pe) {
-            throw new DatabaseRuntimeException("DB finding drivers without current order exception", pe);
         }
     }
 }

@@ -2,61 +2,105 @@ package com.chpok.logiweb.service.impl;
 
 import com.chpok.logiweb.dao.CargoDao;
 import com.chpok.logiweb.dto.CargoDto;
+import com.chpok.logiweb.exception.InvalidEntityException;
 import com.chpok.logiweb.model.Cargo;
 import com.chpok.logiweb.model.Order;
 import com.chpok.logiweb.model.enums.CargoStatus;
 import com.chpok.logiweb.service.CargoService;
 import com.chpok.logiweb.mapper.impl.CargoMapper;
 import com.chpok.logiweb.service.WaypointService;
+import com.chpok.logiweb.service.validation.ValidationProvider;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.hibernate.HibernateException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
+import javax.persistence.EntityNotFoundException;
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.stream.Collectors;
 
 @Service
 @Transactional
 public class CargoServiceImpl implements CargoService {
+    private static final Logger LOGGER = LogManager.getLogger(CargoServiceImpl.class);
+
     private final WaypointService waypointService;
     private final CargoDao cargoDao;
+    private final ValidationProvider<CargoDto> validator;
     private final CargoMapper cargoMapper;
 
-    public CargoServiceImpl(WaypointService waypointService, CargoDao cargoDao, CargoMapper cargoMapper) {
+    public CargoServiceImpl(WaypointService waypointService, CargoDao cargoDao, ValidationProvider<CargoDto> validator, CargoMapper cargoMapper) {
         this.waypointService = waypointService;
         this.cargoDao = cargoDao;
+        this.validator = validator;
         this.cargoMapper = cargoMapper;
     }
 
     @Override
     public List<CargoDto> getAllCargos() {
-        return cargoDao.findAll().stream().map(cargoMapper::mapEntityToDto).collect(Collectors.toList());
+        try {
+            return cargoDao.findAll().stream().map(cargoMapper::mapEntityToDto).collect(Collectors.toList());
+        } catch (HibernateException | NoSuchElementException e) {
+            LOGGER.error("getting all cargos exception");
+
+            throw new EntityNotFoundException();
+        }
     }
 
     @Override
     public void saveCargo(CargoDto cargo) {
-        cargoDao.save(cargoMapper.mapDtoToEntity(cargo));
+        try {
+            validator.validate(cargo);
+
+            cargoDao.save(cargoMapper.mapDtoToEntity(cargo));
+        } catch (HibernateException | NoSuchElementException | IllegalArgumentException e) {
+            LOGGER.error("saving cargo exception");
+
+            throw new InvalidEntityException();
+        }
     }
 
     @Override
     public CargoDto getCargoById(Long id) {
-        return cargoMapper.mapEntityToDto(cargoDao.findById(id).get());
+        try {
+            return cargoMapper.mapEntityToDto(cargoDao.findById(id).get());
+        } catch (HibernateException | NoSuchElementException e) {
+            LOGGER.error("getting cargo by id exception");
+
+            throw new EntityNotFoundException();
+        }
     }
 
     @Override
     public void deleteCargo(Long id) {
-        final Cargo deletingCargo = cargoDao.findById(id).get();
+        try {
+            final Cargo deletingCargo = cargoDao.findById(id).get();
 
-        for (Order.Waypoint waypoint : deletingCargo.getWaypoints()) {
-            waypointService.deleteWaypoint(waypoint.getId());
+            for (Order.Waypoint waypoint : deletingCargo.getWaypoints()) {
+                waypointService.deleteWaypoint(waypoint.getId());
+            }
+
+            cargoDao.deleteById(id);
+        } catch (HibernateException | NoSuchElementException e) {
+            LOGGER.error("deleting cargo by id exception");
+
+            throw new EntityNotFoundException();
         }
-
-        cargoDao.deleteById(id);
     }
 
     @Override
     public void updateCargo(CargoDto cargo) {
-        cargoDao.update(cargoMapper.mapDtoToEntity(cargo));
+        try {
+            validator.validate(cargo);
+
+            cargoDao.update(cargoMapper.mapDtoToEntity(cargo));
+        } catch (HibernateException | NoSuchElementException | IllegalArgumentException e) {
+            LOGGER.error("updating cargo exception");
+
+            throw new InvalidEntityException();
+        }
     }
 
     @Override
@@ -69,10 +113,16 @@ public class CargoServiceImpl implements CargoService {
 
     @Override
     public void updateCargoStatus(Long cargoId, CargoStatus newCargoStatus) {
-        final Cargo updatingCargo = cargoDao.findById(cargoId).get();
+        try {
+            final Cargo updatingCargo = cargoDao.findById(cargoId).get();
 
-        updatingCargo.setStatus(newCargoStatus);
+            updatingCargo.setStatus(newCargoStatus);
 
-        cargoDao.update(updatingCargo);
+            cargoDao.update(updatingCargo);
+        } catch (HibernateException | NoSuchElementException e) {
+            LOGGER.error("updating cargo status by id exception");
+
+            throw new InvalidEntityException();
+        }
     }
 }

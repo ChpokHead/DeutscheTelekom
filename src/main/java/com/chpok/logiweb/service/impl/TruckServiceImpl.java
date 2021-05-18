@@ -5,6 +5,7 @@ import com.chpok.logiweb.dao.TruckDao;
 import com.chpok.logiweb.dto.DriverDto;
 import com.chpok.logiweb.dto.OrderDto;
 import com.chpok.logiweb.dto.TruckDto;
+import com.chpok.logiweb.model.Location;
 import com.chpok.logiweb.model.enums.TruckStatus;
 import com.chpok.logiweb.service.TruckService;
 import com.chpok.logiweb.mapper.impl.DriverMapper;
@@ -86,6 +87,15 @@ public class TruckServiceImpl implements TruckService {
         final TruckDto updatingTruck = getTruckById(truckId);
 
         updatingTruck.setCurrentOrder(null);
+
+        updateTruck(updatingTruck);
+    }
+
+    @Override
+    public void updateTruckLocation(Long truckId, Location newLocation) {
+        final TruckDto updatingTruck = getTruckById(truckId);
+
+        updatingTruck.setLocation(newLocation);
 
         updateTruck(updatingTruck);
     }

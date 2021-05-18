@@ -92,7 +92,7 @@ public class WaypointServiceImpl implements WaypointService {
 
             updatingWaypoint.setIsDone(waypoint.getIsDone());
 
-            updateWaypointCargoStatus(waypoint);
+            updateWaypointCargoStatus(updatingWaypoint);
 
             updatedWaypoints.add(updatingWaypoint);
         }
@@ -101,16 +101,11 @@ public class WaypointServiceImpl implements WaypointService {
     }
 
     private void updateWaypointCargoStatus(Order.Waypoint waypoint) {
-        if (waypoint.getIsDone()) {
-            if (waypoint.getType().equals(WaypointType.LOADING)) {
-                cargoService.updateCargoStatus(waypoint.getCargo().getId(), CargoStatus.SHIPPED);
-            } else {
-                cargoService.updateCargoStatus(waypoint.getCargo().getId(), CargoStatus.DELIVERED);
-            }
+        if (waypoint.getType().equals(WaypointType.LOADING)) {
+            cargoService.updateCargoStatus(waypoint.getCargo().getId(), CargoStatus.SHIPPED);
         } else {
-            cargoService.updateCargoStatus(waypoint.getCargo().getId(), CargoStatus.PREPARED);
+            cargoService.updateCargoStatus(waypoint.getCargo().getId(), CargoStatus.DELIVERED);
         }
-
     }
 
     @Override
