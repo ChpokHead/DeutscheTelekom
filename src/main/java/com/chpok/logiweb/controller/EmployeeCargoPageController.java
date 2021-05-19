@@ -2,9 +2,13 @@ package com.chpok.logiweb.controller;
 
 import com.chpok.logiweb.dto.CargoDto;
 import com.chpok.logiweb.service.CargoService;
+import org.codehaus.jackson.map.ObjectMapper;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+
+import javax.persistence.EntityNotFoundException;
+import java.io.IOException;
 
 @Controller
 @RequestMapping("/employeeCargo")
@@ -25,9 +29,16 @@ public class EmployeeCargoPageController {
         return "employeeCargoPage";
     }
 
-    @GetMapping(value = "/{id}")
-    public CargoDto getTruck(@PathVariable Long id) {
-        return cargoService.getCargoById(id);
+    @GetMapping(value = "/{id}", produces={"application/json; charset=UTF-8"})
+    @ResponseBody
+    public String getCargo(@PathVariable Long id) {
+        try {
+            final ObjectMapper mapper = new ObjectMapper();
+
+            return mapper.writeValueAsString(cargoService.getCargoById(id));
+        } catch (IOException ioe) {
+            throw new EntityNotFoundException();
+        }
     }
 
     @PostMapping

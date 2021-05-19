@@ -10,7 +10,6 @@ import org.springframework.stereotype.Component;
 
 import java.util.List;
 import java.util.Optional;
-import java.util.Set;
 
 @Component
 public class OrderDaoImpl implements OrderDao {
@@ -70,6 +69,7 @@ public class OrderDaoImpl implements OrderDao {
                     }
                 }
             }
+
             session.getTransaction().commit();
 
             return orders;
@@ -102,8 +102,4 @@ public class OrderDaoImpl implements OrderDao {
         }
     }
 
-    @Override
-    public void deleteAllByIds(Set<Long> ids) {
-
-    }
 }

@@ -1,7 +1,8 @@
 package com.chpok.logiweb.model;
 
 import com.chpok.logiweb.model.enums.TruckStatus;
-import com.chpok.logiweb.util.PostgreSQLEnumType;
+import com.chpok.logiweb.model.enums.util.PostgreSQLEnumType;
+import org.codehaus.jackson.annotate.JsonIgnore;
 import org.hibernate.annotations.Type;
 import org.hibernate.annotations.TypeDef;
 
@@ -36,6 +37,7 @@ public class Truck extends AbstractModel{
     @JoinColumn(name = "location_id")
     private Location location;
 
+    @JsonIgnore
     @OneToMany(mappedBy = "currentTruck", fetch = FetchType.LAZY)
     private List<Driver> currentDrivers;
 
@@ -62,6 +64,7 @@ public class Truck extends AbstractModel{
         return new Builder();
     }
 
+    @Override
     public Long getId() {
         return id;
     }

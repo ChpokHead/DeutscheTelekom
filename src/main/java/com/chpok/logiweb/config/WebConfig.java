@@ -6,7 +6,6 @@ import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.Ordered;
 import org.springframework.http.HttpStatus;
-import org.springframework.security.access.AccessDeniedException;
 import org.springframework.web.HttpRequestMethodNotSupportedException;
 import org.springframework.web.filter.HiddenHttpMethodFilter;
 import org.springframework.web.servlet.HandlerExceptionResolver;
@@ -27,6 +26,8 @@ import java.util.Properties;
 @EnableWebMvc
 @ComponentScan(basePackages = {"com.chpok.logiweb"})
 public class WebConfig implements WebMvcConfigurer {
+    private static final String NOT_FOUND_PAGE = "notFoundPage";
+
     @Autowired
     private RequestMappingHandlerAdapter requestMappingHandlerAdapter;
 
@@ -40,11 +41,11 @@ public class WebConfig implements WebMvcConfigurer {
         SimpleMappingExceptionResolver s = new SimpleMappingExceptionResolver();
         Properties p = new Properties();
 
-        p.setProperty(NoHandlerFoundException.class.getName(), "notFoundPage");
-        p.setProperty(HttpRequestMethodNotSupportedException.class.getName(), "notFoundPage");
+        p.setProperty(NoHandlerFoundException.class.getName(), NOT_FOUND_PAGE);
+        p.setProperty(HttpRequestMethodNotSupportedException.class.getName(), NOT_FOUND_PAGE);
 
         s.setExceptionMappings(p);
-        s.addStatusCode("notFoundPage", HttpStatus.NOT_FOUND.value());
+        s.addStatusCode(NOT_FOUND_PAGE, HttpStatus.NOT_FOUND.value());
 
         s.setOrder(Ordered.HIGHEST_PRECEDENCE);
         return s;

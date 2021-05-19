@@ -34,7 +34,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public User getUserById(Long id) {
         try {
-            return userDao.findById(id).get();
+            return userDao.findById(id).orElseThrow(NoSuchElementException::new);
         } catch (HibernateException | NoSuchElementException | IllegalArgumentException e) {
             LOGGER.error("getting user by id exception");
 
@@ -45,7 +45,8 @@ public class UserServiceImpl implements UserService {
     @Override
     public DriverDto getDriverByUserId(Long id) {
         try {
-            return driverMapper.mapEntityToDto(userDao.findById(id).get().getDriver());
+            return driverMapper.mapEntityToDto(userDao.findById(id)
+                    .orElseThrow(NoSuchElementException::new).getDriver());
         } catch (HibernateException | NoSuchElementException | IllegalArgumentException e) {
             LOGGER.error("getting driver by user id exception");
 
@@ -56,7 +57,8 @@ public class UserServiceImpl implements UserService {
     @Override
     public EmployeeDto getEmployeeByUserId(Long id) {
         try {
-            return employeeMapper.mapEntityToDto(userDao.findById(id).get().getEmployee());
+            return employeeMapper.mapEntityToDto(userDao.findById(id)
+                    .orElseThrow(NoSuchElementException::new).getEmployee());
         } catch (HibernateException | NoSuchElementException | IllegalArgumentException e) {
             LOGGER.error("getting employee by user id exception");
 

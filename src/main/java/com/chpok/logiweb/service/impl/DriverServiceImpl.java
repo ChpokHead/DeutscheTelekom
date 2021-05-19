@@ -108,6 +108,10 @@ public class DriverServiceImpl implements DriverService {
     public void deleteDriver(Long id) {
         try {
             driverDao.deleteById(id);
+
+            final String info = String.format("driver with id = %d was deleted", id);
+
+            LOGGER.info(info);
         } catch (HibernateException | NoSuchElementException e) {
             LOGGER.error("deleting driver by id exception");
 
@@ -121,6 +125,10 @@ public class DriverServiceImpl implements DriverService {
             validator.validate(driver);
 
             driverDao.save(driverMapper.mapDtoToEntity(driver));
+
+            final String info = String.format("new driver with first name = %s and last name = %s was created", driver.getFirstName(), driver.getLastName());
+
+            LOGGER.info(info);
         } catch (HibernateException | NoSuchElementException | IllegalArgumentException e) {
             LOGGER.error("saving driver exception");
 
@@ -131,7 +139,8 @@ public class DriverServiceImpl implements DriverService {
     @Override
     public DriverDto getDriverById(Long id) {
         try {
-            return driverMapper.mapEntityToDto(driverDao.findById(id).get());
+            return driverMapper.mapEntityToDto(driverDao.findById(id)
+                    .orElseThrow(NoSuchElementException::new));
         } catch (HibernateException | NoSuchElementException e) {
             LOGGER.error("getting driver by id exception");
 
@@ -181,33 +190,16 @@ public class DriverServiceImpl implements DriverService {
     }
 
     @Override
-    public void updateDriverMonthWorkedHours(Long driverId, Short newMonthWorkedHours) {
-        try {
-            final DriverDto updatingDriver = getDriverById(driverId);
+    public void updateDriverWhenOrderIsComplete(Long driverId, short newMonthWorkedHours, Location newLocation, DriverStatus newStatus) {
+        final DriverDto updatingDriver = getDriverById(driverId);
 
-            updatingDriver.setMonthWorkedHours(newMonthWorkedHours);
+        updatingDriver.setMonthWorkedHours(newMonthWorkedHours);
+        updatingDriver.setLocation(newLocation);
+        updatingDriver.setStatus(newStatus.ordinal());
+        updatingDriver.setCurrentOrder(null);
+        updatingDriver.setCurrentTruck(null);
 
-            updateDriver(updatingDriver);
-        } catch (HibernateException | NoSuchElementException e) {
-            LOGGER.error("updating driver monthWorkedHours by id exception");
-
-            throw new InvalidEntityException();
-        }
-    }
-
-    @Override
-    public void updateDriverLocation(Long driverId, Location location) {
-        try {
-            final DriverDto updatingDriver = getDriverById(driverId);
-
-            updatingDriver.setLocation(location);
-
-            updateDriver(updatingDriver);
-        } catch (HibernateException | NoSuchElementException e) {
-            LOGGER.error("updating driver location by id exception");
-
-            throw new InvalidEntityException();
-        }
+        updateDriver(updatingDriver);
     }
 
 }

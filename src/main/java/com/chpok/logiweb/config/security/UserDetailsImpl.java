@@ -10,7 +10,7 @@ import java.util.Collection;
 import java.util.List;
 
 public class UserDetailsImpl implements UserDetails {
-    private User user;
+    private final transient User user;
 
     public UserDetailsImpl(User user) {
         this.user = user;

@@ -23,7 +23,8 @@ public class LocationMapServiceImpl implements LocationMapService {
     @Override
     public Short getDistanceBetweenLocationsByIds(Long startingLocationId, Long endingLocationId) {
         try {
-            return locationMapDao.findByStartingAndEndingLocationsIds(startingLocationId, endingLocationId).get().getDistance();
+            return locationMapDao.findByStartingAndEndingLocationsIds(startingLocationId, endingLocationId)
+                    .orElseThrow(NoSuchElementException::new).getDistance();
         } catch (HibernateException | NoSuchElementException e) {
             LOGGER.error("getting distance between locations by ids exception");
 

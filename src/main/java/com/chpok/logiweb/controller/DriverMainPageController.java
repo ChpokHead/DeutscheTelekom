@@ -39,7 +39,7 @@ public class DriverMainPageController {
 
         model.addAttribute("shiftworker", truckService.getDriverShiftworker(currentDriver));
 
-        model.addAttribute("isOrderCompleted", orderService.checkOrderIsCompleted(currentDriver.getCurrentOrder()));
+        model.addAttribute("isOrderCompleted", orderService.checkOrderIsCompleted(currentDriver.getCurrentOrder().getId()));
 
         return "driverPage";
     }

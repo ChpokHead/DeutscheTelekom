@@ -1,7 +1,7 @@
 package com.chpok.logiweb.model;
 
 import com.chpok.logiweb.model.enums.UserRole;
-import com.chpok.logiweb.util.PostgreSQLEnumType;
+import com.chpok.logiweb.model.enums.util.PostgreSQLEnumType;
 import org.hibernate.annotations.Type;
 import org.hibernate.annotations.TypeDef;
 

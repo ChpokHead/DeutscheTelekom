@@ -1,7 +1,7 @@
 package com.chpok.logiweb.model;
 
 import com.chpok.logiweb.model.enums.CargoStatus;
-import com.chpok.logiweb.util.PostgreSQLEnumType;
+import com.chpok.logiweb.model.enums.util.PostgreSQLEnumType;
 import org.hibernate.annotations.Type;
 import org.hibernate.annotations.TypeDef;
 
@@ -45,6 +45,7 @@ public class Cargo extends AbstractModel {
         return new Builder();
     }
 
+    @Override
     public Long getId() {
         return id;
     }

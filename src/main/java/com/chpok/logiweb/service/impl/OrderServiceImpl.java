@@ -4,6 +4,7 @@ import com.chpok.logiweb.dao.OrderDao;
 import com.chpok.logiweb.dto.*;
 import com.chpok.logiweb.exception.InvalidEntityException;
 import com.chpok.logiweb.model.Driver;
+import com.chpok.logiweb.model.Location;
 import com.chpok.logiweb.model.Order;
 import com.chpok.logiweb.model.Truck;
 import com.chpok.logiweb.model.enums.DriverStatus;
@@ -27,6 +28,7 @@ import java.util.stream.Collectors;
 @Component
 public class OrderServiceImpl implements OrderService {
     private static final Logger LOGGER = LogManager.getLogger(OrderServiceImpl.class);
+    private static final int AMOUNT_KG_IN_TONNES = 1000;
 
     private final WaypointService waypointService;
     private final TruckService truckService;
@@ -37,7 +39,8 @@ public class OrderServiceImpl implements OrderService {
     private final OrderMapper orderMapper;
     private final TruckMapper truckMapper;
 
-    public OrderServiceImpl(WaypointService waypointService, DriverService driverService, CargoService cargoService, LocationMapService locationMapService, OrderDao orderDao, OrderMapper orderMapper, TruckService truckService, TruckMapper truckMapper) {
+    public OrderServiceImpl(WaypointService waypointService, DriverService driverService, CargoService cargoService,
+                            LocationMapService locationMapService, OrderDao orderDao, OrderMapper orderMapper, TruckService truckService, TruckMapper truckMapper) {
         this.waypointService = waypointService;
         this.driverService = driverService;
         this.cargoService = cargoService;
@@ -63,6 +66,8 @@ public class OrderServiceImpl implements OrderService {
     public void saveOrder(OrderDto order) {
         try {
             orderDao.save(orderMapper.mapDtoToEntity(order));
+
+            LOGGER.info("new order was created");
         } catch (HibernateException | NoSuchElementException | IllegalArgumentException e) {
             LOGGER.error("saving order exception");
 
@@ -74,6 +79,10 @@ public class OrderServiceImpl implements OrderService {
     public void updateOrder(OrderDto order) {
         try {
             orderDao.update(orderMapper.mapDtoToEntity(order));
+
+            final String info = String.format("order with id = %d was updated", order.getId());
+
+            LOGGER.info(info);
         } catch (HibernateException | NoSuchElementException | IllegalArgumentException e) {
             LOGGER.error("updating order exception");
 
@@ -182,7 +191,7 @@ public class OrderServiceImpl implements OrderService {
     @Override
     public OrderDto getOrderById(Long id) {
         try {
-            return orderMapper.mapEntityToDto(orderDao.findById(id).get());
+            return orderMapper.mapEntityToDto(orderDao.findById(id).orElseThrow(NoSuchElementException::new));
         } catch (HibernateException | NoSuchElementException e) {
             LOGGER.error("getting order by id exception");
 
@@ -191,9 +200,11 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
-    public boolean checkOrderIsCompleted(Order order) {
+    public boolean checkOrderIsCompleted(Long orderId) {
+        final OrderDto checkingOrder = getOrderById(orderId);
+
         try {
-            return order != null && order.getWaypoints() != null && waypointService.checkAllWaypointsComplete(order.getWaypoints());
+            return checkingOrder != null && checkingOrder.getWaypoints() != null && waypointService.checkAllWaypointsComplete(checkingOrder.getWaypoints());
         } catch (HibernateException | NoSuchElementException | IllegalArgumentException e) {
             LOGGER.error("checking order is completed exception");
 
@@ -218,7 +229,7 @@ public class OrderServiceImpl implements OrderService {
                 isTruckSuitable = true;
 
                 for (WaypointDto waypoint : loadingWaypoints) {
-                    if (waypoint.getCargo().getWeight() > truck.getCapacity() * 1000 || !loadingWaypoints.get(0).getLocation().equals(truck.getLocation())) {
+                    if (waypoint.getCargo().getWeight() > truck.getCapacity() * AMOUNT_KG_IN_TONNES || !loadingWaypoints.get(0).getLocation().equals(truck.getLocation())) {
                         isTruckSuitable = false;
                         break;
                     }
@@ -327,11 +338,10 @@ public class OrderServiceImpl implements OrderService {
 
             if (!orderDrivers.isEmpty()) {
                 for (Driver driver : orderDrivers) {
-                    driverService.updateDriverMonthWorkedHours(driver.getId(), calculateMonthWorkedHoursForOrderCurrentDriver(driver.getMonthWorkedHours(), completingOrder));
-                    driverService.updateDriverLocation(driver.getId(), orderWaypoints.get(orderWaypoints.size() - 1).getLocation());
-                    driverService.updateDriverCurrentTruck(driver.getId(), null);
-                    driverService.updateDriverCurrentOrder(driver.getId(), null);
-                    driverService.updateDriverStatus(driver.getId(), DriverStatus.RESTING);
+                    final short updatedDriverMonthWorkedHours = calculateMonthWorkedHoursForOrderCurrentDriver(driver.getMonthWorkedHours(), completingOrder);
+                    final Location updateDriverLocation = orderWaypoints.get(orderWaypoints.size() - 1).getLocation();
+
+                    driverService.updateDriverWhenOrderIsComplete(driver.getId(), updatedDriverMonthWorkedHours, updateDriverLocation, DriverStatus.RESTING);
                 }
             }
 
@@ -342,6 +352,10 @@ public class OrderServiceImpl implements OrderService {
             }
 
             orderDao.deleteById(orderId);
+
+            final String info = String.format("order with id = %d has been completed", orderId);
+
+            LOGGER.info(info);
         } catch (HibernateException | NoSuchElementException e) {
             LOGGER.error("completing order by order id exception");
 
@@ -389,6 +403,10 @@ public class OrderServiceImpl implements OrderService {
             }
 
             orderDao.deleteById(id);
+
+            final String info = String.format("order with id = %d has been deleted", id);
+
+            LOGGER.info(info);
         } catch (HibernateException | NoSuchElementException e) {
             LOGGER.error("deleting order by order id exception");
 

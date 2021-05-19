@@ -1,7 +1,8 @@
 package com.chpok.logiweb.model;
 
 import com.chpok.logiweb.model.enums.WaypointType;
-import com.chpok.logiweb.util.PostgreSQLEnumType;
+import com.chpok.logiweb.model.enums.util.PostgreSQLEnumType;
+import org.codehaus.jackson.annotate.JsonIgnore;
 import org.hibernate.annotations.DynamicInsert;
 import org.hibernate.annotations.Type;
 import org.hibernate.annotations.TypeDef;
@@ -22,6 +23,7 @@ public class Order extends AbstractModel{
     @JoinColumn(name = "current_truck_id")
     private Truck currentTruck;
 
+    @JsonIgnore
     @OneToMany(mappedBy = "currentOrder", fetch = FetchType.LAZY)
     private List<Driver> drivers;
 

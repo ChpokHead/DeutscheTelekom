@@ -1,7 +1,8 @@
 package com.chpok.logiweb.model;
 
 import com.chpok.logiweb.model.enums.DriverStatus;
-import com.chpok.logiweb.util.PostgreSQLEnumType;
+import com.chpok.logiweb.model.enums.util.PostgreSQLEnumType;
+import org.codehaus.jackson.annotate.JsonIgnore;
 import org.hibernate.annotations.DynamicInsert;
 import org.hibernate.annotations.Type;
 import org.hibernate.annotations.TypeDef;
@@ -29,12 +30,6 @@ public class Driver extends AbstractModel {
     @Column(name = "month_worked_hours")
     private Short monthWorkedHours;
 
-    @Column(name = "next_month_worked_hours")
-    private Short nextMonthWorkedHours;
-
-    @Column(name = "is_month_changed")
-    private Boolean isMonthChanged;
-
     @Enumerated(EnumType.STRING)
     @Column(name = "status", columnDefinition = "driver_status")
     @Type(type = "pgsql_enum")
@@ -44,10 +39,12 @@ public class Driver extends AbstractModel {
     @JoinColumn(name = "location_id")
     private Location location;
 
+    @JsonIgnore
     @ManyToOne
     @JoinColumn(name = "current_truck_id")
     private Truck currentTruck;
 
+    @JsonIgnore
     @ManyToOne
     @JoinColumn(name = "current_order_id")
     private Order currentOrder;
@@ -65,14 +62,13 @@ public class Driver extends AbstractModel {
         this.location = builder.location;
         this.currentTruck = builder.currentTruck;
         this.currentOrder = builder.currentOrder;
-        this.nextMonthWorkedHours = builder.nextMonthWorkedHours;
-        this.isMonthChanged = builder.isMonthChanged;
     }
 
     public static Builder builder() {
         return new Builder();
     }
 
+    @Override
     public Long getId() {
         return id;
     }
@@ -113,22 +109,6 @@ public class Driver extends AbstractModel {
         return currentOrder;
     }
 
-    public Short getNextMonthWorkedHours() {
-        return nextMonthWorkedHours;
-    }
-
-    public void setNextMonthWorkedHours(Short nextMonthWorkedHours) {
-        this.nextMonthWorkedHours = nextMonthWorkedHours;
-    }
-
-    public Boolean getMonthChanged() {
-        return isMonthChanged;
-    }
-
-    public void setMonthChanged(Boolean monthChanged) {
-        isMonthChanged = monthChanged;
-    }
-
     public static class Builder {
         private Long id;
         private String firstName;
@@ -138,8 +118,6 @@ public class Driver extends AbstractModel {
         private Location location;
         private Truck currentTruck;
         private Order currentOrder;
-        private Short nextMonthWorkedHours;
-        private Boolean isMonthChanged;
 
         private Builder(){
 
@@ -162,16 +140,6 @@ public class Driver extends AbstractModel {
 
         public Builder withMonthWorkedHours(Short monthWorkedHours) {
             this.monthWorkedHours = monthWorkedHours;
-            return this;
-        }
-
-        public Builder withNextMonthWorkedHours(Short nextMonthWorkedHours) {
-            this.nextMonthWorkedHours = nextMonthWorkedHours;
-            return this;
-        }
-
-        public Builder withIsMonthChanged(Boolean isMonthChanged) {
-            this.isMonthChanged = isMonthChanged;
             return this;
         }
 

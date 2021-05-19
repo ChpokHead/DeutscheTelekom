@@ -51,26 +51,6 @@ public class UserDaoImpl implements UserDao {
     }
 
     @Override
-    public List<User> findAll() {
-        return Collections.emptyList();
-    }
-
-    @Override
-    public void update(User entity) {
-
-    }
-
-    @Override
-    public void deleteById(Long id) {
-
-    }
-
-    @Override
-    public void deleteAllByIds(Set<Long> ids) {
-
-    }
-
-    @Override
     public Optional<User> findUserByUsername(String username) {
         try (Session session = sessionFactory.openSession()){
             session.beginTransaction();
@@ -86,4 +66,5 @@ public class UserDaoImpl implements UserDao {
             return foundUser;
         }
     }
+
 }

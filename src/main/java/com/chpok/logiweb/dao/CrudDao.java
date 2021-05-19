@@ -1,19 +1,33 @@
 package com.chpok.logiweb.dao;
 
+import com.chpok.logiweb.exception.MethodNotImplementedException;
+
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
 public interface CrudDao<E> {
-    void save(E entity);
+    default void save(E entity) {
+        throw new MethodNotImplementedException();
+    }
 
-    Optional<E> findById(Long id);
+    default Optional<E> findById(Long id) {
+        throw new MethodNotImplementedException();
+    }
 
-    List<E> findAll();
+    default List<E> findAll() {
+        throw new MethodNotImplementedException();
+    }
 
-    void update(E entity);
+    default void update(E entity) {
+        throw new MethodNotImplementedException();
+    }
 
-    void deleteById(Long id);
+    default void deleteById(Long id) {
+        throw new MethodNotImplementedException();
+    }
 
-    void deleteAllByIds(Set<Long> ids);
+    default void deleteAllByIds(Set<Long> ids) {
+        throw new MethodNotImplementedException();
+    }
 }

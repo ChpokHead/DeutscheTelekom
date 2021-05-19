@@ -3,8 +3,6 @@ package com.chpok.logiweb.controller;
 import com.chpok.logiweb.model.User;
 import com.chpok.logiweb.model.enums.UserRole;
 import com.chpok.logiweb.config.security.UserDetailsImpl;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -19,8 +17,6 @@ import javax.servlet.http.HttpSession;
 @SessionAttributes({"currentUser"})
 @Controller
 public class LoginController {
-    private final Logger logger = LogManager.getLogger();
-
     @GetMapping("/login")
     public String getMainPage(@RequestParam(name = "error", required = false) String error, Model model) {
         if (error != null) {
@@ -52,7 +48,7 @@ public class LoginController {
     }
 
     @PostMapping("/postLogin")
-    String login(Model model, HttpSession session) {
+    public String login(Model model, HttpSession session) {
         UsernamePasswordAuthenticationToken authentication = (UsernamePasswordAuthenticationToken) SecurityContextHolder.getContext().getAuthentication();
 
         validatePrinciple(authentication.getPrincipal());

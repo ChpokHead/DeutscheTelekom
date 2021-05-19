@@ -10,7 +10,6 @@ import org.springframework.stereotype.Component;
 
 import java.util.List;
 import java.util.Optional;
-import java.util.Set;
 
 @Component
 public class DriverDaoImpl implements DriverDao {
@@ -94,11 +93,6 @@ public class DriverDaoImpl implements DriverDao {
 
             session.getTransaction().commit();
         }
-    }
-
-    @Override
-    public void deleteAllByIds(Set<Long> ids) {
-
     }
 
     @Override

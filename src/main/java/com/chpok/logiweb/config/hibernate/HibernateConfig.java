@@ -44,7 +44,7 @@ public class HibernateConfig {
                 "hibernate.hbm2ddl.auto", "validate");
         hibernateProperties.setProperty(
                 "hibernate.dialect", "org.hibernate.dialect.PostgreSQL95Dialect");
-        hibernateProperties.setProperty("hibernate.show_sql", "true");
+        hibernateProperties.setProperty("hibernate.show_sql", "false");
 
         return hibernateProperties;
     }

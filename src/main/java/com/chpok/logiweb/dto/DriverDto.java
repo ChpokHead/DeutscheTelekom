@@ -3,6 +3,7 @@ package com.chpok.logiweb.dto;
 import com.chpok.logiweb.model.Location;
 import com.chpok.logiweb.model.Order;
 import com.chpok.logiweb.model.Truck;
+import org.codehaus.jackson.annotate.JsonIgnore;
 
 public class DriverDto {
     private String firstName;
@@ -13,7 +14,9 @@ public class DriverDto {
     private Boolean isMonthChanged;
     private Integer status;
     private Location location;
+    @JsonIgnore
     private Truck currentTruck;
+    @JsonIgnore
     private Order currentOrder;
 
     public String getFirstName() {

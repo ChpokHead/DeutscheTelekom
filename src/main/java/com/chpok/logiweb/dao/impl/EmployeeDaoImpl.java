@@ -6,9 +6,7 @@ import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.springframework.stereotype.Repository;
 
-import java.util.List;
 import java.util.Optional;
-import java.util.Set;
 
 @Repository
 public class EmployeeDaoImpl implements EmployeeDao {
@@ -43,23 +41,4 @@ public class EmployeeDaoImpl implements EmployeeDao {
         }
     }
 
-    @Override
-    public List<Employee> findAll() {
-        return null;
-    }
-
-    @Override
-    public void update(Employee entity) {
-
-    }
-
-    @Override
-    public void deleteById(Long id) {
-
-    }
-
-    @Override
-    public void deleteAllByIds(Set<Long> ids) {
-
-    }
 }

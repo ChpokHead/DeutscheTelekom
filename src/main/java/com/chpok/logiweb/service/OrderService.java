@@ -19,7 +19,7 @@ public interface OrderService {
     void updateOrderStartAndEndDates(Long orderId, LocalDate orderStartDate, LocalDate orderEndDate);
     void deleteOrderStartAndEndDatesWithDrivers(Long orderId);
     OrderDto getOrderById(Long id);
-    boolean checkOrderIsCompleted(Order order);
+    boolean checkOrderIsCompleted(Long orderId);
     List<TruckDto> getSuitableTrucksForOrder(Long orderId);
     Short getOrderDistance(Long orderId);
     Short getOrderTravelHours(Long orderId);

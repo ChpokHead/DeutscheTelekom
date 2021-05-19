@@ -3,9 +3,6 @@ package com.chpok.logiweb.dto;
 import com.chpok.logiweb.model.Driver;
 import com.chpok.logiweb.model.Order;
 import com.chpok.logiweb.model.Truck;
-import org.springframework.format.annotation.DateTimeFormat;
-
-import javax.persistence.Column;
 import java.time.LocalDate;
 import java.util.List;
 

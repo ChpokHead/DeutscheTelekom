@@ -2,7 +2,6 @@ package com.chpok.logiweb.controller;
 
 import com.chpok.logiweb.dto.OrderDto;
 import com.chpok.logiweb.dto.WaypointsPair;
-import com.chpok.logiweb.model.Driver;
 import com.chpok.logiweb.service.*;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.stereotype.Controller;

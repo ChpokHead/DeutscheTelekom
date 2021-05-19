@@ -6,10 +6,7 @@ import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.query.Query;
 import org.springframework.stereotype.Component;
-
-import java.util.List;
 import java.util.Optional;
-import java.util.Set;
 
 @Component
 public class LocationMapDaoImpl implements LocationMapDao {
@@ -47,26 +44,6 @@ public class LocationMapDaoImpl implements LocationMapDao {
     }
 
     @Override
-    public List<LocationMap> findAll() {
-        return null;
-    }
-
-    @Override
-    public void update(LocationMap entity) {
-
-    }
-
-    @Override
-    public void deleteById(Long id) {
-
-    }
-
-    @Override
-    public void deleteAllByIds(Set<Long> ids) {
-
-    }
-
-    @Override
     public Optional<LocationMap> findByStartingAndEndingLocationsIds(Long startingLocationId, Long endingLocationId) {
         try (Session session = sessionFactory.openSession()){
             session.beginTransaction();
@@ -84,4 +61,5 @@ public class LocationMapDaoImpl implements LocationMapDao {
             return Optional.ofNullable(findingLocationMap);
         }
     }
+
 }

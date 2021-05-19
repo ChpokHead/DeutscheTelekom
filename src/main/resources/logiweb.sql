@@ -2,7 +2,7 @@ create type truck_status as enum ('OK', 'BROKEN');
 
 alter type truck_status owner to chpok;
 
-create type driver_status as enum ('RESTING', 'SHIFTING', 'DRIVING');
+create type driver_status as enum ('RESTING', 'SHIFTING', 'DRIVING', 'CARGO_WORKING');
 
 alter type driver_status owner to chpok;
 
@@ -67,7 +67,7 @@ create table waypoint
     order_id bigint not null
         constraint waypoint_order_id_fkey
             references customer_order
-            on update cascade on delete restrict,
+            on update cascade on delete cascade,
     location_id bigint
         constraint waypoint_location__fk
             references location
@@ -106,7 +106,6 @@ create table driver
     first_name varchar(30) not null,
     last_name varchar(30) not null,
     month_worked_hours smallint default 0,
-    status driver_status default 'RESTING'::driver_status,
     current_truck_id bigint
         constraint driver_truck__fk
             references truck
@@ -118,7 +117,8 @@ create table driver
     current_order_id bigint
         constraint driver_customer_order__fk
             references customer_order
-            on update cascade
+            on update cascade,
+    status driver_status default 'RESTING'::driver_status
 );
 
 alter table driver owner to chpok;

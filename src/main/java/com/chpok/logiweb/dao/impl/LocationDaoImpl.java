@@ -9,7 +9,6 @@ import org.springframework.stereotype.Component;
 
 import java.util.List;
 import java.util.Optional;
-import java.util.Set;
 
 @Component
 public class LocationDaoImpl implements LocationDao {
@@ -57,21 +56,6 @@ public class LocationDaoImpl implements LocationDao {
 
             return locations;
         }
-    }
-
-    @Override
-    public void update(Location entity) {
-
-    }
-
-    @Override
-    public void deleteById(Long id) {
-
-    }
-
-    @Override
-    public void deleteAllByIds(Set<Long> ids) {
-
     }
 
     @Override

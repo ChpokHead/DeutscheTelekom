@@ -5,6 +5,7 @@ import com.chpok.logiweb.dto.DriverDto;
 import com.chpok.logiweb.dto.OrderDto;
 import com.chpok.logiweb.dto.TruckDto;
 import com.chpok.logiweb.exception.InvalidEntityException;
+import com.chpok.logiweb.mapper.impl.OrderMapper;
 import com.chpok.logiweb.model.Location;
 import com.chpok.logiweb.model.enums.TruckStatus;
 import com.chpok.logiweb.service.TruckService;
@@ -18,7 +19,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityNotFoundException;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.stream.Collectors;
@@ -32,12 +32,14 @@ public class TruckServiceImpl implements TruckService {
     private final TruckDao truckDao;
     private final TruckMapper truckMapper;
     private final DriverMapper driverMapper;
+    private final OrderMapper orderMapper;
 
-    public TruckServiceImpl(ValidationProvider<TruckDto> validator, TruckDao truckDao, TruckMapper truckMapper, DriverMapper driverMapper) {
+    public TruckServiceImpl(ValidationProvider<TruckDto> validator, TruckDao truckDao, TruckMapper truckMapper, DriverMapper driverMapper, OrderMapper orderMapper) {
         this.validator = validator;
         this.truckDao = truckDao;
         this.truckMapper = truckMapper;
         this.driverMapper = driverMapper;
+        this.orderMapper = orderMapper;
     }
 
     @Override
@@ -81,6 +83,10 @@ public class TruckServiceImpl implements TruckService {
             validator.validate(truck);
 
             truckDao.save(truckMapper.mapDtoToEntity(truck));
+
+            final String info = String.format("truck with reg number = %s was created", truck.getRegNumber());
+
+            LOGGER.info(info);
         } catch (HibernateException | NoSuchElementException | IllegalArgumentException e) {
             LOGGER.error("saving truck exception");
 
@@ -92,12 +98,16 @@ public class TruckServiceImpl implements TruckService {
     public DriverDto getDriverShiftworker(DriverDto driver) {
         try {
             if (driver.getCurrentTruck() != null) {
-                List<DriverDto> drivers = getTruckById(driver.getCurrentTruck().getId()).getCurrentDrivers()
-                        .stream().map(driverMapper::mapEntityToDto).collect(Collectors.toList());
+                final TruckDto currentTruck = getTruckById(driver.getCurrentTruck().getId());
 
-                removeDriverFromListById(driver.getPersonalNumber(), drivers);
+                if (currentTruck.getCurrentDrivers().size() != 1) {
+                    List<DriverDto> drivers = currentTruck.getCurrentDrivers()
+                            .stream().map(driverMapper::mapEntityToDto).collect(Collectors.toList());
 
-                return drivers.get(0);
+                    removeDriverFromListById(driver.getPersonalNumber(), drivers);
+
+                    return drivers.get(0);
+                }
             }
 
             return null;
@@ -126,9 +136,13 @@ public class TruckServiceImpl implements TruckService {
         try {
             final TruckDto updatingTruck = getTruckById(truckId);
 
-            updatingTruck.setCurrentOrder(null);
+            updatingTruck.setCurrentOrder(orderMapper.mapDtoToEntity(newOrder));
 
             updateTruck(updatingTruck);
+
+            final String info = String.format("current order of truck with id = %d has id = %d", truckId, newOrder.getId());
+
+            LOGGER.info(info);
         } catch (HibernateException | NoSuchElementException | IllegalArgumentException e) {
             LOGGER.error("updating truck's current order exception");
 
@@ -144,6 +158,10 @@ public class TruckServiceImpl implements TruckService {
             updatingTruck.setLocation(newLocation);
 
             updateTruck(updatingTruck);
+
+            final String info = String.format("truck with id = %d changed location to %s", truckId, newLocation.getName());
+
+            LOGGER.info(info);
         } catch (HibernateException | NoSuchElementException | IllegalArgumentException e) {
             LOGGER.error("updating truck location exception");
 
@@ -154,7 +172,7 @@ public class TruckServiceImpl implements TruckService {
     @Override
     public TruckDto getTruckById(Long id) {
         try {
-            return truckMapper.mapEntityToDto(truckDao.findById(id).get());
+            return truckMapper.mapEntityToDto(truckDao.findById(id).orElseThrow(NoSuchElementException::new));
         } catch (HibernateException | NoSuchElementException e) {
             LOGGER.error("getting truck by id exception");
 

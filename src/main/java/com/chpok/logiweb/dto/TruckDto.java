@@ -17,10 +17,6 @@ public class TruckDto {
 
     private Order currentOrder;
 
-    public TruckDto() {
-
-    }
-
     public Long getId() {
         return id;
     }

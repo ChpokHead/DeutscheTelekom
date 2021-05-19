@@ -10,7 +10,6 @@ import org.springframework.stereotype.Component;
 
 import java.util.List;
 import java.util.Optional;
-import java.util.Set;
 
 @Component
 public class WaypointDaoImpl implements WaypointDao {
@@ -106,11 +105,6 @@ public class WaypointDaoImpl implements WaypointDao {
     }
 
     @Override
-    public void deleteAllByIds(Set<Long> ids) {
-
-    }
-
-    @Override
     public List<Order.Waypoint> findAllByOrderId(Long orderId) {
         try (Session session = sessionFactory.openSession()){
             session.beginTransaction();
@@ -126,4 +120,5 @@ public class WaypointDaoImpl implements WaypointDao {
             return waypoints;
         }
     }
+
 }

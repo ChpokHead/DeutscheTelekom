@@ -22,8 +22,8 @@ public class DriverDtoValidator implements ValidationProvider<DriverDto> {
         validateCredentialIsNotANumber(driver.getFirstName());
         validateCredentialIsNotANumber(driver.getLastName());
 
-        validateMonthWorkedHoursIsPositive(driver.getMonthWorkedHours());
         validateMonthWorkedHoursIsNull(driver.getMonthWorkedHours());
+        validateMonthWorkedHoursIsPositive(driver.getMonthWorkedHours());
         validateMonthWorkedHoursLessOrEqualMaxMonthWorkedHours(driver.getMonthWorkedHours());
     }
 

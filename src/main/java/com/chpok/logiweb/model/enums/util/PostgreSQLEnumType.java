@@ -1,4 +1,4 @@
-package com.chpok.logiweb.util;
+package com.chpok.logiweb.model.enums.util;
 
 import org.hibernate.HibernateException;
 import org.hibernate.engine.spi.SharedSessionContractImplementor;
@@ -19,8 +19,7 @@ public class PostgreSQLEnumType extends EnumType {
             throws HibernateException, SQLException {
         if(value == null) {
             st.setNull( index, Types.OTHER );
-        }
-        else {
+        } else {
             st.setObject(
                     index,
                     value.toString(),

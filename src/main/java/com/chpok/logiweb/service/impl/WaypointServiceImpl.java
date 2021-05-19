@@ -42,6 +42,10 @@ public class WaypointServiceImpl implements WaypointService {
     public void saveWaypoint(WaypointDto waypoint) {
         try {
             waypointDao.save(waypointMapper.mapDtoToEntity(waypoint));
+
+            final String info = String.format("new waypoint with location = %s was created", waypoint.getLocation().getName());
+
+            LOGGER.info(info);
         } catch (HibernateException | NoSuchElementException | IllegalArgumentException e) {
             LOGGER.error("saving waypoint exception");
 
@@ -53,6 +57,10 @@ public class WaypointServiceImpl implements WaypointService {
     public void deleteWaypoint(Long id) {
         try {
             waypointDao.deleteById(id);
+
+            final String info = String.format("waypoint with id = %d was deleted",id);
+
+            LOGGER.info(info);
         } catch (HibernateException | NoSuchElementException e) {
             LOGGER.error("deleting waypoint by id exception");
 
@@ -115,11 +123,14 @@ public class WaypointServiceImpl implements WaypointService {
             final List<Order.Waypoint> updatedWaypoints = new ArrayList<>();
 
             for (Order.Waypoint waypoint : waypoints) {
-                final Order.Waypoint updatingWaypoint = waypointDao.findById(waypoint.getId()).get();
+                final Order.Waypoint updatingWaypoint
+                        = waypointDao.findById(waypoint.getId()).orElseThrow(NoSuchElementException::new);
 
                 updatingWaypoint.setIsDone(waypoint.getIsDone());
 
-                updateWaypointCargoStatus(updatingWaypoint);
+                if (Boolean.TRUE.equals(updatingWaypoint.getIsDone())) {
+                    updateWaypointCargoStatus(updatingWaypoint);
+                }
 
                 updatedWaypoints.add(updatingWaypoint);
             }

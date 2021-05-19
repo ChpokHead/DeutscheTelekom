@@ -55,6 +55,10 @@ public class CargoServiceImpl implements CargoService {
             validator.validate(cargo);
 
             cargoDao.save(cargoMapper.mapDtoToEntity(cargo));
+
+            final String info = String.format("new cargo with name = %s and weight = %d was created", cargo.getName(), cargo.getWeight());
+
+            LOGGER.info(info);
         } catch (HibernateException | NoSuchElementException | IllegalArgumentException e) {
             LOGGER.error("saving cargo exception");
 
@@ -65,7 +69,7 @@ public class CargoServiceImpl implements CargoService {
     @Override
     public CargoDto getCargoById(Long id) {
         try {
-            return cargoMapper.mapEntityToDto(cargoDao.findById(id).get());
+            return cargoMapper.mapEntityToDto(cargoDao.findById(id).orElseThrow(NoSuchElementException::new));
         } catch (HibernateException | NoSuchElementException e) {
             LOGGER.error("getting cargo by id exception");
 
@@ -76,13 +80,17 @@ public class CargoServiceImpl implements CargoService {
     @Override
     public void deleteCargo(Long id) {
         try {
-            final Cargo deletingCargo = cargoDao.findById(id).get();
+            final Cargo deletingCargo = cargoDao.findById(id).orElseThrow(NoSuchElementException::new);
 
             for (Order.Waypoint waypoint : deletingCargo.getWaypoints()) {
                 waypointService.deleteWaypoint(waypoint.getId());
             }
 
             cargoDao.deleteById(id);
+
+            final String info = String.format("cargo with id = %d and name = %s was deleted", deletingCargo.getId(), deletingCargo.getName());
+
+            LOGGER.info(info);
         } catch (HibernateException | NoSuchElementException e) {
             LOGGER.error("deleting cargo by id exception");
 
@@ -114,11 +122,15 @@ public class CargoServiceImpl implements CargoService {
     @Override
     public void updateCargoStatus(Long cargoId, CargoStatus newCargoStatus) {
         try {
-            final Cargo updatingCargo = cargoDao.findById(cargoId).get();
+            final Cargo updatingCargo = cargoDao.findById(cargoId).orElseThrow(NoSuchElementException::new);
 
             updatingCargo.setStatus(newCargoStatus);
 
             cargoDao.update(updatingCargo);
+
+            final String info = String.format("cargo with id = %d was updated to %s", updatingCargo.getId(), updatingCargo.getStatus().toString());
+
+            LOGGER.info(info);
         } catch (HibernateException | NoSuchElementException e) {
             LOGGER.error("updating cargo status by id exception");
 

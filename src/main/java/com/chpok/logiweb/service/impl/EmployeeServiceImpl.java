@@ -29,7 +29,7 @@ public class EmployeeServiceImpl implements EmployeeService {
     @Override
     public EmployeeDto getEmployeeById(Long id) {
         try {
-            return employeeMapper.mapEntityToDto(employeeDao.findById(id).get());
+            return employeeMapper.mapEntityToDto(employeeDao.findById(id).orElseThrow(NoSuchElementException::new));
         } catch (HibernateException | NoSuchElementException e) {
             LOGGER.error("getting employee by id exception");
 
