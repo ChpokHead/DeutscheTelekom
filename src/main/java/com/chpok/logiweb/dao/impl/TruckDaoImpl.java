@@ -1,6 +1,7 @@
 package com.chpok.logiweb.dao.impl;
 
 import com.chpok.logiweb.dao.TruckDao;
+import com.chpok.logiweb.model.Driver;
 import com.chpok.logiweb.model.Truck;
 import org.hibernate.Hibernate;
 import org.hibernate.Session;
@@ -40,7 +41,9 @@ public class TruckDaoImpl implements TruckDao{
             final Truck truck = session.get(Truck.class, id);
 
             if (truck != null) {
-                Hibernate.initialize(truck.getCurrentDrivers());
+                for (Driver driver : truck.getCurrentDrivers()) {
+                    Hibernate.initialize(driver);
+                }
             }
 
             session.getTransaction().commit();

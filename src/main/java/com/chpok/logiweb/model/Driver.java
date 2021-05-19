@@ -17,7 +17,8 @@ import java.util.Objects;
         typeClass = PostgreSQLEnumType.class
 )
 public class Driver extends AbstractModel {
-    public static final short DRIVERS_MONTH_WORKING_LIMIT = 176;
+    public static final short DRIVERS_MONTH_WORKING_HOURS_LIMIT = 176;
+    public static final short DRIVERS_DAY_WORKING_HOURS_LIMIT = 9;
 
     @Column(name = "first_name")
     private String firstName;
@@ -27,6 +28,12 @@ public class Driver extends AbstractModel {
 
     @Column(name = "month_worked_hours")
     private Short monthWorkedHours;
+
+    @Column(name = "next_month_worked_hours")
+    private Short nextMonthWorkedHours;
+
+    @Column(name = "is_month_changed")
+    private Boolean isMonthChanged;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "status", columnDefinition = "driver_status")
@@ -58,6 +65,8 @@ public class Driver extends AbstractModel {
         this.location = builder.location;
         this.currentTruck = builder.currentTruck;
         this.currentOrder = builder.currentOrder;
+        this.nextMonthWorkedHours = builder.nextMonthWorkedHours;
+        this.isMonthChanged = builder.isMonthChanged;
     }
 
     public static Builder builder() {
@@ -104,6 +113,22 @@ public class Driver extends AbstractModel {
         return currentOrder;
     }
 
+    public Short getNextMonthWorkedHours() {
+        return nextMonthWorkedHours;
+    }
+
+    public void setNextMonthWorkedHours(Short nextMonthWorkedHours) {
+        this.nextMonthWorkedHours = nextMonthWorkedHours;
+    }
+
+    public Boolean getMonthChanged() {
+        return isMonthChanged;
+    }
+
+    public void setMonthChanged(Boolean monthChanged) {
+        isMonthChanged = monthChanged;
+    }
+
     public static class Builder {
         private Long id;
         private String firstName;
@@ -113,6 +138,8 @@ public class Driver extends AbstractModel {
         private Location location;
         private Truck currentTruck;
         private Order currentOrder;
+        private Short nextMonthWorkedHours;
+        private Boolean isMonthChanged;
 
         private Builder(){
 
@@ -135,6 +162,16 @@ public class Driver extends AbstractModel {
 
         public Builder withMonthWorkedHours(Short monthWorkedHours) {
             this.monthWorkedHours = monthWorkedHours;
+            return this;
+        }
+
+        public Builder withNextMonthWorkedHours(Short nextMonthWorkedHours) {
+            this.nextMonthWorkedHours = nextMonthWorkedHours;
+            return this;
+        }
+
+        public Builder withIsMonthChanged(Boolean isMonthChanged) {
+            this.isMonthChanged = isMonthChanged;
             return this;
         }
 

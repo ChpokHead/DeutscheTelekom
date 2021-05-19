@@ -168,11 +168,11 @@
                             </div>
                             <div class="mb-3">
                                 <label for="addInputDriversShift" class="form-label">Размер смены водителей</label>
-                                <input type="number" class="form-control" id="addInputDriversShift" min="0" max="176" th:field="*{driversShift}">
+                                <input type="number" class="form-control" id="addInputDriversShift" min="1" max="2" th:field="*{driversShift}">
                             </div>
                             <div class="mb-3">
                                 <label for="addInputCapacity" class="form-label">Вместимость (тонн)</label>
-                                <input type="number" class="form-control" id="addInputCapacity" min="0" max="1000" th:field="*{capacity}">
+                                <input type="number" class="form-control" id="addInputCapacity" min="1" max="30" th:field="*{capacity}">
                             </div>
                             <div class="mb-3">
                                 <label for="addTruckStatus" class="form-label">Состояние фуры</label>

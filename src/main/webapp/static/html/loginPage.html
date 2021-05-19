@@ -22,12 +22,7 @@
             <label for="password">Пароль</label>
         </div>
         <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
-
-        <div class="checkbox mb-3">
-            <label>
-                <input type="checkbox" value="remember-me"> Запомнить меня
-            </label>
-        </div>
+        <br>
         <button class="w-100 btn btn-lg btn-primary" style="background-color: orange;border-color: orange;" type="submit">Войти</button>
     </form>
 </main>

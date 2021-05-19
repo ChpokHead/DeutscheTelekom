@@ -5,13 +5,13 @@ import com.chpok.logiweb.dto.DriverDto;
 import com.chpok.logiweb.dto.OrderDto;
 import com.chpok.logiweb.dto.TruckDto;
 import com.chpok.logiweb.exception.InvalidEntityException;
-import com.chpok.logiweb.model.Cargo;
 import com.chpok.logiweb.model.Location;
-import com.chpok.logiweb.model.Order;
+import com.chpok.logiweb.model.enums.DriverStatus;
 import com.chpok.logiweb.service.DriverService;
 import com.chpok.logiweb.mapper.impl.DriverMapper;
 import com.chpok.logiweb.mapper.impl.OrderMapper;
 import com.chpok.logiweb.mapper.impl.TruckMapper;
+import com.chpok.logiweb.service.TruckService;
 import com.chpok.logiweb.service.validation.ValidationProvider;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -22,7 +22,6 @@ import org.springframework.transaction.annotation.Transactional;
 import javax.persistence.EntityNotFoundException;
 import java.util.List;
 import java.util.NoSuchElementException;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -35,13 +34,15 @@ public class DriverServiceImpl implements DriverService {
     private final DriverMapper driverMapper;
     private final OrderMapper orderMapper;
     private final TruckMapper truckMapper;
+    private final TruckService truckService;
 
-    public DriverServiceImpl(ValidationProvider<DriverDto> validator, DriverDao driverDao, DriverMapper driverMapper, OrderMapper orderMapper, TruckMapper truckMapper) {
+    public DriverServiceImpl(ValidationProvider<DriverDto> validator, DriverDao driverDao, DriverMapper driverMapper, OrderMapper orderMapper, TruckMapper truckMapper, TruckService truckService) {
         this.validator = validator;
         this.driverDao = driverDao;
         this.driverMapper = driverMapper;
         this.orderMapper = orderMapper;
         this.truckMapper = truckMapper;
+        this.truckService = truckService;
     }
 
     @Override
@@ -69,11 +70,31 @@ public class DriverServiceImpl implements DriverService {
     }
 
     @Override
-    public void updateDriverStatus(DriverDto driver) {
+    public void updateDriverAndShiftWorkerStatus(Long driverId, DriverStatus newStatus) {
         try {
-            final DriverDto updatingDriver = getDriverById(driver.getPersonalNumber());
+            final DriverDto updatingDriver = getDriverById(driverId);
+            final DriverDto updatingDriverShiftworker = truckService.getDriverShiftworker(updatingDriver);
 
-            updatingDriver.setStatus(driver.getStatus());
+            if (newStatus == DriverStatus.DRIVING) {
+                updateDriverStatus(updatingDriverShiftworker.getPersonalNumber(), DriverStatus.SHIFTING);
+            } else if (newStatus == DriverStatus.SHIFTING) {
+                updateDriverStatus(updatingDriverShiftworker.getPersonalNumber(), DriverStatus.DRIVING);
+            }
+
+            updateDriverStatus(updatingDriver.getPersonalNumber(), newStatus);
+        } catch (HibernateException | NoSuchElementException | IllegalArgumentException e) {
+            LOGGER.error("updating driver status exception");
+
+            throw new InvalidEntityException();
+        }
+    }
+
+    @Override
+    public void updateDriverStatus(Long driverId, DriverStatus newStatus) {
+        try {
+            final DriverDto updatingDriver = getDriverById(driverId);
+
+            updatingDriver.setStatus(newStatus.ordinal());
 
             updateDriver(updatingDriver);
         } catch (HibernateException | NoSuchElementException | IllegalArgumentException e) {

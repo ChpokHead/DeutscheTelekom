@@ -2,8 +2,11 @@ package com.chpok.logiweb.config;
 
 import com.chpok.logiweb.config.hibernate.HibernateConfig;
 import com.chpok.logiweb.config.security.WebSecurityConfig;
+import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.filter.CharacterEncodingFilter;
 import org.springframework.web.filter.HiddenHttpMethodFilter;
+import org.springframework.web.servlet.DispatcherServlet;
+import org.springframework.web.servlet.FrameworkServlet;
 import org.springframework.web.servlet.support.AbstractAnnotationConfigDispatcherServletInitializer;
 
 import javax.servlet.Filter;
@@ -35,5 +38,12 @@ public class LogiwebAppInit extends AbstractAnnotationConfigDispatcherServletIni
         return new Filter[] {hiddenHttpMethodFilter, encodingFilter};
     }
 
+    @Override
+    protected FrameworkServlet createDispatcherServlet(WebApplicationContext servletAppContext) {
+        DispatcherServlet ds = new DispatcherServlet(servletAppContext);
 
+        ds.setThrowExceptionIfNoHandlerFound(true);
+
+        return ds;
+    }
 }

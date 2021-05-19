@@ -1,15 +1,12 @@
 package com.chpok.logiweb.controller;
 
-import com.chpok.logiweb.exception.MyException;
 import com.chpok.logiweb.dto.DriverDto;
 import com.chpok.logiweb.service.DriverService;
 import com.chpok.logiweb.service.LocationService;
 import com.chpok.logiweb.service.TruckService;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.server.ResponseStatusException;
 
 @Controller
 @RequestMapping("/employeeDriver")
@@ -42,11 +39,7 @@ public class EmployeeDriverPageController {
     @GetMapping("/{id}")
     @ResponseBody
     public DriverDto getDriver(@PathVariable Long id) {
-        try {
-            return driverService.getDriverById(id);
-        } catch (MyException dre) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Driver not found", dre);
-        }
+        return driverService.getDriverById(id);
     }
 
     @PostMapping

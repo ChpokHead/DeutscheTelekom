@@ -13,7 +13,7 @@ public interface TruckService {
     void deleteTruck(Long id);
     TruckDto getTruckById(Long id);
     void saveTruck(TruckDto truck);
-    List<DriverDto> getDriverShiftworkers(DriverDto driver);
+    DriverDto getDriverShiftworker(DriverDto driver);
     List<TruckDto> getTrucksWithOKStatusAndWithoutCurrentOrder();
     void updateTruckCurrentOrder(Long truckId, OrderDto newOrder);
     void updateTruckLocation(Long truckId, Location newLocation);

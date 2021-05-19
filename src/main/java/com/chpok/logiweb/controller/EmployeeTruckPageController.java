@@ -1,14 +1,11 @@
 package com.chpok.logiweb.controller;
 
-import com.chpok.logiweb.exception.MyException;
 import com.chpok.logiweb.dto.TruckDto;
 import com.chpok.logiweb.service.LocationService;
 import com.chpok.logiweb.service.TruckService;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.server.ResponseStatusException;
 
 
 @Controller
@@ -38,11 +35,7 @@ public class EmployeeTruckPageController {
     @GetMapping(value = "/{id}")
     @ResponseBody
     public TruckDto getTruck(@PathVariable Long id) {
-        try {
-            return truckService.getTruckById(id);
-        } catch (MyException dre) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Truck not found", dre);
-        }
+        return truckService.getTruckById(id);
     }
 
     @PutMapping

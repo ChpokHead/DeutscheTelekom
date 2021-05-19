@@ -1,108 +1,165 @@
 package com.chpok.logiweb.service.impl;
 
-import com.chpok.logiweb.dao.DriverDao;
 import com.chpok.logiweb.dao.TruckDao;
 import com.chpok.logiweb.dto.DriverDto;
 import com.chpok.logiweb.dto.OrderDto;
 import com.chpok.logiweb.dto.TruckDto;
+import com.chpok.logiweb.exception.InvalidEntityException;
 import com.chpok.logiweb.model.Location;
 import com.chpok.logiweb.model.enums.TruckStatus;
 import com.chpok.logiweb.service.TruckService;
 import com.chpok.logiweb.mapper.impl.DriverMapper;
 import com.chpok.logiweb.mapper.impl.TruckMapper;
+import com.chpok.logiweb.service.validation.ValidationProvider;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.hibernate.HibernateException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.persistence.EntityNotFoundException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.stream.Collectors;
 
 @Service
 @Transactional
 public class TruckServiceImpl implements TruckService {
+    private static final Logger LOGGER = LogManager.getLogger(TruckServiceImpl.class);
+
+    private final ValidationProvider<TruckDto> validator;
     private final TruckDao truckDao;
-    private final DriverDao driverDao;
     private final TruckMapper truckMapper;
     private final DriverMapper driverMapper;
 
-    public TruckServiceImpl(TruckDao truckDao, DriverDao driverDao, TruckMapper truckMapper, DriverMapper driverMapper) {
+    public TruckServiceImpl(ValidationProvider<TruckDto> validator, TruckDao truckDao, TruckMapper truckMapper, DriverMapper driverMapper) {
+        this.validator = validator;
         this.truckDao = truckDao;
-        this.driverDao = driverDao;
         this.truckMapper = truckMapper;
         this.driverMapper = driverMapper;
     }
 
     @Override
     public List<TruckDto> getAllTrucks() {
-        List<TruckDto> trucks = truckDao.findAll().stream().map(truckMapper::mapEntityToDto).collect(Collectors.toList());
+        try {
+            return truckDao.findAll().stream().map(truckMapper::mapEntityToDto).collect(Collectors.toList());
+        } catch (HibernateException | NoSuchElementException e) {
+            LOGGER.error("getting all trucks exception");
 
-        for (TruckDto truck : trucks) {
-            truck.setCurrentDrivers(driverDao.findByCurrentTruckId(truck.getId()));
+            throw new EntityNotFoundException();
         }
-
-        return trucks;
     }
 
     @Override
     public void updateTruck(TruckDto truckDto) {
-        truckDao.update(truckMapper.mapDtoToEntity(truckDto));
+        try {
+            validator.validate(truckDto);
+
+            truckDao.update(truckMapper.mapDtoToEntity(truckDto));
+        } catch (HibernateException | NoSuchElementException | IllegalArgumentException e) {
+            LOGGER.error("updating truck exception");
+
+            throw new InvalidEntityException();
+        }
     }
 
     @Override
     public void deleteTruck(Long id) {
-        truckDao.deleteById(id);
-    }
+        try {
+            truckDao.deleteById(id);
+        } catch (HibernateException | NoSuchElementException e) {
+            LOGGER.error("deleting truck by id exception");
 
-    @Override
-    public void saveTruck(TruckDto truckDto) {
-        truckDao.save(truckMapper.mapDtoToEntity(truckDto));
-    }
-
-    @Override
-    public List<DriverDto> getDriverShiftworkers(DriverDto driver) {
-        List<DriverDto> shiftworkers = new ArrayList<>();
-
-        if (driver.getCurrentTruck() != null) {
-            shiftworkers = getTruckById(driver.getCurrentTruck().getId()).getCurrentDrivers()
-                    .stream().map(driverMapper::mapEntityToDto).collect(Collectors.toList());
-
-            removeDriverFromListById(driver.getPersonalNumber(), shiftworkers);
+            throw new EntityNotFoundException();
         }
+    }
 
+    @Override
+    public void saveTruck(TruckDto truck) {
+        try {
+            validator.validate(truck);
 
-        return shiftworkers;
+            truckDao.save(truckMapper.mapDtoToEntity(truck));
+        } catch (HibernateException | NoSuchElementException | IllegalArgumentException e) {
+            LOGGER.error("saving truck exception");
+
+            throw new InvalidEntityException();
+        }
+    }
+
+    @Override
+    public DriverDto getDriverShiftworker(DriverDto driver) {
+        try {
+            if (driver.getCurrentTruck() != null) {
+                List<DriverDto> drivers = getTruckById(driver.getCurrentTruck().getId()).getCurrentDrivers()
+                        .stream().map(driverMapper::mapEntityToDto).collect(Collectors.toList());
+
+                removeDriverFromListById(driver.getPersonalNumber(), drivers);
+
+                return drivers.get(0);
+            }
+
+            return null;
+        } catch (HibernateException | NoSuchElementException e) {
+            LOGGER.error("getting driver shiftworker exception");
+
+            throw new EntityNotFoundException();
+        }
     }
 
     @Override
     public List<TruckDto> getTrucksWithOKStatusAndWithoutCurrentOrder() {
-        final List<TruckDto> allTrucks = getAllTrucks();
+        try {
+            return getAllTrucks().stream()
+                    .filter(truck -> TruckStatus.fromInteger(truck.getStatus()) == TruckStatus.OK && truck.getCurrentOrder() == null)
+                    .collect(Collectors.toList());
+        } catch (HibernateException | NoSuchElementException e) {
+            LOGGER.error("getting trucks with OK status and without current order exception");
 
-        return allTrucks.stream()
-                .filter(truck -> TruckStatus.fromInteger(truck.getStatus()) == TruckStatus.OK && truck.getCurrentOrder() == null)
-                .collect(Collectors.toList());
+            throw new EntityNotFoundException();
+        }
     }
 
     @Override
     public void updateTruckCurrentOrder(Long truckId, OrderDto newOrder) {
-        final TruckDto updatingTruck = getTruckById(truckId);
+        try {
+            final TruckDto updatingTruck = getTruckById(truckId);
 
-        updatingTruck.setCurrentOrder(null);
+            updatingTruck.setCurrentOrder(null);
 
-        updateTruck(updatingTruck);
+            updateTruck(updatingTruck);
+        } catch (HibernateException | NoSuchElementException | IllegalArgumentException e) {
+            LOGGER.error("updating truck's current order exception");
+
+            throw new InvalidEntityException();
+        }
     }
 
     @Override
     public void updateTruckLocation(Long truckId, Location newLocation) {
-        final TruckDto updatingTruck = getTruckById(truckId);
+        try {
+            final TruckDto updatingTruck = getTruckById(truckId);
 
-        updatingTruck.setLocation(newLocation);
+            updatingTruck.setLocation(newLocation);
 
-        updateTruck(updatingTruck);
+            updateTruck(updatingTruck);
+        } catch (HibernateException | NoSuchElementException | IllegalArgumentException e) {
+            LOGGER.error("updating truck location exception");
+
+            throw new InvalidEntityException();
+        }
     }
 
     @Override
     public TruckDto getTruckById(Long id) {
-        return truckMapper.mapEntityToDto(truckDao.findById(id).get());
+        try {
+            return truckMapper.mapEntityToDto(truckDao.findById(id).get());
+        } catch (HibernateException | NoSuchElementException e) {
+            LOGGER.error("getting truck by id exception");
+
+            throw new EntityNotFoundException();
+        }
     }
 
     private void removeDriverFromListById(Long id, List<DriverDto> driverList) {

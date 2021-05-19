@@ -7,8 +7,6 @@ import com.chpok.logiweb.model.Order;
 import java.util.List;
 
 public interface WaypointService {
-    List<WaypointDto> getAllWaypoints();
-    WaypointDto getWaypointById(Long id);
     void saveWaypoint(WaypointDto waypoint);
     void deleteWaypoint(Long id);
     void updateWaypoint(WaypointDto waypoint);

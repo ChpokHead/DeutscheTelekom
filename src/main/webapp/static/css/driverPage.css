@@ -14,3 +14,23 @@
     height: 3px;
     background-color: #ff910a;
 }
+
+#status-change-btn {
+    background-color: #ff910a;
+    color: white;
+    border: 0;
+}
+#status-change-btn:hover {
+    background-color: #ef8b05;
+    color: white;
+}
+
+#order-status-change-btn {
+    background-color: #ff910a;
+    color: white;
+    border: 0;
+}
+#order-status-change-btn:hover {
+    background-color: #ef8b05;
+    color: white;
+}

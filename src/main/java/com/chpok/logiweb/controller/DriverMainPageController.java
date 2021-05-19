@@ -1,6 +1,7 @@
 package com.chpok.logiweb.controller;
 
 import com.chpok.logiweb.dto.DriverDto;
+import com.chpok.logiweb.model.enums.DriverStatus;
 import com.chpok.logiweb.service.*;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -36,7 +37,7 @@ public class DriverMainPageController {
 
         model.addAttribute("driver", currentDriver);
 
-        model.addAttribute("shiftworkers", truckService.getDriverShiftworkers(currentDriver));
+        model.addAttribute("shiftworker", truckService.getDriverShiftworker(currentDriver));
 
         model.addAttribute("isOrderCompleted", orderService.checkOrderIsCompleted(currentDriver.getCurrentOrder()));
 
@@ -44,8 +45,8 @@ public class DriverMainPageController {
     }
 
     @PutMapping
-    public String updateDriver(@ModelAttribute DriverDto driver) {
-        driverService.updateDriverStatus(driver);
+    public String updateDriver(@ModelAttribute DriverDto driver, Model model) {
+        driverService.updateDriverAndShiftWorkerStatus(driver.getPersonalNumber(), DriverStatus.fromInteger(driver.getStatus()));
 
         return REDIRECT_TO_MAIN_PAGE;
     }

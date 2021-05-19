@@ -4,6 +4,7 @@ import com.chpok.logiweb.dto.DriverDto;
 import com.chpok.logiweb.dto.OrderDto;
 import com.chpok.logiweb.dto.TruckDto;
 import com.chpok.logiweb.model.Location;
+import com.chpok.logiweb.model.enums.DriverStatus;
 
 import java.util.List;
 import java.util.Optional;
@@ -17,7 +18,8 @@ public interface DriverService {
     List<DriverDto> getAllDriversWithoutCurrentOrder();
     void updateDriverCurrentOrder(Long driverId, OrderDto newOrder);
     void updateDriverCurrentTruck(Long driverId, TruckDto newTruck);
-    void updateDriverStatus(DriverDto driver);
+    void updateDriverStatus(Long driverId, DriverStatus newStatus);
+    void updateDriverAndShiftWorkerStatus(Long driverId, DriverStatus newStatus);
     void updateDriverMonthWorkedHours(Long driverId, Short newMonthWorkedHours);
     void updateDriverLocation(Long driverId, Location location);
 }

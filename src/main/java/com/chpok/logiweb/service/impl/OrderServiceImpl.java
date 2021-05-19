@@ -6,10 +6,10 @@ import com.chpok.logiweb.exception.InvalidEntityException;
 import com.chpok.logiweb.model.Driver;
 import com.chpok.logiweb.model.Order;
 import com.chpok.logiweb.model.Truck;
+import com.chpok.logiweb.model.enums.DriverStatus;
 import com.chpok.logiweb.service.*;
 import com.chpok.logiweb.mapper.impl.OrderMapper;
 import com.chpok.logiweb.mapper.impl.TruckMapper;
-import com.chpok.logiweb.service.validation.ValidationProvider;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.hibernate.HibernateException;
@@ -17,6 +17,7 @@ import org.springframework.stereotype.Component;
 
 import javax.persistence.EntityNotFoundException;
 import java.time.LocalDate;
+import java.time.temporal.TemporalAdjusters;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -326,10 +327,11 @@ public class OrderServiceImpl implements OrderService {
 
             if (!orderDrivers.isEmpty()) {
                 for (Driver driver : orderDrivers) {
-                    driverService.updateDriverMonthWorkedHours(driver.getId(), (short)(driver.getMonthWorkedHours() + getOrderTravelHours(completingOrder.getId())));
+                    driverService.updateDriverMonthWorkedHours(driver.getId(), calculateMonthWorkedHoursForOrderCurrentDriver(driver.getMonthWorkedHours(), completingOrder));
                     driverService.updateDriverLocation(driver.getId(), orderWaypoints.get(orderWaypoints.size() - 1).getLocation());
                     driverService.updateDriverCurrentTruck(driver.getId(), null);
                     driverService.updateDriverCurrentOrder(driver.getId(), null);
+                    driverService.updateDriverStatus(driver.getId(), DriverStatus.RESTING);
                 }
             }
 
@@ -344,6 +346,21 @@ public class OrderServiceImpl implements OrderService {
             LOGGER.error("completing order by order id exception");
 
             throw new EntityNotFoundException();
+        }
+    }
+
+    private short calculateMonthWorkedHoursForOrderCurrentDriver(short driverMonthWorkedHours, OrderDto driverCurrentOrder) {
+        final LocalDate travelStartDate = driverCurrentOrder.getStartDate();
+        final short orderMinTravelHours = getOrderTravelHours(driverCurrentOrder.getId());
+        final short orderMinTravelDays = (short)(orderMinTravelHours / (Driver.DRIVERS_DAY_WORKING_HOURS_LIMIT * driverCurrentOrder.getCurrentDrivers().size()) + 1);
+        final LocalDate travelEndDate = travelStartDate.plusDays(orderMinTravelDays);
+
+        if (!travelStartDate.getMonth().equals(travelEndDate.getMonth())) {
+            final short daysInNewMonth = (short) (orderMinTravelDays - (travelStartDate.with(TemporalAdjusters.lastDayOfMonth()).getDayOfMonth() - travelStartDate.getDayOfMonth() + 1));
+
+            return (short) (daysInNewMonth * Driver.DRIVERS_DAY_WORKING_HOURS_LIMIT);
+        } else {
+            return (short) (driverMonthWorkedHours + orderMinTravelHours);
         }
     }
 
@@ -380,7 +397,7 @@ public class OrderServiceImpl implements OrderService {
     }
 
     private boolean isDriverOverworking(DriverDto driver, Short orderTravelHours) {
-        return driver.getMonthWorkedHours() + orderTravelHours > Driver.DRIVERS_MONTH_WORKING_LIMIT;
+        return driver.getMonthWorkedHours() + orderTravelHours > Driver.DRIVERS_MONTH_WORKING_HOURS_LIMIT;
     }
 
     private boolean isDriverAndOrderCurrentTruckHasSameLocation(DriverDto driver, OrderDto order) {

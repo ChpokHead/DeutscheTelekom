@@ -5,7 +5,9 @@ import com.chpok.logiweb.model.enums.UserRole;
 import com.chpok.logiweb.config.security.UserDetailsImpl;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -25,7 +27,19 @@ public class LoginController {
             prepareErrorMessage(model);
         }
 
-        return "loginPage";
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+
+        if (authentication == null || authentication instanceof AnonymousAuthenticationToken) {
+            return "loginPage";
+        }
+
+        User loggedUser = ((UserDetailsImpl)authentication.getPrincipal()).getUserDetails();
+
+        if (loggedUser.getRole().equals(UserRole.ROLE_EMPLOYEE)) {
+            return "redirect:employeePage";
+        } else {
+            return "redirect:driverPage";
+        }
     }
 
     @GetMapping(value = "/logout")
@@ -34,7 +48,7 @@ public class LoginController {
 
         session.setComplete();
 
-        return "redirect:/login";
+        return "loginPage";
     }
 
     @PostMapping("/postLogin")

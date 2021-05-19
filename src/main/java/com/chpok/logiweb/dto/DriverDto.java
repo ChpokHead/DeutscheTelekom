@@ -9,6 +9,8 @@ public class DriverDto {
     private String lastName;
     private Long personalNumber;
     private Short monthWorkedHours;
+    private Short nextMonthWorkedHours;
+    private Boolean isMonthChanged;
     private Integer status;
     private Location location;
     private Truck currentTruck;
@@ -76,5 +78,21 @@ public class DriverDto {
 
     public void setCurrentOrder(Order currentOrder) {
         this.currentOrder = currentOrder;
+    }
+
+    public Short getNextMonthWorkedHours() {
+        return nextMonthWorkedHours;
+    }
+
+    public void setNextMonthWorkedHours(Short nextMonthWorkedHours) {
+        this.nextMonthWorkedHours = nextMonthWorkedHours;
+    }
+
+    public Boolean getMonthChanged() {
+        return isMonthChanged;
+    }
+
+    public void setMonthChanged(Boolean monthChanged) {
+        isMonthChanged = monthChanged;
     }
 }

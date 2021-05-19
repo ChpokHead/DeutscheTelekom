@@ -1,13 +1,10 @@
 package com.chpok.logiweb.controller;
 
-import com.chpok.logiweb.exception.MyException;
 import com.chpok.logiweb.dto.CargoDto;
 import com.chpok.logiweb.service.CargoService;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.server.ResponseStatusException;
 
 @Controller
 @RequestMapping("/employeeCargo")
@@ -29,13 +26,8 @@ public class EmployeeCargoPageController {
     }
 
     @GetMapping(value = "/{id}")
-    @ResponseBody
     public CargoDto getTruck(@PathVariable Long id) {
-        try {
-            return cargoService.getCargoById(id);
-        } catch (MyException dre) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Cargo not found", dre);
-        }
+        return cargoService.getCargoById(id);
     }
 
     @PostMapping

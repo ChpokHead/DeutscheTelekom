@@ -39,10 +39,10 @@
             </div>
             <div class="col">
                 <div class="d-flex w-100 justify-content-center">
-                    <div th:if="${order.currentTruck == null and #lists.isEmpty(order.currentDrivers)}">
+                    <div th:if="${order.currentTruck == null and #lists.isEmpty(order.currentDrivers) and not #lists.isEmpty(cargos)}">
                         <button id = "waypoint-add" class="btn btn-lg" data-bs-toggle="modal" data-bs-target="#addModal">Добавить маршрутные точки</button>
                     </div>
-                    <div th:if="${order.currentTruck != null or not #lists.isEmpty(order.currentDrivers)}">
+                    <div th:if="${order.currentTruck != null or not #lists.isEmpty(order.currentDrivers) or #lists.isEmpty(cargos)}">
                         <button id = "waypoint-add-disabled" class="btn btn-primary btn-lg disabled" data-bs-toggle="modal" data-bs-target="#addModal">Добавить маршрутные точки</button>
                     </div>
                 </div>
@@ -240,7 +240,7 @@
                         </div>
                         <div class="mb-3">
                             <label for="inputAddWaypointCargo" class="form-label">Груз</label>
-                            <select class="form-select" aria-label="Груз" id="inputAddWaypointCargo" th:field="*{pair[0].cargo.id}">
+                            <select class="form-select" aria-label="Груз" id="inputAddWaypointCargo" th:field="*{pair[0].cargo.id}" required>
                                 <option th:each="cargo : ${cargos}" th:value="${cargo.id}" th:text="'#' + ${cargo.id} + ' ' + ${cargo.name}"></option>
                             </select>
                             <input type="hidden" id="hidden-cargo-id" th:field = "*{pair[1].cargo.id}"/>
@@ -314,7 +314,7 @@
                         </div>
                         <div class="mb-3">
                             <label for="inputUpdateWaypointCargo" class="form-label">Груз</label>
-                            <select class="form-select" aria-label="Груз" id="inputUpdateWaypointCargo" th:field="*{pair[0].cargo.id}">
+                            <select class="form-select" aria-label="Груз" id="inputUpdateWaypointCargo" th:field="*{pair[0].cargo.id}" required>
                                 <option th:each="cargo : ${cargos}" th:value="${cargo.id}" th:text="'#' + ${cargo.id} + ' ' + ${cargo.name}"></option>
                             </select>
                             <input type="hidden" id="hidden-cargo-update-id" th:field = "*{pair[1].cargo.id}"/>
@@ -652,8 +652,28 @@
             start.attr('value', currentDate);
             start.attr('min', currentDate);
 
-            end.attr('value', new Date().addDays(minDays).toISOString().split("T")[0]);
-            end.attr('min', new Date().addDays(minDays).toISOString().split("T")[0]);
+            end.attr('value', new Date(start.attr('value')).addDays(minDays).toISOString().split("T")[0]);
+            end.attr('min', new Date(start.attr('value')).addDays(minDays).toISOString().split("T")[0]);
+        });
+    </script>
+    <script th:inline="javascript" type="text/javascript">
+        $('#start').change(function (e) {
+            Date.prototype.addDays = function(days) {
+                var date = new Date(this.valueOf());
+                date.setDate(date.getDate() + days);
+                return date;
+            };
+
+            var start = $('#start');
+            var end = $('#end');
+            var numOfDrivers = [[${order.currentDrivers.size()}]];
+            var orderTravelHours = [[${orderTravelHours}]];
+            var minDays = (orderTravelHours / (9 * numOfDrivers)) + 1;
+
+            end.attr('value', new Date(start.val()).addDays(minDays).toISOString().split("T")[0]);
+            end.attr('min', new Date(start.val()).addDays(minDays).toISOString().split("T")[0]);
+
+            console.log(end.attr('value'))
         });
     </script>
 </body>
