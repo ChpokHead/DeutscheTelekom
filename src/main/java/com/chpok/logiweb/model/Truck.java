@@ -41,6 +41,7 @@ public class Truck extends AbstractModel{
     @OneToMany(mappedBy = "currentTruck", fetch = FetchType.LAZY)
     private List<Driver> currentDrivers;
 
+    @JsonIgnore
     @OneToOne
     @JoinColumn(name = "current_order_id")
     private Order currentOrder;

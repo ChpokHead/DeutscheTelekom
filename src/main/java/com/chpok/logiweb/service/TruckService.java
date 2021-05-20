@@ -17,4 +17,5 @@ public interface TruckService {
     List<TruckDto> getTrucksWithOKStatusAndWithoutCurrentOrder();
     void updateTruckCurrentOrder(Long truckId, OrderDto newOrder);
     void updateTruckLocation(Long truckId, Location newLocation);
+    void updateTruckWhenCurrentOrderIsDeleted(Long truckId);
 }

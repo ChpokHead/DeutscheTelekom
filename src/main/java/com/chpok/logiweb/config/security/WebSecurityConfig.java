@@ -21,12 +21,6 @@ import org.springframework.web.filter.CharacterEncodingFilter;
 @EnableWebSecurity
 @EnableGlobalMethodSecurity(prePostEnabled = true)
 public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
-    @Bean("authenticationManager")
-    @Override
-    public AuthenticationManager authenticationManagerBean() throws Exception {
-        return super.authenticationManagerBean();
-    }
-
     @Override
     @Bean
     public UserDetailsService userDetailsService() {
@@ -72,7 +66,6 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .authorizeRequests().antMatchers("/driver**").hasAnyRole("DRIVER")
                 .and()
                 .formLogin().loginPage("/login").usernameParameter("username").passwordParameter("password").permitAll()
-                .loginProcessingUrl("/doLogin")
                 .successForwardUrl("/postLogin")
                 .failureUrl("/login?error=true")
                 .and()

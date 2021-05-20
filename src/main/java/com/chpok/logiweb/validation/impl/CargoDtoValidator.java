@@ -1,20 +1,28 @@
-package com.chpok.logiweb.service.validation.impl;
+package com.chpok.logiweb.validation.impl;
 
 import com.chpok.logiweb.dto.CargoDto;
-import com.chpok.logiweb.service.validation.ValidationProvider;
+import com.chpok.logiweb.validation.ValidationProvider;
 import org.springframework.stereotype.Component;
 
 @Component
 public class CargoDtoValidator implements ValidationProvider<CargoDto> {
+    private static final int MAX_WEIGHT = 100000;
 
     @Override
     public void validate(CargoDto cargo) {
-        validateWeightIsNegativeOrZero(cargo.getWeight());
         validateWeightIsNull(cargo.getWeight());
+        validateWeightIsNegativeOrZero(cargo.getWeight());
+        validateWeightIsLessThanMaxValue(cargo.getWeight());
 
         validateNameIsNull(cargo.getName());
         validateNameIsEmpty(cargo.getName());
         validateNameContainsOnlySpacesOrBlanks(cargo.getName());
+    }
+
+    private void validateWeightIsLessThanMaxValue(Integer weight) {
+        if (weight > MAX_WEIGHT) {
+            throw new IllegalArgumentException();
+        }
     }
 
     private void validateWeightIsNegativeOrZero(Integer weight) {

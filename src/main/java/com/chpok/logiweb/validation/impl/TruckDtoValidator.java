@@ -1,7 +1,7 @@
-package com.chpok.logiweb.service.validation.impl;
+package com.chpok.logiweb.validation.impl;
 
 import com.chpok.logiweb.dto.TruckDto;
-import com.chpok.logiweb.service.validation.ValidationProvider;
+import com.chpok.logiweb.validation.ValidationProvider;
 import org.springframework.stereotype.Component;
 
 @Component

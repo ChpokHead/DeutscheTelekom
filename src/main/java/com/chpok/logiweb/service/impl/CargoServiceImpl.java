@@ -9,7 +9,7 @@ import com.chpok.logiweb.model.enums.CargoStatus;
 import com.chpok.logiweb.service.CargoService;
 import com.chpok.logiweb.mapper.impl.CargoMapper;
 import com.chpok.logiweb.service.WaypointService;
-import com.chpok.logiweb.service.validation.ValidationProvider;
+import com.chpok.logiweb.validation.ValidationProvider;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.hibernate.HibernateException;
@@ -56,9 +56,7 @@ public class CargoServiceImpl implements CargoService {
 
             cargoDao.save(cargoMapper.mapDtoToEntity(cargo));
 
-            final String info = String.format("new cargo with name = %s and weight = %d was created", cargo.getName(), cargo.getWeight());
-
-            LOGGER.info(info);
+            logOnSuccess(String.format("new cargo with name = %s and weight = %d was created", cargo.getName(), cargo.getWeight()));
         } catch (HibernateException | NoSuchElementException | IllegalArgumentException e) {
             LOGGER.error("saving cargo exception");
 
@@ -88,9 +86,7 @@ public class CargoServiceImpl implements CargoService {
 
             cargoDao.deleteById(id);
 
-            final String info = String.format("cargo with id = %d and name = %s was deleted", deletingCargo.getId(), deletingCargo.getName());
-
-            LOGGER.info(info);
+            logOnSuccess(String.format("cargo with id = %d and name = %s was deleted", deletingCargo.getId(), deletingCargo.getName()));
         } catch (HibernateException | NoSuchElementException e) {
             LOGGER.error("deleting cargo by id exception");
 
@@ -128,13 +124,16 @@ public class CargoServiceImpl implements CargoService {
 
             cargoDao.update(updatingCargo);
 
-            final String info = String.format("cargo with id = %d was updated to %s", updatingCargo.getId(), updatingCargo.getStatus().toString());
-
-            LOGGER.info(info);
+            logOnSuccess(String.format("cargo with id = %d was updated to %s", updatingCargo.getId(), updatingCargo.getStatus().toString()));
         } catch (HibernateException | NoSuchElementException e) {
             LOGGER.error("updating cargo status by id exception");
 
             throw new InvalidEntityException();
         }
     }
+
+    private void logOnSuccess(String logInfo) {
+        LOGGER.info(logInfo);
+    }
+
 }

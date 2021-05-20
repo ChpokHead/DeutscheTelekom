@@ -12,7 +12,7 @@ import com.chpok.logiweb.mapper.impl.DriverMapper;
 import com.chpok.logiweb.mapper.impl.OrderMapper;
 import com.chpok.logiweb.mapper.impl.TruckMapper;
 import com.chpok.logiweb.service.TruckService;
-import com.chpok.logiweb.service.validation.ValidationProvider;
+import com.chpok.logiweb.validation.ValidationProvider;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.hibernate.HibernateException;
@@ -75,10 +75,12 @@ public class DriverServiceImpl implements DriverService {
             final DriverDto updatingDriver = getDriverById(driverId);
             final DriverDto updatingDriverShiftworker = truckService.getDriverShiftworker(updatingDriver);
 
-            if (newStatus == DriverStatus.DRIVING) {
-                updateDriverStatus(updatingDriverShiftworker.getPersonalNumber(), DriverStatus.SHIFTING);
-            } else if (newStatus == DriverStatus.SHIFTING) {
-                updateDriverStatus(updatingDriverShiftworker.getPersonalNumber(), DriverStatus.DRIVING);
+            if (updatingDriverShiftworker != null) {
+                if (newStatus == DriverStatus.DRIVING) {
+                    updateDriverStatus(updatingDriverShiftworker.getPersonalNumber(), DriverStatus.SHIFTING);
+                } else if (newStatus == DriverStatus.SHIFTING) {
+                    updateDriverStatus(updatingDriverShiftworker.getPersonalNumber(), DriverStatus.DRIVING);
+                }
             }
 
             updateDriverStatus(updatingDriver.getPersonalNumber(), newStatus);
@@ -109,9 +111,7 @@ public class DriverServiceImpl implements DriverService {
         try {
             driverDao.deleteById(id);
 
-            final String info = String.format("driver with id = %d was deleted", id);
-
-            LOGGER.info(info);
+            logOnSuccess(String.format("driver with id = %d was deleted", id));
         } catch (HibernateException | NoSuchElementException e) {
             LOGGER.error("deleting driver by id exception");
 
@@ -126,9 +126,7 @@ public class DriverServiceImpl implements DriverService {
 
             driverDao.save(driverMapper.mapDtoToEntity(driver));
 
-            final String info = String.format("new driver with first name = %s and last name = %s was created", driver.getFirstName(), driver.getLastName());
-
-            LOGGER.info(info);
+            logOnSuccess(String.format("new driver with first name = %s and last name = %s was created", driver.getFirstName(), driver.getLastName()));
         } catch (HibernateException | NoSuchElementException | IllegalArgumentException e) {
             LOGGER.error("saving driver exception");
 
@@ -190,16 +188,39 @@ public class DriverServiceImpl implements DriverService {
     }
 
     @Override
-    public void updateDriverWhenOrderIsComplete(Long driverId, short newMonthWorkedHours, Location newLocation, DriverStatus newStatus) {
-        final DriverDto updatingDriver = getDriverById(driverId);
+    public void updateDriverWhenOrderIsCompleted(Long driverId, short newMonthWorkedHours, Location newLocation) {
+        try {
+            final DriverDto updatingDriver = getDriverById(driverId);
 
-        updatingDriver.setMonthWorkedHours(newMonthWorkedHours);
-        updatingDriver.setLocation(newLocation);
-        updatingDriver.setStatus(newStatus.ordinal());
-        updatingDriver.setCurrentOrder(null);
-        updatingDriver.setCurrentTruck(null);
+            updatingDriver.setMonthWorkedHours(newMonthWorkedHours);
+            updatingDriver.setLocation(newLocation);
+            updatingDriver.setStatus(DriverStatus.RESTING.ordinal());
+            updatingDriver.setCurrentOrder(null);
+            updatingDriver.setCurrentTruck(null);
 
-        updateDriver(updatingDriver);
+            updateDriver(updatingDriver);
+        } catch (HibernateException | NoSuchElementException e) {
+            LOGGER.error("updating driver when order is completed exception");
+        }
+    }
+
+    @Override
+    public void updateDriverWhenOrderIsDeleted(Long driverId) {
+        try {
+            final DriverDto updatingDriver = getDriverById(driverId);
+
+            updatingDriver.setStatus(DriverStatus.RESTING.ordinal());
+            updatingDriver.setCurrentOrder(null);
+            updatingDriver.setCurrentTruck(null);
+
+            updateDriver(updatingDriver);
+        } catch (HibernateException | NoSuchElementException e) {
+            LOGGER.error("updating driver when order is deleted exception");
+        }
+    }
+
+    private void logOnSuccess(String logInfo) {
+        LOGGER.info(logInfo);
     }
 
 }

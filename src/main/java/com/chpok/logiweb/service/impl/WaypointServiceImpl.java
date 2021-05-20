@@ -43,9 +43,7 @@ public class WaypointServiceImpl implements WaypointService {
         try {
             waypointDao.save(waypointMapper.mapDtoToEntity(waypoint));
 
-            final String info = String.format("new waypoint with location = %s was created", waypoint.getLocation().getName());
-
-            LOGGER.info(info);
+            logOnSuccess(String.format("new waypoint with location = %s was created", waypoint.getLocation().getName()));
         } catch (HibernateException | NoSuchElementException | IllegalArgumentException e) {
             LOGGER.error("saving waypoint exception");
 
@@ -58,9 +56,7 @@ public class WaypointServiceImpl implements WaypointService {
         try {
             waypointDao.deleteById(id);
 
-            final String info = String.format("waypoint with id = %d was deleted",id);
-
-            LOGGER.info(info);
+            logOnSuccess(String.format("waypoint with id = %d was deleted",id));
         } catch (HibernateException | NoSuchElementException e) {
             LOGGER.error("deleting waypoint by id exception");
 
@@ -202,6 +198,10 @@ public class WaypointServiceImpl implements WaypointService {
 
             throw new EntityNotFoundException();
         }
+    }
+
+    private void logOnSuccess(String logInfo) {
+        LOGGER.info(logInfo);
     }
 
 }

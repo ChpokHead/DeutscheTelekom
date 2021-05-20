@@ -3,6 +3,7 @@ package com.chpok.logiweb.dto;
 import com.chpok.logiweb.model.Driver;
 import com.chpok.logiweb.model.Location;
 import com.chpok.logiweb.model.Order;
+import org.codehaus.jackson.annotate.JsonIgnore;
 
 import java.util.List;
 
@@ -13,8 +14,11 @@ public class TruckDto {
     private Short capacity;
     private Integer status;
     private Location location;
+
+    @JsonIgnore
     private List<Driver> currentDrivers;
 
+    @JsonIgnore
     private Order currentOrder;
 
     public Long getId() {

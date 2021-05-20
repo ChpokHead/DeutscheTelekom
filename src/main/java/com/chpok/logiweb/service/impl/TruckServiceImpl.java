@@ -11,7 +11,7 @@ import com.chpok.logiweb.model.enums.TruckStatus;
 import com.chpok.logiweb.service.TruckService;
 import com.chpok.logiweb.mapper.impl.DriverMapper;
 import com.chpok.logiweb.mapper.impl.TruckMapper;
-import com.chpok.logiweb.service.validation.ValidationProvider;
+import com.chpok.logiweb.validation.ValidationProvider;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.hibernate.HibernateException;
@@ -19,6 +19,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityNotFoundException;
+import java.util.Collections;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.stream.Collectors;
@@ -84,9 +85,7 @@ public class TruckServiceImpl implements TruckService {
 
             truckDao.save(truckMapper.mapDtoToEntity(truck));
 
-            final String info = String.format("truck with reg number = %s was created", truck.getRegNumber());
-
-            LOGGER.info(info);
+            logOnSuccess(String.format("truck with reg number = %s was created", truck.getRegNumber()));
         } catch (HibernateException | NoSuchElementException | IllegalArgumentException e) {
             LOGGER.error("saving truck exception");
 
@@ -140,9 +139,7 @@ public class TruckServiceImpl implements TruckService {
 
             updateTruck(updatingTruck);
 
-            final String info = String.format("current order of truck with id = %d has id = %d", truckId, newOrder.getId());
-
-            LOGGER.info(info);
+            logOnSuccess(String.format("current order of truck with id = %d was updated", truckId));
         } catch (HibernateException | NoSuchElementException | IllegalArgumentException e) {
             LOGGER.error("updating truck's current order exception");
 
@@ -159,13 +156,27 @@ public class TruckServiceImpl implements TruckService {
 
             updateTruck(updatingTruck);
 
-            final String info = String.format("truck with id = %d changed location to %s", truckId, newLocation.getName());
-
-            LOGGER.info(info);
+            logOnSuccess(String.format("truck with id = %d changed location to %s", truckId, newLocation.getName()));
         } catch (HibernateException | NoSuchElementException | IllegalArgumentException e) {
             LOGGER.error("updating truck location exception");
 
             throw new InvalidEntityException();
+        }
+    }
+
+    @Override
+    public void updateTruckWhenCurrentOrderIsDeleted(Long truckId) {
+        try {
+            final TruckDto updatingTruck = getTruckById(truckId);
+
+            updatingTruck.setCurrentOrder(null);
+            updatingTruck.setCurrentDrivers(Collections.emptyList());
+
+            updateTruck(updatingTruck);
+        } catch (HibernateException | NoSuchElementException e) {
+            LOGGER.error("updating truck when order is deleted exception");
+
+            throw new EntityNotFoundException();
         }
     }
 
@@ -188,4 +199,9 @@ public class TruckServiceImpl implements TruckService {
             }
         }
     }
+
+    private void logOnSuccess(String logInfo) {
+        LOGGER.info(logInfo);
+    }
+
 }

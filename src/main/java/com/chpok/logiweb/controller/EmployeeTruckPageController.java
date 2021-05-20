@@ -3,9 +3,13 @@ package com.chpok.logiweb.controller;
 import com.chpok.logiweb.dto.TruckDto;
 import com.chpok.logiweb.service.LocationService;
 import com.chpok.logiweb.service.TruckService;
+import org.codehaus.jackson.map.ObjectMapper;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+
+import javax.persistence.EntityNotFoundException;
+import java.io.IOException;
 
 
 @Controller
@@ -32,10 +36,16 @@ public class EmployeeTruckPageController {
         return "employeeTruckPage";
     }
 
-    @GetMapping(value = "/{id}")
+    @GetMapping(value = "/{id}", produces={"application/json; charset=UTF-8"})
     @ResponseBody
-    public TruckDto getTruck(@PathVariable Long id) {
-        return truckService.getTruckById(id);
+    public String getTruck(@PathVariable Long id) {
+        try {
+            final ObjectMapper mapper = new ObjectMapper();
+
+            return mapper.writeValueAsString(truckService.getTruckById(id));
+        } catch (IOException ioe) {
+            throw new EntityNotFoundException();
+        }
     }
 
     @PutMapping

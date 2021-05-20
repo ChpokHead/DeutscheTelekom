@@ -67,7 +67,7 @@ public class OrderServiceImpl implements OrderService {
         try {
             orderDao.save(orderMapper.mapDtoToEntity(order));
 
-            LOGGER.info("new order was created");
+            logOnSuccess("new order was created");
         } catch (HibernateException | NoSuchElementException | IllegalArgumentException e) {
             LOGGER.error("saving order exception");
 
@@ -80,9 +80,7 @@ public class OrderServiceImpl implements OrderService {
         try {
             orderDao.update(orderMapper.mapDtoToEntity(order));
 
-            final String info = String.format("order with id = %d was updated", order.getId());
-
-            LOGGER.info(info);
+            logOnSuccess(String.format("order with id = %d was updated", order.getId()));
         } catch (HibernateException | NoSuchElementException | IllegalArgumentException e) {
             LOGGER.error("updating order exception");
 
@@ -110,10 +108,6 @@ public class OrderServiceImpl implements OrderService {
     @Override
     public void deleteOrderCurrentTruckWithCurrentDriversAndDates(Long orderId) {
         try {
-            final OrderDto updatingOrder = getOrderById(orderId);
-
-            truckService.updateTruckCurrentOrder(updatingOrder.getCurrentTruck().getId(), null);
-
             deleteOrderStartAndEndDatesWithDrivers(orderId);
 
             deleteOrderCurrentTruck(orderId);
@@ -128,7 +122,7 @@ public class OrderServiceImpl implements OrderService {
         try {
             final OrderDto updatingOrder = getOrderById(orderId);
 
-            truckService.updateTruckCurrentOrder(updatingOrder.getCurrentTruck().getId(), null);
+            truckService.updateTruckWhenCurrentOrderIsDeleted(updatingOrder.getCurrentTruck().getId());
 
             updatingOrder.setCurrentTruck(null);
 
@@ -177,7 +171,7 @@ public class OrderServiceImpl implements OrderService {
             final OrderDto updatingOrder = getOrderById(orderId);
 
             for (Driver driver: updatingOrder.getCurrentDrivers()) {
-                driverService.updateDriverCurrentOrder(driver.getId(), null);
+                driverService.updateDriverWhenOrderIsDeleted(driver.getId());
             }
 
             updateOrderStartAndEndDates(orderId, null, null);
@@ -259,7 +253,8 @@ public class OrderServiceImpl implements OrderService {
                 final List<WaypointDto> orderWaypoints = pair.getPair();
 
                 orderDistance +=
-                        locationMapService.getDistanceBetweenLocationsByIds(orderWaypoints.get(0).getLocation().getId(), orderWaypoints.get(1).getLocation().getId());
+                        locationMapService.getDistanceBetweenLocationsByIds(orderWaypoints.get(0).getLocation().getId(),
+                                orderWaypoints.get(1).getLocation().getId());
             }
 
             return orderDistance;
@@ -339,9 +334,9 @@ public class OrderServiceImpl implements OrderService {
             if (!orderDrivers.isEmpty()) {
                 for (Driver driver : orderDrivers) {
                     final short updatedDriverMonthWorkedHours = calculateMonthWorkedHoursForOrderCurrentDriver(driver.getMonthWorkedHours(), completingOrder);
-                    final Location updateDriverLocation = orderWaypoints.get(orderWaypoints.size() - 1).getLocation();
+                    final Location updatedDriverLocation = orderWaypoints.get(orderWaypoints.size() - 1).getLocation();
 
-                    driverService.updateDriverWhenOrderIsComplete(driver.getId(), updatedDriverMonthWorkedHours, updateDriverLocation, DriverStatus.RESTING);
+                    driverService.updateDriverWhenOrderIsCompleted(driver.getId(), updatedDriverMonthWorkedHours, updatedDriverLocation);
                 }
             }
 
@@ -353,9 +348,7 @@ public class OrderServiceImpl implements OrderService {
 
             orderDao.deleteById(orderId);
 
-            final String info = String.format("order with id = %d has been completed", orderId);
-
-            LOGGER.info(info);
+            logOnSuccess(String.format("order with id = %d has been completed", orderId));
         } catch (HibernateException | NoSuchElementException e) {
             LOGGER.error("completing order by order id exception");
 
@@ -404,9 +397,7 @@ public class OrderServiceImpl implements OrderService {
 
             orderDao.deleteById(id);
 
-            final String info = String.format("order with id = %d has been deleted", id);
-
-            LOGGER.info(info);
+            logOnSuccess(String.format("order with id = %d has been deleted", id));
         } catch (HibernateException | NoSuchElementException e) {
             LOGGER.error("deleting order by order id exception");
 
@@ -420,6 +411,10 @@ public class OrderServiceImpl implements OrderService {
 
     private boolean isDriverAndOrderCurrentTruckHasSameLocation(DriverDto driver, OrderDto order) {
         return driver.getLocation().getId().equals(order.getCurrentTruck().getLocation().getId());
+    }
+
+    private void logOnSuccess(String logInfo) {
+        LOGGER.info(logInfo);
     }
 
 }

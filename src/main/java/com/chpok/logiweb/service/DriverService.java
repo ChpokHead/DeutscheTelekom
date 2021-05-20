@@ -19,5 +19,6 @@ public interface DriverService {
     void updateDriverCurrentTruck(Long driverId, TruckDto newTruck);
     void updateDriverStatus(Long driverId, DriverStatus newStatus);
     void updateDriverAndShiftWorkerStatus(Long driverId, DriverStatus newStatus);
-    void updateDriverWhenOrderIsComplete(Long driverId, short newMonthWorkedHours, Location newLocation, DriverStatus newStatus);
+    void updateDriverWhenOrderIsCompleted(Long driverId, short newMonthWorkedHours, Location newLocation);
+    void updateDriverWhenOrderIsDeleted(Long driverId);
 }
