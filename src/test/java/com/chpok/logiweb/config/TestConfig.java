@@ -14,7 +14,8 @@ import javax.sql.DataSource;
 import java.util.Properties;
 
 @Configuration
-@ComponentScan(basePackages = {"com.chpok.logiweb.dao.impl", "com.chpok.logiweb.model"})
+@ComponentScan(basePackages = {"com.chpok.logiweb.dao.impl", "com.chpok.logiweb.model",
+        "com.chpok.logiweb.service.impl", "com.chpok.logiweb.mapper.impl", "com.chpok.logiweb.validation.impl"})
 public class TestConfig {
     @Autowired
     private DataSource dataSource;
@@ -23,7 +24,7 @@ public class TestConfig {
     public LocalSessionFactoryBean sessionFactory() {
         LocalSessionFactoryBean sessionFactory = new LocalSessionFactoryBean();
         sessionFactory.setDataSource(dataSource);
-        sessionFactory.setPackagesToScan("com.chpok.logiweb");
+        sessionFactory.setPackagesToScan("com.chpok.logiweb.model");
         sessionFactory.setHibernateProperties(hibernateProperties());
 
         return sessionFactory;

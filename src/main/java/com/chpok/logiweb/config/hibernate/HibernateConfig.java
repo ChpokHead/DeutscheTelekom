@@ -27,7 +27,7 @@ public class HibernateConfig {
     public LocalSessionFactoryBean sessionFactory() {
         LocalSessionFactoryBean sessionFactory = new LocalSessionFactoryBean();
         sessionFactory.setDataSource(dataSource());
-        sessionFactory.setPackagesToScan("com.chpok.logiweb");
+        sessionFactory.setPackagesToScan("com.chpok.logiweb.model");
         sessionFactory.setHibernateProperties(hibernateProperties());
 
         return sessionFactory;

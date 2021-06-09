@@ -5,6 +5,7 @@ import com.chpok.logiweb.dto.DriverDto;
 import com.chpok.logiweb.dto.OrderDto;
 import com.chpok.logiweb.dto.TruckDto;
 import com.chpok.logiweb.exception.InvalidEntityException;
+import com.chpok.logiweb.model.Driver;
 import com.chpok.logiweb.model.Location;
 import com.chpok.logiweb.model.enums.DriverStatus;
 import com.chpok.logiweb.service.DriverService;
@@ -16,6 +17,7 @@ import com.chpok.logiweb.validation.ValidationProvider;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.hibernate.HibernateException;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -29,15 +31,18 @@ import java.util.stream.Collectors;
 public class DriverServiceImpl implements DriverService {
     private static final Logger LOGGER = LogManager.getLogger(DriverServiceImpl.class);
 
-    private final ValidationProvider<DriverDto> validator;
+    private final ValidationProvider<DriverDto> saveUpdateValidator;
+    private final ValidationProvider<DriverDto> deleteValidator;
     private final DriverDao driverDao;
     private final DriverMapper driverMapper;
     private final OrderMapper orderMapper;
     private final TruckMapper truckMapper;
     private final TruckService truckService;
 
-    public DriverServiceImpl(ValidationProvider<DriverDto> validator, DriverDao driverDao, DriverMapper driverMapper, OrderMapper orderMapper, TruckMapper truckMapper, TruckService truckService) {
-        this.validator = validator;
+    public DriverServiceImpl(@Qualifier("driverDtoValidator") ValidationProvider<DriverDto> saveUpdateValidator,
+                             @Qualifier("driverDtoDeleteValidator") ValidationProvider<DriverDto> deleteValidator, DriverDao driverDao, DriverMapper driverMapper, OrderMapper orderMapper, TruckMapper truckMapper, TruckService truckService) {
+        this.saveUpdateValidator = saveUpdateValidator;
+        this.deleteValidator = deleteValidator;
         this.driverDao = driverDao;
         this.driverMapper = driverMapper;
         this.orderMapper = orderMapper;
@@ -59,7 +64,7 @@ public class DriverServiceImpl implements DriverService {
     @Override
     public void updateDriver(DriverDto driver) {
         try {
-            validator.validate(driver);
+            saveUpdateValidator.validate(driver);
 
             driverDao.update(driverMapper.mapDtoToEntity(driver));
         } catch (HibernateException | NoSuchElementException | IllegalArgumentException e) {
@@ -109,10 +114,14 @@ public class DriverServiceImpl implements DriverService {
     @Override
     public void deleteDriver(Long id) {
         try {
+            final Driver deletingDriver = driverDao.findById(id).orElseThrow(IllegalArgumentException::new);
+
+            deleteValidator.validate(driverMapper.mapEntityToDto(deletingDriver));
+
             driverDao.deleteById(id);
 
             logOnSuccess(String.format("driver with id = %d was deleted", id));
-        } catch (HibernateException | NoSuchElementException e) {
+        } catch (HibernateException | NoSuchElementException | IllegalArgumentException e) {
             LOGGER.error("deleting driver by id exception");
 
             throw new EntityNotFoundException();
@@ -122,7 +131,7 @@ public class DriverServiceImpl implements DriverService {
     @Override
     public void saveDriver(DriverDto driver) {
         try {
-            validator.validate(driver);
+            saveUpdateValidator.validate(driver);
 
             driverDao.save(driverMapper.mapDtoToEntity(driver));
 

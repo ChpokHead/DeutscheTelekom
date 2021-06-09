@@ -27,7 +27,7 @@ public class CargoServiceImpl implements CargoService {
     private static final Logger LOGGER = LogManager.getLogger(CargoServiceImpl.class);
 
     private final WaypointService waypointService;
-    private final CargoDao cargoDao;
+    private CargoDao cargoDao;
     private final ValidationProvider<CargoDto> validator;
     private final CargoMapper cargoMapper;
 

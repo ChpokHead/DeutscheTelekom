@@ -80,7 +80,7 @@
                                     <p class="mb-1" th:text="'Текущий город: ' + ${truck.location.name}"></p>
                                 </div>
                                 <div class="col-0">
-                                    <button type="button" class="btn btn-primary rounded" data-bs-toggle="modal" data-bs-target="#delModal" th:id ="${truck.id}" name="del-truck-btn">
+                                    <button type="button" class="btn btn-primary rounded" data-bs-toggle="modal" data-bs-target="#delModal" th:id ="${truck.id}" name="del-truck-btn" th:disabled="${truck.currentOrder != null}">
                                         <em class="fa fa-trash"></em>
                                     </button>
                                 </div>

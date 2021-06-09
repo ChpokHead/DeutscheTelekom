@@ -3,6 +3,7 @@ package com.chpok.logiweb.dto;
 import com.chpok.logiweb.model.Order;
 
 import java.util.List;
+import java.util.Objects;
 
 public class CargoDto {
     private Long id;
@@ -49,5 +50,18 @@ public class CargoDto {
 
     public void setWaypoints(List<Order.Waypoint> waypoints) {
         this.waypoints = waypoints;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        CargoDto cargoDto = (CargoDto) o;
+        return Objects.equals(id, cargoDto.id) && Objects.equals(name, cargoDto.name) && Objects.equals(weight, cargoDto.weight) && Objects.equals(status, cargoDto.status);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, name, weight, status);
     }
 }

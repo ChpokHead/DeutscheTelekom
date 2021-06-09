@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.persistence.EntityNotFoundException;
 import java.io.IOException;
+import java.util.Optional;
 
 
 @Controller
@@ -36,7 +37,23 @@ public class EmployeeTruckPageController {
         return "employeeTruckPage";
     }
 
-    @GetMapping(value = "/{id}", produces={"application/json; charset=UTF-8"})
+    @GetMapping(value = "/trucks", produces = {"application/json; charset=UTF-8"})
+    @ResponseBody
+    public String getTrucks(@RequestParam(name = "location") Optional<String> locationName) {
+        try {
+            final ObjectMapper mapper = new ObjectMapper();
+
+            if (locationName.isPresent()) {
+                return mapper.writeValueAsString(truckService.getTrucksAtLocationByName(locationName.get()));
+            } else {
+                return mapper.writeValueAsString(truckService.getAllTrucks());
+            }
+        } catch (IOException ioe) {
+            throw new EntityNotFoundException();
+        }
+    }
+
+    @GetMapping(value = "/{id}", produces = {"application/json; charset=UTF-8"})
     @ResponseBody
     public String getTruck(@PathVariable Long id) {
         try {

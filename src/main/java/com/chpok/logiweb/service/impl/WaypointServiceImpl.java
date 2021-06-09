@@ -14,6 +14,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.hibernate.HibernateException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
 
 import javax.persistence.EntityNotFoundException;
@@ -29,11 +30,10 @@ public class WaypointServiceImpl implements WaypointService {
 
     private final WaypointDao waypointDao;
     private final WaypointMapper waypointMapper;
+    private final CargoService cargoService;
 
-    @Autowired
-    private CargoService cargoService;
-
-    public WaypointServiceImpl(WaypointDao waypointDao, WaypointMapper waypointMapper) {
+    public WaypointServiceImpl(@Lazy CargoService cargoService, WaypointDao waypointDao, WaypointMapper waypointMapper) {
+        this.cargoService = cargoService;
         this.waypointDao = waypointDao;
         this.waypointMapper = waypointMapper;
     }
@@ -43,7 +43,7 @@ public class WaypointServiceImpl implements WaypointService {
         try {
             waypointDao.save(waypointMapper.mapDtoToEntity(waypoint));
 
-            logOnSuccess(String.format("new waypoint with location = %s was created", waypoint.getLocation().getName()));
+            logOnSuccess("new waypoint was created");
         } catch (HibernateException | NoSuchElementException | IllegalArgumentException e) {
             LOGGER.error("saving waypoint exception");
 

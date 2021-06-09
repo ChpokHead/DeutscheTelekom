@@ -6,6 +6,7 @@ import com.chpok.logiweb.model.Truck;
 import org.hibernate.Hibernate;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
+import org.hibernate.query.Query;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
@@ -14,6 +15,7 @@ import java.util.Optional;
 @Component
 public class TruckDaoImpl implements TruckDao{
     private static final String FIND_ALL_QUERY = "SELECT t FROM Truck t";
+    private static final String FIND_ALL_BY_CURRENT_LOCATION_ID_QUERY = "SELECT t FROM Truck t where t.location.id = :id";
 
     private final SessionFactory sessionFactory;
 
@@ -85,6 +87,23 @@ public class TruckDaoImpl implements TruckDao{
             session.delete(deletingTruck);
 
             session.getTransaction().commit();
+        }
+    }
+
+    @Override
+    public List<Truck> findByCurrentLocationId(Long currentLocationId) {
+        try (Session session = sessionFactory.openSession()) {
+            session.beginTransaction();
+
+            Query<Truck> query = session.createQuery(FIND_ALL_BY_CURRENT_LOCATION_ID_QUERY, Truck.class);
+
+            query.setParameter("id", currentLocationId);
+
+            final List<Truck> trucksAtSpecifiedLocation = query.getResultList();
+
+            session.getTransaction().commit();
+
+            return trucksAtSpecifiedLocation;
         }
     }
 

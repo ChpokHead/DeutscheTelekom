@@ -27,7 +27,4 @@ public interface CrudDao<E> {
         throw new MethodNotImplementedException();
     }
 
-    default void deleteAllByIds(Set<Long> ids) {
-        throw new MethodNotImplementedException();
-    }
 }

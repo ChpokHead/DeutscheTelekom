@@ -60,6 +60,11 @@ button[name=del-truck-btn]:focus {
     color: white;
 }
 
+button[name=del-truck-btn]:disabled {
+    background-color: #e50303;
+    color: white;
+}
+
 button[name=update-truck-btn]:hover {
     background-color: #23a744;
     color: white;

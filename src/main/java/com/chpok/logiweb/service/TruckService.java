@@ -18,4 +18,5 @@ public interface TruckService {
     void updateTruckCurrentOrder(Long truckId, OrderDto newOrder);
     void updateTruckLocation(Long truckId, Location newLocation);
     void updateTruckWhenCurrentOrderIsDeleted(Long truckId);
+    List<TruckDto> getTrucksAtLocationByName(String locationName);
 }

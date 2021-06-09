@@ -7,7 +7,6 @@ import com.chpok.logiweb.model.Driver;
 import com.chpok.logiweb.model.Location;
 import com.chpok.logiweb.model.Order;
 import com.chpok.logiweb.model.Truck;
-import com.chpok.logiweb.model.enums.DriverStatus;
 import com.chpok.logiweb.service.*;
 import com.chpok.logiweb.mapper.impl.OrderMapper;
 import com.chpok.logiweb.mapper.impl.TruckMapper;
