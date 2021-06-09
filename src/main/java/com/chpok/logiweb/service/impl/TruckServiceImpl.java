@@ -72,6 +72,10 @@ public class TruckServiceImpl implements TruckService {
             saveUpdateValidator.validate(truckDto);
 
             truckDao.update(truckMapper.mapDtoToEntity(truckDto));
+
+            sendMessage("truck updated");
+
+            logOnSuccess(String.format("truck with id = %d was updated", truckDto.getId()));
         } catch (HibernateException | NoSuchElementException | IllegalArgumentException e) {
             LOGGER.error("updating truck exception");
 
@@ -87,6 +91,10 @@ public class TruckServiceImpl implements TruckService {
             deleteValidator.validate(truckMapper.mapEntityToDto(deletingTruck));
 
             truckDao.deleteById(id);
+
+            sendMessage("truck deleted");
+
+            logOnSuccess(String.format("truck with id = %d was deleted", id));
         } catch (HibernateException | NoSuchElementException | IllegalArgumentException e) {
             LOGGER.error("deleting truck by id exception");
 
@@ -101,7 +109,7 @@ public class TruckServiceImpl implements TruckService {
 
             truckDao.save(truckMapper.mapDtoToEntity(truck));
 
-            kafkaTemplate.send("logiweb", "truck saved");
+            sendMessage("truck saved");
 
             logOnSuccess(String.format("truck with reg number = %s was created", truck.getRegNumber()));
         } catch (HibernateException | NoSuchElementException | IllegalArgumentException e) {
@@ -236,4 +244,7 @@ public class TruckServiceImpl implements TruckService {
         LOGGER.info(logInfo);
     }
 
+    private void sendMessage(String message) {
+        kafkaTemplate.send("logiweb", message);
+    }
 }
