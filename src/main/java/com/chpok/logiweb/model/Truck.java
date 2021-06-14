@@ -2,7 +2,7 @@ package com.chpok.logiweb.model;
 
 import com.chpok.logiweb.model.enums.TruckStatus;
 import com.chpok.logiweb.model.enums.util.PostgreSQLEnumType;
-import org.codehaus.jackson.annotate.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import org.hibernate.annotations.Type;
 import org.hibernate.annotations.TypeDef;
 
@@ -41,7 +41,6 @@ public class Truck extends AbstractModel {
     @OneToMany(mappedBy = "currentTruck", fetch = FetchType.LAZY)
     private List<Driver> currentDrivers;
 
-    @JsonIgnore
     @OneToOne
     @JoinColumn(name = "current_order_id")
     private Order currentOrder;

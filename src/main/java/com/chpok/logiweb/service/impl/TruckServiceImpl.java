@@ -73,7 +73,7 @@ public class TruckServiceImpl implements TruckService {
 
             truckDao.update(truckMapper.mapDtoToEntity(truckDto));
 
-            sendMessage("truck updated");
+            sendMessage(String.format("truck updated, id = %d", truckDto.getId()));
 
             logOnSuccess(String.format("truck with id = %d was updated", truckDto.getId()));
         } catch (HibernateException | NoSuchElementException | IllegalArgumentException e) {
@@ -92,7 +92,7 @@ public class TruckServiceImpl implements TruckService {
 
             truckDao.deleteById(id);
 
-            sendMessage("truck deleted");
+            sendMessage(String.format("truck deleted, id = %d", id));
 
             logOnSuccess(String.format("truck with id = %d was deleted", id));
         } catch (HibernateException | NoSuchElementException | IllegalArgumentException e) {
@@ -245,6 +245,6 @@ public class TruckServiceImpl implements TruckService {
     }
 
     private void sendMessage(String message) {
-        kafkaTemplate.send("logiweb", message);
+        kafkaTemplate.send("logiweb-truck", message);
     }
 }

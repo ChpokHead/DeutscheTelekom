@@ -1,7 +1,7 @@
 package com.chpok.logiweb.controller;
 
 import com.chpok.logiweb.service.LocationService;
-import org.codehaus.jackson.map.ObjectMapper;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;

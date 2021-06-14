@@ -28,7 +28,7 @@
         <log4j.version>2.5</log4j.version>
         <thymeleaf.version>3.0.11.RELEASE</thymeleaf.version>
         <hibernate.version>5.4.2.Final</hibernate.version>
-        <jackson.version>2.12.2</jackson.version>
+        <jackson.version>2.12.3</jackson.version>
         <spring.security.version>5.4.5</spring.security.version>
         <slf4j.version>1.7.30</slf4j.version>
         <spring.kafka.version>2.7.1</spring.kafka.version>
@@ -131,9 +131,27 @@
         </dependency>
 
         <dependency>
-            <groupId>org.codehaus.jackson</groupId>
-            <artifactId>jackson-mapper-asl</artifactId>
-            <version>1.9.13</version>
+            <groupId>com.fasterxml.jackson.datatype</groupId>
+            <artifactId>jackson-datatype-jsr310</artifactId>
+            <version>${jackson.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>com.fasterxml.jackson.module</groupId>
+            <artifactId>jackson-module-parameter-names</artifactId>
+            <version>${jackson.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>com.fasterxml.jackson.datatype</groupId>
+            <artifactId>jackson-datatype-jdk8</artifactId>
+            <version>${jackson.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>com.fasterxml.jackson.core</groupId>
+            <artifactId>jackson-annotations</artifactId>
+            <version>${jackson.version}</version>
         </dependency>
 
         <dependency>

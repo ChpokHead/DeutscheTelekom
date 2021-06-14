@@ -2,7 +2,6 @@ package com.chpok.logiweb.model;
 
 import com.chpok.logiweb.model.enums.DriverStatus;
 import com.chpok.logiweb.model.enums.util.PostgreSQLEnumType;
-import org.codehaus.jackson.annotate.JsonIgnore;
 import org.hibernate.annotations.DynamicInsert;
 import org.hibernate.annotations.Type;
 import org.hibernate.annotations.TypeDef;
@@ -39,12 +38,10 @@ public class Driver extends AbstractModel {
     @JoinColumn(name = "location_id")
     private Location location;
 
-    @JsonIgnore
     @ManyToOne
     @JoinColumn(name = "current_truck_id")
     private Truck currentTruck;
 
-    @JsonIgnore
     @ManyToOne
     @JoinColumn(name = "current_order_id")
     private Order currentOrder;

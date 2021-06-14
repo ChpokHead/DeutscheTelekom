@@ -18,6 +18,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.hibernate.HibernateException;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -36,18 +37,18 @@ public class DriverServiceImpl implements DriverService {
     private final DriverDao driverDao;
     private final DriverMapper driverMapper;
     private final OrderMapper orderMapper;
-    private final TruckMapper truckMapper;
     private final TruckService truckService;
+    private final KafkaTemplate<String, String> kafkaTemplate;
 
     public DriverServiceImpl(@Qualifier("driverDtoValidator") ValidationProvider<DriverDto> saveUpdateValidator,
-                             @Qualifier("driverDtoDeleteValidator") ValidationProvider<DriverDto> deleteValidator, DriverDao driverDao, DriverMapper driverMapper, OrderMapper orderMapper, TruckMapper truckMapper, TruckService truckService) {
+                             @Qualifier("driverDtoDeleteValidator") ValidationProvider<DriverDto> deleteValidator, DriverDao driverDao, DriverMapper driverMapper, OrderMapper orderMapper, TruckService truckService, KafkaTemplate<String, String> kafkaTemplate) {
         this.saveUpdateValidator = saveUpdateValidator;
         this.deleteValidator = deleteValidator;
         this.driverDao = driverDao;
         this.driverMapper = driverMapper;
         this.orderMapper = orderMapper;
-        this.truckMapper = truckMapper;
         this.truckService = truckService;
+        this.kafkaTemplate = kafkaTemplate;
     }
 
     @Override
@@ -67,6 +68,10 @@ public class DriverServiceImpl implements DriverService {
             saveUpdateValidator.validate(driver);
 
             driverDao.update(driverMapper.mapDtoToEntity(driver));
+
+            logOnSuccess(String.format("driver with id = %d was updated", driver.getPersonalNumber()));
+
+            sendMessage(String.format("driver updated, id = %d", driver.getPersonalNumber()));
         } catch (HibernateException | NoSuchElementException | IllegalArgumentException e) {
             LOGGER.error("updating driver exception");
 
@@ -121,6 +126,8 @@ public class DriverServiceImpl implements DriverService {
             driverDao.deleteById(id);
 
             logOnSuccess(String.format("driver with id = %d was deleted", id));
+
+            sendMessage(String.format("driver deleted, id = %d", id));
         } catch (HibernateException | NoSuchElementException | IllegalArgumentException e) {
             LOGGER.error("deleting driver by id exception");
 
@@ -136,6 +143,8 @@ public class DriverServiceImpl implements DriverService {
             driverDao.save(driverMapper.mapDtoToEntity(driver));
 
             logOnSuccess(String.format("new driver with first name = %s and last name = %s was created", driver.getFirstName(), driver.getLastName()));
+
+            sendMessage("driver saved");
         } catch (HibernateException | NoSuchElementException | IllegalArgumentException e) {
             LOGGER.error("saving driver exception");
 
@@ -186,7 +195,7 @@ public class DriverServiceImpl implements DriverService {
         try {
             final DriverDto updatingDriver = getDriverById(driverId);
 
-            updatingDriver.setCurrentTruck(truckMapper.mapDtoToEntity(newTruck));
+            updatingDriver.setCurrentTruck(newTruck);
 
             updateDriver(updatingDriver);
         } catch (HibernateException | NoSuchElementException e) {
@@ -230,6 +239,10 @@ public class DriverServiceImpl implements DriverService {
 
     private void logOnSuccess(String logInfo) {
         LOGGER.info(logInfo);
+    }
+
+    private void sendMessage(String message) {
+        kafkaTemplate.send("logiweb-driver", message);
     }
 
 }

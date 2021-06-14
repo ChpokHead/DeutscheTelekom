@@ -237,7 +237,7 @@
         $.ajax({
             type:"GET",
             contentType: "application/json",
-            url: "/employeeDriver/" + passedID,
+            url: "/employeeDriver/drivers/" + passedID,
             success: function (data) {
                 $('#inputUpdateDriverFirstName').val(data["firstName"]);
                 $('#inputUpdateDriverLastName').val(data["lastName"]);

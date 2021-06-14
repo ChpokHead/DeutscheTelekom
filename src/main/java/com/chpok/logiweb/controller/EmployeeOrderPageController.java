@@ -3,11 +3,15 @@ package com.chpok.logiweb.controller;
 import com.chpok.logiweb.dto.OrderDto;
 import com.chpok.logiweb.dto.WaypointsPair;
 import com.chpok.logiweb.service.*;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
+import javax.persistence.EntityNotFoundException;
+import java.io.IOException;
 import java.time.LocalDate;
 
 @Controller
@@ -39,6 +43,34 @@ public class EmployeeOrderPageController {
         model.addAttribute("order", new OrderDto());
 
         return "employeeOrderPage";
+    }
+
+    @GetMapping(value = "/orders", produces={"application/json; charset=UTF-8"})
+    @ResponseBody
+    public String getOrders() {
+        try {
+            final ObjectMapper mapper = new ObjectMapper();
+
+            mapper.registerModule(new JavaTimeModule());
+
+            return mapper.writeValueAsString(orderService.getAllOrders());
+        } catch (IOException ioe) {
+            throw new EntityNotFoundException();
+        }
+    }
+
+    @GetMapping(value = "/orders/{id}", produces = {"application/json; charset=UTF-8"})
+    @ResponseBody
+    public String getOrder(@PathVariable Long id) {
+        try {
+            final ObjectMapper mapper = new ObjectMapper();
+
+            mapper.registerModule(new JavaTimeModule());
+
+            return mapper.writeValueAsString(orderService.getOrderById(id));
+        } catch (IOException ioe) {
+            throw new EntityNotFoundException();
+        }
     }
 
     @GetMapping("/edit/{id}")

@@ -2,7 +2,7 @@ package com.chpok.logiweb.controller;
 
 import com.chpok.logiweb.dto.CargoDto;
 import com.chpok.logiweb.service.CargoService;
-import org.codehaus.jackson.map.ObjectMapper;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;

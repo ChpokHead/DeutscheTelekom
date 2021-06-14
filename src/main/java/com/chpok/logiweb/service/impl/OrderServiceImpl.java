@@ -13,6 +13,7 @@ import com.chpok.logiweb.mapper.impl.TruckMapper;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.hibernate.HibernateException;
+import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Component;
 
 import javax.persistence.EntityNotFoundException;
@@ -37,9 +38,10 @@ public class OrderServiceImpl implements OrderService {
     private final OrderDao orderDao;
     private final OrderMapper orderMapper;
     private final TruckMapper truckMapper;
+    private final KafkaTemplate<String, String> kafkaTemplate;
 
     public OrderServiceImpl(WaypointService waypointService, DriverService driverService, CargoService cargoService,
-                            LocationMapService locationMapService, OrderDao orderDao, OrderMapper orderMapper, TruckService truckService, TruckMapper truckMapper) {
+                            LocationMapService locationMapService, OrderDao orderDao, OrderMapper orderMapper, TruckService truckService, TruckMapper truckMapper, KafkaTemplate<String, String> kafkaTemplate) {
         this.waypointService = waypointService;
         this.driverService = driverService;
         this.cargoService = cargoService;
@@ -48,6 +50,7 @@ public class OrderServiceImpl implements OrderService {
         this.orderMapper = orderMapper;
         this.truckService = truckService;
         this.truckMapper = truckMapper;
+        this.kafkaTemplate = kafkaTemplate;
     }
 
     @Override
@@ -67,6 +70,8 @@ public class OrderServiceImpl implements OrderService {
             orderDao.save(orderMapper.mapDtoToEntity(order));
 
             logOnSuccess("new order was created");
+
+            sendMessage("order saved");
         } catch (HibernateException | NoSuchElementException | IllegalArgumentException e) {
             LOGGER.error("saving order exception");
 
@@ -80,6 +85,8 @@ public class OrderServiceImpl implements OrderService {
             orderDao.update(orderMapper.mapDtoToEntity(order));
 
             logOnSuccess(String.format("order with id = %d was updated", order.getId()));
+
+            sendMessage(String.format("order updated, id = %d", order.getId()));
         } catch (HibernateException | NoSuchElementException | IllegalArgumentException e) {
             LOGGER.error("updating order exception");
 
@@ -308,7 +315,7 @@ public class OrderServiceImpl implements OrderService {
             final OrderDto updatingOrder = getOrderById(orderId);
 
             newDriver.setCurrentOrder(orderMapper.mapDtoToEntity(updatingOrder));
-            newDriver.setCurrentTruck(updatingOrder.getCurrentTruck());
+            newDriver.setCurrentTruck(truckMapper.mapEntityToDto(updatingOrder.getCurrentTruck()));
 
             driverService.updateDriver(newDriver);
         } catch (HibernateException | NoSuchElementException | IllegalArgumentException e) {
@@ -397,6 +404,8 @@ public class OrderServiceImpl implements OrderService {
             orderDao.deleteById(id);
 
             logOnSuccess(String.format("order with id = %d has been deleted", id));
+
+            sendMessage(String.format("order deleted, id = %d", id));
         } catch (HibernateException | NoSuchElementException e) {
             LOGGER.error("deleting order by order id exception");
 
@@ -414,6 +423,10 @@ public class OrderServiceImpl implements OrderService {
 
     private void logOnSuccess(String logInfo) {
         LOGGER.info(logInfo);
+    }
+
+    private void sendMessage(String message) {
+        kafkaTemplate.send("logiweb-order", message);
     }
 
 }

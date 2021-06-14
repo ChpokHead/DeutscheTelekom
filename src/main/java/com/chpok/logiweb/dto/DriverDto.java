@@ -3,20 +3,15 @@ package com.chpok.logiweb.dto;
 import com.chpok.logiweb.model.Location;
 import com.chpok.logiweb.model.Order;
 import com.chpok.logiweb.model.Truck;
-import org.codehaus.jackson.annotate.JsonIgnore;
 
 public class DriverDto {
     private String firstName;
     private String lastName;
     private Long personalNumber;
     private Short monthWorkedHours;
-    private Short nextMonthWorkedHours;
-    private Boolean isMonthChanged;
     private Integer status;
     private Location location;
-    @JsonIgnore
-    private Truck currentTruck;
-    @JsonIgnore
+    private TruckDto currentTruck;
     private Order currentOrder;
 
     public String getFirstName() {
@@ -67,11 +62,11 @@ public class DriverDto {
         this.location = location;
     }
 
-    public Truck getCurrentTruck() {
+    public TruckDto getCurrentTruck() {
         return currentTruck;
     }
 
-    public void setCurrentTruck(Truck currentTruck) {
+    public void setCurrentTruck(TruckDto currentTruck) {
         this.currentTruck = currentTruck;
     }
 
@@ -83,19 +78,4 @@ public class DriverDto {
         this.currentOrder = currentOrder;
     }
 
-    public Short getNextMonthWorkedHours() {
-        return nextMonthWorkedHours;
-    }
-
-    public void setNextMonthWorkedHours(Short nextMonthWorkedHours) {
-        this.nextMonthWorkedHours = nextMonthWorkedHours;
-    }
-
-    public Boolean getMonthChanged() {
-        return isMonthChanged;
-    }
-
-    public void setMonthChanged(Boolean monthChanged) {
-        isMonthChanged = monthChanged;
-    }
 }

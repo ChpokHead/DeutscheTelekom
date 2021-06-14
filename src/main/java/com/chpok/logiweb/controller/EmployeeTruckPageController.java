@@ -3,7 +3,8 @@ package com.chpok.logiweb.controller;
 import com.chpok.logiweb.dto.TruckDto;
 import com.chpok.logiweb.service.LocationService;
 import com.chpok.logiweb.service.TruckService;
-import org.codehaus.jackson.map.ObjectMapper;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -43,6 +44,8 @@ public class EmployeeTruckPageController {
         try {
             final ObjectMapper mapper = new ObjectMapper();
 
+            mapper.registerModule(new JavaTimeModule());
+
             if (locationName.isPresent()) {
                 return mapper.writeValueAsString(truckService.getTrucksAtLocationByName(locationName.get()));
             } else {
@@ -53,11 +56,13 @@ public class EmployeeTruckPageController {
         }
     }
 
-    @GetMapping(value = "/{id}", produces = {"application/json; charset=UTF-8"})
+    @GetMapping(value = "/trucks/{id}", produces = {"application/json; charset=UTF-8"})
     @ResponseBody
     public String getTruck(@PathVariable Long id) {
         try {
             final ObjectMapper mapper = new ObjectMapper();
+
+            mapper.registerModule(new JavaTimeModule());
 
             return mapper.writeValueAsString(truckService.getTruckById(id));
         } catch (IOException ioe) {

@@ -4,7 +4,8 @@ import com.chpok.logiweb.dto.DriverDto;
 import com.chpok.logiweb.service.DriverService;
 import com.chpok.logiweb.service.LocationService;
 import com.chpok.logiweb.service.TruckService;
-import org.codehaus.jackson.map.ObjectMapper;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -40,11 +41,27 @@ public class EmployeeDriverPageController {
         return "employeeDriverPage";
     }
 
-    @GetMapping(value = "/{id}", produces={"application/json; charset=UTF-8"})
+    @GetMapping(value = "/drivers", produces={"application/json; charset=UTF-8"})
+    @ResponseBody
+    public String getDrivers() {
+        try {
+            final ObjectMapper mapper = new ObjectMapper();
+
+            mapper.registerModule(new JavaTimeModule());
+
+            return mapper.writeValueAsString(driverService.getAllDrivers());
+        } catch (IOException ioe) {
+            throw new EntityNotFoundException();
+        }
+    }
+
+    @GetMapping(value = "/drivers/{id}", produces={"application/json; charset=UTF-8"})
     @ResponseBody
     public String getDriver(@PathVariable Long id) {
         try {
             final ObjectMapper mapper = new ObjectMapper();
+
+            mapper.registerModule(new JavaTimeModule());
 
             return mapper.writeValueAsString(driverService.getDriverById(id));
         } catch (IOException ioe) {

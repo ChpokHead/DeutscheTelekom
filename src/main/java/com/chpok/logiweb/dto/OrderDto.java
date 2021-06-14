@@ -3,14 +3,22 @@ package com.chpok.logiweb.dto;
 import com.chpok.logiweb.model.Driver;
 import com.chpok.logiweb.model.Order;
 import com.chpok.logiweb.model.Truck;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import java.time.LocalDate;
 import java.util.List;
 
 public class OrderDto {
     private Long id;
     private Boolean isCompleted;
+
+    @JsonIgnore
     private Truck currentTruck;
+
+    @JsonIgnore
     private List<Driver> currentDrivers;
+
+    @JsonIgnore
     private List<Order.Waypoint> waypoints;
     private LocalDate creationDate;
     private LocalDate startDate;

@@ -4,10 +4,14 @@ import com.chpok.logiweb.dto.DriverDto;
 import com.chpok.logiweb.mapper.Mapper;
 import com.chpok.logiweb.model.Driver;
 import com.chpok.logiweb.model.enums.DriverStatus;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 @Component
 public class DriverMapper implements Mapper<Driver, DriverDto> {
+    @Autowired
+    private TruckMapper truckMapper;
+
     public Driver mapDtoToEntity(DriverDto driverDto) {
         if (driverDto == null) {
             return null;
@@ -20,7 +24,7 @@ public class DriverMapper implements Mapper<Driver, DriverDto> {
                 .withLocation(driverDto.getLocation())
                 .withStatus(DriverStatus.fromInteger(driverDto.getStatus()))
                 .withMonthWorkedHours(driverDto.getMonthWorkedHours())
-                .withCurrentTruck(driverDto.getCurrentTruck())
+                .withCurrentTruck(truckMapper.mapDtoToEntity(driverDto.getCurrentTruck()))
                 .withCurrentOrder(driverDto.getCurrentOrder())
                 .build();
     }
@@ -38,7 +42,7 @@ public class DriverMapper implements Mapper<Driver, DriverDto> {
         driverDto.setPersonalNumber(driver.getId());
         driverDto.setMonthWorkedHours(driver.getMonthWorkedHours());
         driverDto.setLocation(driver.getLocation());
-        driverDto.setCurrentTruck(driver.getCurrentTruck());
+        driverDto.setCurrentTruck(truckMapper.mapEntityToDto(driver.getCurrentTruck()));
         driverDto.setCurrentOrder(driver.getCurrentOrder());
 
         return driverDto;
