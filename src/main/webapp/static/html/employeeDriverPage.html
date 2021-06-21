@@ -69,7 +69,7 @@
                                 </div>
                                 <div class="d-flex justify-content-end">
                                     <div class="col py-3">
-                                        <button type="button" class="btn btn-primary rounded" data-bs-toggle="modal" data-bs-target="#exampleModal" th:id ="${driver.personalNumber}" name="update-item-btn">
+                                        <button type="button" class="btn btn-primary rounded" data-bs-toggle="modal" data-bs-target="#exampleModal" th:id ="${driver.personalNumber}" th:disabled="${driver.currentOrder != null}" name="update-item-btn">
                                             <em class="fa fa-edit"></em>
                                         </button>
                                     </div>

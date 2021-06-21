@@ -68,7 +68,7 @@
                                     <h5 class="mb-1" th:text="${truck.regNumber}"></h5>
                                 </div>
                                 <div class="col-0 py-3">
-                                    <button type="button" class="btn btn-primary rounded" data-bs-toggle="modal" data-bs-target="#exampleModal" th:id ="${truck.id}" name="update-truck-btn">
+                                    <button type="button" class="btn btn-primary rounded" data-bs-toggle="modal" data-bs-target="#exampleModal" th:id ="${truck.id}" name="update-truck-btn" th:disabled="${truck.currentOrder != null}">
                                         <em class="fa fa-edit"></em>
                                     </button>
                                 </div>

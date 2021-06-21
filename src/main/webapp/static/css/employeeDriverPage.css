@@ -48,6 +48,12 @@ button[name=update-item-btn]:focus {
     border: 0;
 }
 
+button[name=update-item-btn]:disabled {
+    background-color: #23a744;
+    color: white;
+    border: 0;
+}
+
 .side-navbar {
     width: 180px;
     height: 100%;

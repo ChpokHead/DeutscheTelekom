@@ -13,6 +13,7 @@ import com.chpok.logiweb.validation.ValidationProvider;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.hibernate.HibernateException;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -26,14 +27,14 @@ import java.util.stream.Collectors;
 public class CargoServiceImpl implements CargoService {
     private static final Logger LOGGER = LogManager.getLogger(CargoServiceImpl.class);
 
-    private final WaypointService waypointService;
+    @Autowired
+    private WaypointService waypointService;
+    @Autowired
     private CargoDao cargoDao;
     private final ValidationProvider<CargoDto> validator;
     private final CargoMapper cargoMapper;
 
-    public CargoServiceImpl(WaypointService waypointService, CargoDao cargoDao, ValidationProvider<CargoDto> validator, CargoMapper cargoMapper) {
-        this.waypointService = waypointService;
-        this.cargoDao = cargoDao;
+    public CargoServiceImpl(ValidationProvider<CargoDto> validator, CargoMapper cargoMapper) {
         this.validator = validator;
         this.cargoMapper = cargoMapper;
     }

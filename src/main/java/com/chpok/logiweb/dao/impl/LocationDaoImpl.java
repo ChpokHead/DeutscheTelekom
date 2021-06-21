@@ -22,13 +22,15 @@ public class LocationDaoImpl implements LocationDao {
     }
 
     @Override
-    public void save(Location entity) {
+    public Long save(Location entity) {
         try (Session session = sessionFactory.openSession()){
             session.beginTransaction();
 
             session.save(entity);
 
             session.getTransaction().commit();
+
+            return entity.getId();
         }
     }
 

@@ -2,7 +2,8 @@ package com.chpok.logiweb.dto;
 
 import com.chpok.logiweb.model.Location;
 import com.chpok.logiweb.model.Order;
-import com.chpok.logiweb.model.Truck;
+
+import java.util.Objects;
 
 public class DriverDto {
     private String firstName;
@@ -76,6 +77,19 @@ public class DriverDto {
 
     public void setCurrentOrder(Order currentOrder) {
         this.currentOrder = currentOrder;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        DriverDto driverDto = (DriverDto) o;
+        return firstName.equals(driverDto.firstName) && lastName.equals(driverDto.lastName) && personalNumber.equals(driverDto.personalNumber) && Objects.equals(monthWorkedHours, driverDto.monthWorkedHours) && Objects.equals(status, driverDto.status) && Objects.equals(location, driverDto.location);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(firstName, lastName, personalNumber, monthWorkedHours, status, location);
     }
 
 }

@@ -4,10 +4,9 @@ import com.chpok.logiweb.exception.MethodNotImplementedException;
 
 import java.util.List;
 import java.util.Optional;
-import java.util.Set;
 
 public interface CrudDao<E> {
-    default void save(E entity) {
+    default Long save(E entity) {
         throw new MethodNotImplementedException();
     }
 

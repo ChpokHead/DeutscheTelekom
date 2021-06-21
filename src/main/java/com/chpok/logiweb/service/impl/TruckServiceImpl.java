@@ -10,6 +10,7 @@ import com.chpok.logiweb.mapper.impl.OrderMapper;
 import com.chpok.logiweb.model.Location;
 import com.chpok.logiweb.model.Truck;
 import com.chpok.logiweb.model.enums.TruckStatus;
+import com.chpok.logiweb.model.kafka.LogiwebMessage;
 import com.chpok.logiweb.service.TruckService;
 import com.chpok.logiweb.mapper.impl.DriverMapper;
 import com.chpok.logiweb.mapper.impl.TruckMapper;
@@ -17,6 +18,7 @@ import com.chpok.logiweb.validation.ValidationProvider;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.hibernate.HibernateException;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
@@ -33,26 +35,25 @@ import java.util.stream.Collectors;
 public class TruckServiceImpl implements TruckService {
     private static final Logger LOGGER = LogManager.getLogger(TruckServiceImpl.class);
 
+    @Autowired
+    private TruckDao truckDao;
+    @Autowired
+    private TruckMapper truckMapper;
+    @Autowired
+    private DriverMapper driverMapper;
+    @Autowired
+    private OrderMapper orderMapper;
+    @Autowired
+    private LocationDao locationDao;
+    @Autowired
+    private KafkaTemplate<String, LogiwebMessage> kafkaTemplate;
     private final ValidationProvider<TruckDto> saveUpdateValidator;
     private final ValidationProvider<TruckDto> deleteValidator;
-    private final TruckDao truckDao;
-    private final LocationDao locationDao;
-    private final TruckMapper truckMapper;
-    private final DriverMapper driverMapper;
-    private final OrderMapper orderMapper;
-    private final KafkaTemplate<String, String> kafkaTemplate;
 
     public TruckServiceImpl(@Qualifier("truckDtoValidator") ValidationProvider<TruckDto> saveUpdateValidator,
-                            @Qualifier("truckDtoDeleteValidator") ValidationProvider<TruckDto> deleteValidator,
-                            TruckDao truckDao, LocationDao locationDao, TruckMapper truckMapper, DriverMapper driverMapper, OrderMapper orderMapper, KafkaTemplate<String, String> kafkaTemplate) {
+                            @Qualifier("truckDtoDeleteValidator") ValidationProvider<TruckDto> deleteValidator) {
         this.saveUpdateValidator = saveUpdateValidator;
         this.deleteValidator = deleteValidator;
-        this.truckDao = truckDao;
-        this.locationDao = locationDao;
-        this.truckMapper = truckMapper;
-        this.driverMapper = driverMapper;
-        this.orderMapper = orderMapper;
-        this.kafkaTemplate = kafkaTemplate;
     }
 
     @Override
@@ -73,7 +74,7 @@ public class TruckServiceImpl implements TruckService {
 
             truckDao.update(truckMapper.mapDtoToEntity(truckDto));
 
-            sendMessage(String.format("truck updated, id = %d", truckDto.getId()));
+            sendMessage(new LogiwebMessage("truck updated", truckDto.getId()));
 
             logOnSuccess(String.format("truck with id = %d was updated", truckDto.getId()));
         } catch (HibernateException | NoSuchElementException | IllegalArgumentException e) {
@@ -92,10 +93,14 @@ public class TruckServiceImpl implements TruckService {
 
             truckDao.deleteById(id);
 
-            sendMessage(String.format("truck deleted, id = %d", id));
+            sendMessage(new LogiwebMessage("truck deleted", deletingTruck.getId()));
 
             logOnSuccess(String.format("truck with id = %d was deleted", id));
-        } catch (HibernateException | NoSuchElementException | IllegalArgumentException e) {
+        } catch (IllegalArgumentException e) {
+            LOGGER.error("deleting truck by id exception");
+
+            throw new InvalidEntityException();
+        } catch (HibernateException | NoSuchElementException e) {
             LOGGER.error("deleting truck by id exception");
 
             throw new EntityNotFoundException();
@@ -107,9 +112,9 @@ public class TruckServiceImpl implements TruckService {
         try {
             saveUpdateValidator.validate(truck);
 
-            truckDao.save(truckMapper.mapDtoToEntity(truck));
+            final Long savedTruckId = truckDao.save(truckMapper.mapDtoToEntity(truck));
 
-            sendMessage("truck saved");
+            sendMessage(new LogiwebMessage("truck saved", savedTruckId));
 
             logOnSuccess(String.format("truck with reg number = %s was created", truck.getRegNumber()));
         } catch (HibernateException | NoSuchElementException | IllegalArgumentException e) {
@@ -244,7 +249,7 @@ public class TruckServiceImpl implements TruckService {
         LOGGER.info(logInfo);
     }
 
-    private void sendMessage(String message) {
+    private void sendMessage(LogiwebMessage message) {
         kafkaTemplate.send("logiweb-truck", message);
     }
 }

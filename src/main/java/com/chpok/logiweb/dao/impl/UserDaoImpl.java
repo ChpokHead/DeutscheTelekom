@@ -21,13 +21,15 @@ public class UserDaoImpl implements UserDao {
     }
 
     @Override
-    public void save(User entity) {
+    public Long save(User entity) {
         try (Session session = sessionFactory.openSession()){
             session.beginTransaction();
 
             session.save(entity);
 
             session.getTransaction().commit();
+
+            return entity.getId();
         }
     }
 

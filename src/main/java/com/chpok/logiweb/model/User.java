@@ -59,6 +59,14 @@ public class User extends AbstractModel {
         return driver;
     }
 
+    public void setDriver(Driver driver) {
+        this.driver = driver;
+    }
+
+    public void setEmployee(Employee employee) {
+        this.employee = employee;
+    }
+
     public Employee getEmployee() {
         return employee;
     }

@@ -8,11 +8,11 @@ import org.springframework.stereotype.Component;
 public class TruckDtoDeleteValidator implements ValidationProvider<TruckDto> {
     @Override
     public void validate(TruckDto entity) {
-        validateCurrentOrderNotNull(entity);
+        validateCurrentOrderIsNull(entity);
     }
 
-    private void validateCurrentOrderNotNull(TruckDto entity) {
-        if (entity.getCurrentOrder() != null) {
+    private void validateCurrentOrderIsNull(TruckDto entity) {
+        if (entity.getCurrentOrder() == null) {
             throw new IllegalArgumentException();
         }
     }

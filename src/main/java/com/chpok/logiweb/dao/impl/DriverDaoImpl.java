@@ -25,13 +25,15 @@ public class DriverDaoImpl implements DriverDao {
 
 
     @Override
-    public void save(Driver entity) {
+    public Long save(Driver entity) {
         try (Session session = sessionFactory.openSession()) {
             session.beginTransaction();
 
             session.save(entity);
 
             session.getTransaction().commit();
+
+            return entity.getId();
         }
     }
 

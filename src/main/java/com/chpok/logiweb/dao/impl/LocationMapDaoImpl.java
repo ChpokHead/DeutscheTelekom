@@ -20,13 +20,15 @@ public class LocationMapDaoImpl implements LocationMapDao {
     }
 
     @Override
-    public void save(LocationMap entity) {
+    public Long save(LocationMap entity) {
         try (Session session = sessionFactory.openSession()){
             session.beginTransaction();
 
             session.save(entity);
 
             session.getTransaction().commit();
+
+            return entity.getId();
         }
     }
 

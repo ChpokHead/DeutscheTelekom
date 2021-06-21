@@ -18,13 +18,15 @@ public class EmployeeDaoImpl implements EmployeeDao {
 
 
     @Override
-    public void save(Employee entity) {
+    public Long save(Employee entity) {
         try (Session session = sessionFactory.openSession()) {
             session.beginTransaction();
 
             session.save(entity);
 
             session.getTransaction().commit();
+
+            return entity.getId();
         }
     }
 

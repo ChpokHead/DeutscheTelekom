@@ -23,13 +23,15 @@ public class WaypointDaoImpl implements WaypointDao {
     }
 
     @Override
-    public void save(Order.Waypoint entity) {
+    public Long save(Order.Waypoint entity) {
         try (Session session = sessionFactory.openSession()){
             session.beginTransaction();
 
             session.save(entity);
 
             session.getTransaction().commit();
+
+            return entity.getId();
         }
     }
 

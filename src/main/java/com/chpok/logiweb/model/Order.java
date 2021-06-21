@@ -171,12 +171,12 @@ public class Order extends AbstractModel{
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Order order = (Order) o;
-        return Objects.equals(isCompleted, order.isCompleted) && Objects.equals(currentTruck, order.currentTruck) && creationDate.equals(order.creationDate) && Objects.equals(startDate, order.startDate) && Objects.equals(endDate, order.endDate);
+        return Objects.equals(id, order.id) && Objects.equals(isCompleted, order.isCompleted) && Objects.equals(currentTruck, order.currentTruck) && Objects.equals(startDate, order.startDate) && Objects.equals(endDate, order.endDate);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(isCompleted, currentTruck, drivers, waypoints, creationDate, startDate, endDate);
+        return Objects.hash(id, isCompleted, currentTruck, drivers, waypoints, creationDate, startDate, endDate);
     }
 
     @Entity

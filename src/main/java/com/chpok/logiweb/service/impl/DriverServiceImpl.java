@@ -8,15 +8,16 @@ import com.chpok.logiweb.exception.InvalidEntityException;
 import com.chpok.logiweb.model.Driver;
 import com.chpok.logiweb.model.Location;
 import com.chpok.logiweb.model.enums.DriverStatus;
+import com.chpok.logiweb.model.kafka.LogiwebMessage;
 import com.chpok.logiweb.service.DriverService;
 import com.chpok.logiweb.mapper.impl.DriverMapper;
 import com.chpok.logiweb.mapper.impl.OrderMapper;
-import com.chpok.logiweb.mapper.impl.TruckMapper;
 import com.chpok.logiweb.service.TruckService;
 import com.chpok.logiweb.validation.ValidationProvider;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.hibernate.HibernateException;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
@@ -32,23 +33,24 @@ import java.util.stream.Collectors;
 public class DriverServiceImpl implements DriverService {
     private static final Logger LOGGER = LogManager.getLogger(DriverServiceImpl.class);
 
+    @Autowired
+    private DriverDao driverDao;
+    @Autowired
+    private DriverMapper driverMapper;
+    @Autowired
+    private TruckService truckService;
+    @Autowired
+    private OrderMapper orderMapper;
+    @Autowired
+    private KafkaTemplate<String, LogiwebMessage> kafkaTemplate;
     private final ValidationProvider<DriverDto> saveUpdateValidator;
     private final ValidationProvider<DriverDto> deleteValidator;
-    private final DriverDao driverDao;
-    private final DriverMapper driverMapper;
-    private final OrderMapper orderMapper;
-    private final TruckService truckService;
-    private final KafkaTemplate<String, String> kafkaTemplate;
+
 
     public DriverServiceImpl(@Qualifier("driverDtoValidator") ValidationProvider<DriverDto> saveUpdateValidator,
-                             @Qualifier("driverDtoDeleteValidator") ValidationProvider<DriverDto> deleteValidator, DriverDao driverDao, DriverMapper driverMapper, OrderMapper orderMapper, TruckService truckService, KafkaTemplate<String, String> kafkaTemplate) {
+                             @Qualifier("driverDtoDeleteValidator") ValidationProvider<DriverDto> deleteValidator) {
         this.saveUpdateValidator = saveUpdateValidator;
         this.deleteValidator = deleteValidator;
-        this.driverDao = driverDao;
-        this.driverMapper = driverMapper;
-        this.orderMapper = orderMapper;
-        this.truckService = truckService;
-        this.kafkaTemplate = kafkaTemplate;
     }
 
     @Override
@@ -71,7 +73,7 @@ public class DriverServiceImpl implements DriverService {
 
             logOnSuccess(String.format("driver with id = %d was updated", driver.getPersonalNumber()));
 
-            sendMessage(String.format("driver updated, id = %d", driver.getPersonalNumber()));
+            sendMessage(new LogiwebMessage("driver updated", driver.getPersonalNumber()));
         } catch (HibernateException | NoSuchElementException | IllegalArgumentException e) {
             LOGGER.error("updating driver exception");
 
@@ -127,8 +129,12 @@ public class DriverServiceImpl implements DriverService {
 
             logOnSuccess(String.format("driver with id = %d was deleted", id));
 
-            sendMessage(String.format("driver deleted, id = %d", id));
-        } catch (HibernateException | NoSuchElementException | IllegalArgumentException e) {
+            sendMessage(new LogiwebMessage("driver deleted", id));
+        } catch (IllegalArgumentException e){
+            LOGGER.error("deleting driver by id exception");
+
+            throw new InvalidEntityException();
+        } catch (HibernateException | NoSuchElementException e) {
             LOGGER.error("deleting driver by id exception");
 
             throw new EntityNotFoundException();
@@ -140,11 +146,11 @@ public class DriverServiceImpl implements DriverService {
         try {
             saveUpdateValidator.validate(driver);
 
-            driverDao.save(driverMapper.mapDtoToEntity(driver));
+            final Long savedDriverId = driverDao.save(driverMapper.mapDtoToEntity(driver));
 
             logOnSuccess(String.format("new driver with first name = %s and last name = %s was created", driver.getFirstName(), driver.getLastName()));
 
-            sendMessage("driver saved");
+            sendMessage(new LogiwebMessage("driver saved", savedDriverId));
         } catch (HibernateException | NoSuchElementException | IllegalArgumentException e) {
             LOGGER.error("saving driver exception");
 
@@ -241,7 +247,7 @@ public class DriverServiceImpl implements DriverService {
         LOGGER.info(logInfo);
     }
 
-    private void sendMessage(String message) {
+    private void sendMessage(LogiwebMessage message) {
         kafkaTemplate.send("logiweb-driver", message);
     }
 

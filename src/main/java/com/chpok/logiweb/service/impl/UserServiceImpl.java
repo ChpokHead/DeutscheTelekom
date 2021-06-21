@@ -10,6 +10,7 @@ import com.chpok.logiweb.mapper.impl.EmployeeMapper;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.hibernate.HibernateException;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -21,15 +22,12 @@ import java.util.NoSuchElementException;
 public class UserServiceImpl implements UserService {
     private static final Logger LOGGER = LogManager.getLogger(UserServiceImpl.class);
 
-    private final UserDao userDao;
-    private final DriverMapper driverMapper;
-    private final EmployeeMapper employeeMapper;
-
-    public UserServiceImpl(UserDao userDao, DriverMapper driverMapper, EmployeeMapper employeeMapper) {
-        this.userDao = userDao;
-        this.driverMapper = driverMapper;
-        this.employeeMapper = employeeMapper;
-    }
+    @Autowired
+    private UserDao userDao;
+    @Autowired
+    private DriverMapper driverMapper;
+    @Autowired
+    private EmployeeMapper employeeMapper;
 
     @Override
     public User getUserById(Long id) {

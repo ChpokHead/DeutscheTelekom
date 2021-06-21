@@ -22,13 +22,15 @@ public class OrderDaoImpl implements OrderDao {
     }
 
     @Override
-    public void save(Order entity) {
+    public Long save(Order entity) {
         try (Session session = sessionFactory.openSession()){
             session.beginTransaction();
 
             session.save(entity);
 
             session.getTransaction().commit();
+
+            return entity.getId();
         }
     }
 

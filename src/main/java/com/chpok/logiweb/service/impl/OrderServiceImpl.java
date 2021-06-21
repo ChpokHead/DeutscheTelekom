@@ -7,12 +7,14 @@ import com.chpok.logiweb.model.Driver;
 import com.chpok.logiweb.model.Location;
 import com.chpok.logiweb.model.Order;
 import com.chpok.logiweb.model.Truck;
+import com.chpok.logiweb.model.kafka.LogiwebMessage;
 import com.chpok.logiweb.service.*;
 import com.chpok.logiweb.mapper.impl.OrderMapper;
 import com.chpok.logiweb.mapper.impl.TruckMapper;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.hibernate.HibernateException;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Component;
 
@@ -30,28 +32,24 @@ public class OrderServiceImpl implements OrderService {
     private static final Logger LOGGER = LogManager.getLogger(OrderServiceImpl.class);
     private static final int AMOUNT_KG_IN_TONNES = 1000;
 
-    private final WaypointService waypointService;
-    private final TruckService truckService;
-    private final DriverService driverService;
-    private final CargoService cargoService;
-    private final LocationMapService locationMapService;
-    private final OrderDao orderDao;
-    private final OrderMapper orderMapper;
-    private final TruckMapper truckMapper;
-    private final KafkaTemplate<String, String> kafkaTemplate;
-
-    public OrderServiceImpl(WaypointService waypointService, DriverService driverService, CargoService cargoService,
-                            LocationMapService locationMapService, OrderDao orderDao, OrderMapper orderMapper, TruckService truckService, TruckMapper truckMapper, KafkaTemplate<String, String> kafkaTemplate) {
-        this.waypointService = waypointService;
-        this.driverService = driverService;
-        this.cargoService = cargoService;
-        this.locationMapService = locationMapService;
-        this.orderDao = orderDao;
-        this.orderMapper = orderMapper;
-        this.truckService = truckService;
-        this.truckMapper = truckMapper;
-        this.kafkaTemplate = kafkaTemplate;
-    }
+    @Autowired
+    private OrderMapper orderMapper;
+    @Autowired
+    private OrderDao orderDao;
+    @Autowired
+    private TruckService truckService;
+    @Autowired
+    private TruckMapper truckMapper;
+    @Autowired
+    private DriverService driverService;
+    @Autowired
+    private WaypointService waypointService;
+    @Autowired
+    private LocationMapService locationMapService;
+    @Autowired
+    private CargoService cargoService;
+    @Autowired
+    private KafkaTemplate<String, LogiwebMessage> kafkaTemplate;
 
     @Override
     public List<OrderDto> getAllOrders() {
@@ -67,11 +65,11 @@ public class OrderServiceImpl implements OrderService {
     @Override
     public void saveOrder(OrderDto order) {
         try {
-            orderDao.save(orderMapper.mapDtoToEntity(order));
+            final Long savedOrderId = orderDao.save(orderMapper.mapDtoToEntity(order));
 
             logOnSuccess("new order was created");
 
-            sendMessage("order saved");
+            sendMessage(new LogiwebMessage("order saved", savedOrderId));
         } catch (HibernateException | NoSuchElementException | IllegalArgumentException e) {
             LOGGER.error("saving order exception");
 
@@ -86,7 +84,7 @@ public class OrderServiceImpl implements OrderService {
 
             logOnSuccess(String.format("order with id = %d was updated", order.getId()));
 
-            sendMessage(String.format("order updated, id = %d", order.getId()));
+            sendMessage(new LogiwebMessage("order updated", order.getId()));
         } catch (HibernateException | NoSuchElementException | IllegalArgumentException e) {
             LOGGER.error("updating order exception");
 
@@ -201,9 +199,9 @@ public class OrderServiceImpl implements OrderService {
 
     @Override
     public boolean checkOrderIsCompleted(Long orderId) {
-        final OrderDto checkingOrder = getOrderById(orderId);
-
         try {
+            final OrderDto checkingOrder = getOrderById(orderId);
+
             return checkingOrder != null && checkingOrder.getWaypoints() != null && waypointService.checkAllWaypointsComplete(checkingOrder.getWaypoints());
         } catch (HibernateException | NoSuchElementException | IllegalArgumentException e) {
             LOGGER.error("checking order is completed exception");
@@ -355,6 +353,8 @@ public class OrderServiceImpl implements OrderService {
             orderDao.deleteById(orderId);
 
             logOnSuccess(String.format("order with id = %d has been completed", orderId));
+
+            sendMessage(new LogiwebMessage("order deleted", orderId));
         } catch (HibernateException | NoSuchElementException e) {
             LOGGER.error("completing order by order id exception");
 
@@ -405,7 +405,7 @@ public class OrderServiceImpl implements OrderService {
 
             logOnSuccess(String.format("order with id = %d has been deleted", id));
 
-            sendMessage(String.format("order deleted, id = %d", id));
+            sendMessage(new LogiwebMessage("order deleted", id));
         } catch (HibernateException | NoSuchElementException e) {
             LOGGER.error("deleting order by order id exception");
 
@@ -425,7 +425,7 @@ public class OrderServiceImpl implements OrderService {
         LOGGER.info(logInfo);
     }
 
-    private void sendMessage(String message) {
+    private void sendMessage(LogiwebMessage message) {
         kafkaTemplate.send("logiweb-order", message);
     }
 

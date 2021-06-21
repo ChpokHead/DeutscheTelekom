@@ -64,4 +64,5 @@ public class CargoDto {
     public int hashCode() {
         return Objects.hash(id, name, weight, status);
     }
+
 }

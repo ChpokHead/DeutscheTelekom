@@ -44,13 +44,15 @@ public class CargoDaoImpl implements CargoDao {
     }
 
     @Override
-    public void save(Cargo entity) {
+    public Long save(Cargo entity) {
         try (Session session = sessionFactory.openSession()) {
             session.beginTransaction();
 
             session.save(entity);
 
             session.getTransaction().commit();
+
+            return entity.getId();
         }
     }
 

@@ -24,13 +24,15 @@ public class TruckDaoImpl implements TruckDao{
     }
 
     @Override
-    public void save(Truck entity) {
+    public Long save(Truck entity) {
         try (Session session = sessionFactory.openSession()) {
             session.beginTransaction();
 
             session.save(entity);
 
             session.getTransaction().commit();
+
+            return entity.getId();
         }
     }
 

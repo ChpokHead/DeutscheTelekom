@@ -2,7 +2,9 @@ package com.chpok.logiweb.dao;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import com.chpok.logiweb.config.KafkaProducerConfig;
 import com.chpok.logiweb.config.TestConfig;
+import com.chpok.logiweb.config.kafka.KafkaTopicConfig;
 import com.chpok.logiweb.model.Employee;
 import io.zonky.test.db.AutoConfigureEmbeddedDatabase;
 import org.junit.jupiter.api.Test;
@@ -13,7 +15,7 @@ import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 @ExtendWith(SpringExtension.class)
-@ContextConfiguration(classes = {TestConfig.class})
+@ContextConfiguration(classes = {TestConfig.class, KafkaProducerConfig.class, KafkaTopicConfig.class})
 @AutoConfigureEmbeddedDatabase(beanName = "dataSource")
 @Sql(scripts = {"/dao/startup.sql"}, executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
 @Sql(scripts = {"/dao/cleanup.sql"}, executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)

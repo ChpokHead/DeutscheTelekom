@@ -7,6 +7,7 @@ import com.chpok.logiweb.mapper.impl.EmployeeMapper;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.hibernate.HibernateException;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -18,13 +19,10 @@ import java.util.NoSuchElementException;
 public class EmployeeServiceImpl implements EmployeeService {
     private static final Logger LOGGER = LogManager.getLogger(EmployeeServiceImpl.class);
 
-    private final EmployeeDao employeeDao;
-    private final EmployeeMapper employeeMapper;
-
-    public EmployeeServiceImpl(EmployeeDao employeeDao, EmployeeMapper employeeMapper) {
-        this.employeeDao = employeeDao;
-        this.employeeMapper = employeeMapper;
-    }
+    @Autowired
+    private EmployeeDao employeeDao;
+    @Autowired
+    private EmployeeMapper employeeMapper;
 
     @Override
     public EmployeeDto getEmployeeById(Long id) {

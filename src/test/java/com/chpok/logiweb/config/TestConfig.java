@@ -23,6 +23,7 @@ public class TestConfig {
     @Bean
     public LocalSessionFactoryBean sessionFactory() {
         LocalSessionFactoryBean sessionFactory = new LocalSessionFactoryBean();
+
         sessionFactory.setDataSource(dataSource);
         sessionFactory.setPackagesToScan("com.chpok.logiweb.model");
         sessionFactory.setHibernateProperties(hibernateProperties());

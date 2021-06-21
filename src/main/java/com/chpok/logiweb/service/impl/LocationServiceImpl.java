@@ -7,6 +7,7 @@ import com.chpok.logiweb.mapper.impl.LocationMapper;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.hibernate.HibernateException;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -20,13 +21,10 @@ import java.util.stream.Collectors;
 public class LocationServiceImpl implements LocationService {
     private static final Logger LOGGER = LogManager.getLogger(LocationServiceImpl.class);
 
-    private final LocationMapper locationMapper;
-    private final LocationDao locationDao;
-
-    public LocationServiceImpl(LocationDao locationDao, LocationMapper locationMapper) {
-        this.locationDao = locationDao;
-        this.locationMapper = locationMapper;
-    }
+    @Autowired
+    private LocationMapper locationMapper;
+    @Autowired
+    private LocationDao locationDao;
 
     @Override
     public List<LocationDto> getAllLocations() {

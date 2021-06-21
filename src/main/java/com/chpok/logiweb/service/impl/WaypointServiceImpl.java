@@ -28,15 +28,13 @@ import java.util.stream.Collectors;
 public class WaypointServiceImpl implements WaypointService {
     private static final Logger LOGGER = LogManager.getLogger(WaypointServiceImpl.class);
 
-    private final WaypointDao waypointDao;
-    private final WaypointMapper waypointMapper;
-    private final CargoService cargoService;
-
-    public WaypointServiceImpl(@Lazy CargoService cargoService, WaypointDao waypointDao, WaypointMapper waypointMapper) {
-        this.cargoService = cargoService;
-        this.waypointDao = waypointDao;
-        this.waypointMapper = waypointMapper;
-    }
+    @Autowired
+    private WaypointDao waypointDao;
+    @Autowired
+    private WaypointMapper waypointMapper;
+    @Autowired
+    @Lazy
+    private CargoService cargoService;
 
     @Override
     public void saveWaypoint(WaypointDto waypoint) {
@@ -195,6 +193,17 @@ public class WaypointServiceImpl implements WaypointService {
             }
         } catch (HibernateException | NoSuchElementException e) {
             LOGGER.error("getting all loading waypoints by order id exception");
+
+            throw new EntityNotFoundException();
+        }
+    }
+
+    @Override
+    public WaypointDto getWaypointById(Long id) {
+        try {
+            return waypointMapper.mapEntityToDto(waypointDao.findById(id).orElseThrow(NoSuchElementException::new));
+        } catch (HibernateException | NoSuchElementException e) {
+            LOGGER.error("getting waypoint by id exception");
 
             throw new EntityNotFoundException();
         }
