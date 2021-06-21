@@ -69,7 +69,7 @@ public class OrderServiceImpl implements OrderService {
 
             logOnSuccess("new order was created");
 
-            sendMessage(new LogiwebMessage("order saved", savedOrderId));
+            sendMessage(new LogiwebMessage("orderSaved", savedOrderId));
         } catch (HibernateException | NoSuchElementException | IllegalArgumentException e) {
             LOGGER.error("saving order exception");
 
@@ -84,7 +84,7 @@ public class OrderServiceImpl implements OrderService {
 
             logOnSuccess(String.format("order with id = %d was updated", order.getId()));
 
-            sendMessage(new LogiwebMessage("order updated", order.getId()));
+            sendMessage(new LogiwebMessage("orderUpdated", order.getId()));
         } catch (HibernateException | NoSuchElementException | IllegalArgumentException e) {
             LOGGER.error("updating order exception");
 
@@ -354,7 +354,7 @@ public class OrderServiceImpl implements OrderService {
 
             logOnSuccess(String.format("order with id = %d has been completed", orderId));
 
-            sendMessage(new LogiwebMessage("order deleted", orderId));
+            sendMessage(new LogiwebMessage("orderDeleted", orderId));
         } catch (HibernateException | NoSuchElementException e) {
             LOGGER.error("completing order by order id exception");
 
@@ -405,7 +405,7 @@ public class OrderServiceImpl implements OrderService {
 
             logOnSuccess(String.format("order with id = %d has been deleted", id));
 
-            sendMessage(new LogiwebMessage("order deleted", id));
+            sendMessage(new LogiwebMessage("orderDeleted", id));
         } catch (HibernateException | NoSuchElementException e) {
             LOGGER.error("deleting order by order id exception");
 

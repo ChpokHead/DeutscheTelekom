@@ -212,6 +212,12 @@
             <artifactId>spring-kafka</artifactId>
             <version>${spring.kafka.version}</version>
         </dependency>
+
+        <dependency>
+            <groupId>io.jsonwebtoken</groupId>
+            <artifactId>jjwt</artifactId>
+            <version>0.9.1</version>
+        </dependency>
     </dependencies>
 
     <build>

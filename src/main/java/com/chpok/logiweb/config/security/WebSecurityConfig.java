@@ -61,9 +61,9 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
         http
                 .authorizeRequests().antMatchers("/login", "/static/**").permitAll()
                 .and()
-                .authorizeRequests().antMatchers("/employee**").hasAnyRole("EMPLOYEE")
+                .authorizeRequests().antMatchers("/employee**/**/**", "/employee**/**","/employee**").hasAnyRole("EMPLOYEE")
                 .and()
-                .authorizeRequests().antMatchers("/driver**").hasAnyRole("DRIVER")
+                .authorizeRequests().antMatchers("/driver*/*").hasAnyRole("DRIVER")
                 .and()
                 .formLogin().loginPage("/login").usernameParameter("username").passwordParameter("password").permitAll()
                 .successForwardUrl("/postLogin")

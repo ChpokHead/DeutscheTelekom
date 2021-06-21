@@ -74,7 +74,7 @@ public class TruckServiceImpl implements TruckService {
 
             truckDao.update(truckMapper.mapDtoToEntity(truckDto));
 
-            sendMessage(new LogiwebMessage("truck updated", truckDto.getId()));
+            sendMessage(new LogiwebMessage("truckUpdated", truckDto.getId()));
 
             logOnSuccess(String.format("truck with id = %d was updated", truckDto.getId()));
         } catch (HibernateException | NoSuchElementException | IllegalArgumentException e) {
@@ -93,7 +93,7 @@ public class TruckServiceImpl implements TruckService {
 
             truckDao.deleteById(id);
 
-            sendMessage(new LogiwebMessage("truck deleted", deletingTruck.getId()));
+            sendMessage(new LogiwebMessage("truckDeleted", deletingTruck.getId()));
 
             logOnSuccess(String.format("truck with id = %d was deleted", id));
         } catch (IllegalArgumentException e) {
@@ -114,7 +114,7 @@ public class TruckServiceImpl implements TruckService {
 
             final Long savedTruckId = truckDao.save(truckMapper.mapDtoToEntity(truck));
 
-            sendMessage(new LogiwebMessage("truck saved", savedTruckId));
+            sendMessage(new LogiwebMessage("truckSaved", savedTruckId));
 
             logOnSuccess(String.format("truck with reg number = %s was created", truck.getRegNumber()));
         } catch (HibernateException | NoSuchElementException | IllegalArgumentException e) {

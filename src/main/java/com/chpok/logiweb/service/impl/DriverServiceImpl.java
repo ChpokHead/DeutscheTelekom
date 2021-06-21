@@ -73,7 +73,7 @@ public class DriverServiceImpl implements DriverService {
 
             logOnSuccess(String.format("driver with id = %d was updated", driver.getPersonalNumber()));
 
-            sendMessage(new LogiwebMessage("driver updated", driver.getPersonalNumber()));
+            sendMessage(new LogiwebMessage("driverUpdated", driver.getPersonalNumber()));
         } catch (HibernateException | NoSuchElementException | IllegalArgumentException e) {
             LOGGER.error("updating driver exception");
 
@@ -129,7 +129,7 @@ public class DriverServiceImpl implements DriverService {
 
             logOnSuccess(String.format("driver with id = %d was deleted", id));
 
-            sendMessage(new LogiwebMessage("driver deleted", id));
+            sendMessage(new LogiwebMessage("driverDeleted", id));
         } catch (IllegalArgumentException e){
             LOGGER.error("deleting driver by id exception");
 
@@ -150,7 +150,7 @@ public class DriverServiceImpl implements DriverService {
 
             logOnSuccess(String.format("new driver with first name = %s and last name = %s was created", driver.getFirstName(), driver.getLastName()));
 
-            sendMessage(new LogiwebMessage("driver saved", savedDriverId));
+            sendMessage(new LogiwebMessage("driverSaved", savedDriverId));
         } catch (HibernateException | NoSuchElementException | IllegalArgumentException e) {
             LOGGER.error("saving driver exception");
 
