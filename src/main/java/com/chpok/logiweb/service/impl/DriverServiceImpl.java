@@ -46,7 +46,6 @@ public class DriverServiceImpl implements DriverService {
     private final ValidationProvider<DriverDto> saveUpdateValidator;
     private final ValidationProvider<DriverDto> deleteValidator;
 
-
     public DriverServiceImpl(@Qualifier("driverDtoValidator") ValidationProvider<DriverDto> saveUpdateValidator,
                              @Qualifier("driverDtoDeleteValidator") ValidationProvider<DriverDto> deleteValidator) {
         this.saveUpdateValidator = saveUpdateValidator;

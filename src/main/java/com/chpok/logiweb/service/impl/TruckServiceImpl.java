@@ -96,11 +96,11 @@ public class TruckServiceImpl implements TruckService {
             sendMessage(new LogiwebMessage("truckDeleted", deletingTruck.getId()));
 
             logOnSuccess(String.format("truck with id = %d was deleted", id));
-        } catch (IllegalArgumentException e) {
+        } catch (HibernateException | NoSuchElementException e) {
             LOGGER.error("deleting truck by id exception");
 
             throw new InvalidEntityException();
-        } catch (HibernateException | NoSuchElementException e) {
+        } catch (IllegalArgumentException e) {
             LOGGER.error("deleting truck by id exception");
 
             throw new EntityNotFoundException();
