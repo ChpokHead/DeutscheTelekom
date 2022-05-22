@@ -1,1 +1,1 @@
-worker: java $JAVA_OPTS -Dspring.profiles.active="postgres,heroku" -DTOPJAVA_ROOT="." -jar target/dependency/webapp-runner.jar target/*.war
+web: java -Dserver.port=$PORT $JAVA_OPTS -Dspring.profiles.active="postgres,heroku" -jar target/dependency/webapp-runner.jar
