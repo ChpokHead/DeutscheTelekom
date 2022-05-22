@@ -1,5 +1,6 @@
 package com.chpok.logiweb.model;
 
+import com.chpok.logiweb.model.enums.OrderStatus;
 import com.chpok.logiweb.model.enums.WaypointType;
 import com.chpok.logiweb.model.enums.util.PostgreSQLEnumType;
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -16,8 +17,10 @@ import java.util.Objects;
 @Table(name = "customer_order")
 @DynamicInsert
 public class Order extends AbstractModel{
-    @Column(name = "is_completed")
-    private Boolean isCompleted;
+    @Enumerated(EnumType.STRING)
+    @Column(name = "status", columnDefinition = "order_status")
+    @Type(type="pgsql_enum")
+    private OrderStatus status;
 
     @JsonIgnore
     @OneToOne
@@ -48,7 +51,7 @@ public class Order extends AbstractModel{
 
     private Order(Builder builder) {
         this.id = builder.id;
-        this.isCompleted = builder.isCompleted;
+        this.status = builder.status;
         this.currentTruck = builder.currentTruck;
         this.drivers = builder.drivers;
         this.waypoints = builder.waypoints;
@@ -61,12 +64,12 @@ public class Order extends AbstractModel{
         return new Builder();
     }
 
-    public Boolean getIsCompleted() {
-        return isCompleted;
+    public OrderStatus getStatus() {
+        return status;
     }
 
-    public void setIsCompleted(Boolean isCompleted) {
-        this.isCompleted = isCompleted;
+    public void setStatus(OrderStatus status) {
+        this.status = status;
     }
 
     public Truck getCurrentTruck() {
@@ -111,7 +114,7 @@ public class Order extends AbstractModel{
 
     public static class Builder {
         private Long id;
-        private Boolean isCompleted;
+        private OrderStatus status;
         private Truck currentTruck;
         private List<Driver> drivers;
         private List<Waypoint> waypoints;
@@ -126,8 +129,8 @@ public class Order extends AbstractModel{
             return this;
         }
 
-        public Builder withIsCompleted(Boolean isCompleted) {
-            this.isCompleted = isCompleted;
+        public Builder withStatus(OrderStatus status) {
+            this.status = status;
             return this;
         }
 
@@ -171,12 +174,12 @@ public class Order extends AbstractModel{
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Order order = (Order) o;
-        return Objects.equals(id, order.id) && Objects.equals(isCompleted, order.isCompleted) && Objects.equals(currentTruck, order.currentTruck) && Objects.equals(startDate, order.startDate) && Objects.equals(endDate, order.endDate);
+        return Objects.equals(id, order.id) && Objects.equals(status, order.status) && Objects.equals(currentTruck, order.currentTruck) && Objects.equals(startDate, order.startDate) && Objects.equals(endDate, order.endDate);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, isCompleted, currentTruck, drivers, waypoints, creationDate, startDate, endDate);
+        return Objects.hash(id, status, currentTruck, drivers, waypoints, creationDate, startDate, endDate);
     }
 
     @Entity

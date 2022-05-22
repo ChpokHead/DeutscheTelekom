@@ -11,7 +11,7 @@ import java.util.Objects;
 
 public class OrderDto {
     private Long id;
-    private Boolean isCompleted;
+    private Integer status = 2;
 
     @JsonIgnore
     private Truck currentTruck;
@@ -33,12 +33,12 @@ public class OrderDto {
         this.id = id;
     }
 
-    public Boolean getIsCompleted() {
-        return isCompleted;
+    public Integer getStatus() {
+        return status;
     }
 
-    public void setIsCompleted(Boolean completed) {
-        isCompleted = completed;
+    public void setStatus(Integer status) {
+        this.status = status;
     }
 
     public Truck getCurrentTruck() {

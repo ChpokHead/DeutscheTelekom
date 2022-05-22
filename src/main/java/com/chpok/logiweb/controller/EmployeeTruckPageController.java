@@ -1,5 +1,6 @@
 package com.chpok.logiweb.controller;
 
+import com.chpok.logiweb.dto.DriverDto;
 import com.chpok.logiweb.dto.TruckDto;
 import com.chpok.logiweb.service.LocationService;
 import com.chpok.logiweb.service.TruckService;
@@ -8,9 +9,11 @@ import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.ModelAndView;
 
 import javax.persistence.EntityNotFoundException;
 import java.io.IOException;
+import java.util.Collections;
 import java.util.Optional;
 
 
@@ -93,4 +96,25 @@ public class EmployeeTruckPageController {
         return REDIRECT_TO_MAIN_PAGE;
     }
 
+    @PostMapping("/search")
+    public ModelAndView searchTruck(@RequestParam(name = "truckId") String truckId) {
+        final ModelAndView mav = new ModelAndView("employeeTruckPage");
+
+        if (truckId != null) {
+            try {
+                mav.addObject("searchId", truckId);
+                mav.addObject("trucks", Collections.singletonList(truckService.getTruckByRegNumber(truckId)));
+            } catch (EntityNotFoundException nfe) {
+                mav.addObject("searchId", truckId);
+                mav.addObject("trucks", Collections.emptyList());
+            }
+        } else {
+            mav.addObject("trucks", truckService.getAllTrucks());
+        }
+
+        mav.addObject("truck", new TruckDto());
+        mav.addObject("locations", locationService.getAllLocations());
+
+        return mav;
+    }
 }

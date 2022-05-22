@@ -18,7 +18,7 @@
             </div>
         </div>
         <div class="row py-1 mb-2">
-            <div class="col">
+            <div class="col" th:if="${order.getStatus() == 2}">
                 <div class="d-flex w-100 justify-content-center">
                     <div th:if="${order.currentTruck == null and not #lists.isEmpty(order.waypoints)}">
                         <button id = "truck-add" class="btn btn-primary btn-lg" data-bs-toggle="modal" data-bs-target="#addTruckModal">Назначить фуру</button>
@@ -28,7 +28,7 @@
                     </div>
                 </div>
             </div>
-            <div class="col">
+            <div class="col" th:if="${order.getStatus() == 2}">
                 <div class="d-flex w-100 justify-content-center">
                     <div th:if="${not #lists.isEmpty(order.waypoints) and order.currentTruck != null and order.currentDrivers.size() < order.currentTruck.driversShift}">
                         <button id = "driver-add" class="btn btn-primary btn-lg" data-bs-toggle="modal" data-bs-target="#addDriverModal">Назначить водителя</button>
@@ -38,7 +38,7 @@
                     </div>
                 </div>
             </div>
-            <div class="col">
+            <div class="col" th:if="${order.getStatus() == 2}">
                 <div class="d-flex w-100 justify-content-center">
                     <div th:if="${order.currentTruck == null and #lists.isEmpty(order.currentDrivers) and not #lists.isEmpty(cargos)}">
                         <button id = "waypoint-add" class="btn btn-lg" data-bs-toggle="modal" data-bs-target="#addModal">Добавить маршрутные точки</button>
@@ -48,7 +48,7 @@
                     </div>
                 </div>
             </div>
-            <div class="col">
+            <div class="col" th:if="${order.getStatus() == 2}">
                 <div class="d-flex w-100 justify-content-center">
                     <div th:if="${not #lists.isEmpty(order.waypoints) and order.currentTruck != null and not #lists.isEmpty(order.currentDrivers) and order.startDate == null and order.endDate == null}">
                         <button id = "date-add" class="btn btn-primary btn-lg" data-bs-toggle="modal" data-bs-target="#addDateModal">Назначить даты заказа</button>
@@ -56,19 +56,22 @@
                     <div th:if="${#lists.isEmpty(order.waypoints) or order.currentTruck == null or #lists.isEmpty(order.currentDrivers)}">
                         <button id = "date-add-disabled" class="btn btn-primary btn-lg" data-bs-toggle="modal" data-bs-target="#addDateModal" disabled>Назначить даты заказа</button>
                     </div>
-                    <div th:if="${order.startDate != null and order.endDate != null}">
+                    <div th:if="${not #lists.isEmpty(order.waypoints) and order.currentTruck != null and not #lists.isEmpty(order.currentDrivers) and order.startDate != null and order.endDate != null and order.getStatus() == 2}">
                         <button id = "date-delete" class="btn btn-danger btn-lg" data-bs-toggle="modal" data-bs-target="#deleteDateModal">Удалить даты заказа</button>
                     </div>
+                    <!--<div th:if="${not #lists.isEmpty(order.waypoints) and order.currentTruck != null and not #lists.isEmpty(order.currentDrivers) and (order.startDate == null or order.endDate == null or order.getStatus() == 0)}">
+                        <button id = "date-delete-disabled" class="btn btn-danger btn-lg" data-bs-toggle="modal" data-bs-target="#deleteDateModal" disabled>Удалить даты заказа</button>
+                    </div>-->
                 </div>
             </div>
-            <div class="col">
+            <div class="col" th:if="${order.getStatus() == 0}">
                 <div class="d-flex w-100 justify-content-center">
-                    <div th:if="${not #lists.isEmpty(order.waypoints) and order.currentTruck != null and not #lists.isEmpty(order.currentDrivers) and order.startDate != null and order.endDate != null and order.isCompleted}">
+                    <div th:if="${not #lists.isEmpty(order.waypoints) and order.currentTruck != null and not #lists.isEmpty(order.currentDrivers) and order.startDate != null and order.endDate != null}">
                         <button id = "order-complete" class="btn btn-success btn-lg" data-bs-toggle="modal" data-bs-target="#completeOrderModal">Завершить заказ</button>
                     </div>
-                    <div th:if="${#lists.isEmpty(order.waypoints) or order.currentTruck == null or #lists.isEmpty(order.currentDrivers) or not order.isCompleted or order.startDate == null or order.endDate == null}">
+                    <!--<div th:if="${#lists.isEmpty(order.waypoints) or order.currentTruck == null or #lists.isEmpty(order.currentDrivers) or order.status == 2 or order.startDate == null or order.endDate == null}">
                         <button id = "order-complete-disabled" class="btn btn-success btn-lg" data-bs-toggle="modal" data-bs-target="#completeOrderModal" disabled>Завершить заказ</button>
-                    </div>
+                    </div>-->
                 </div>
             </div>
         </div>
@@ -496,7 +499,7 @@
     </div>
 
     <div class="modal fade" id="completeOrderModal" tabindex="-1" aria-labelledby="completeOrderModalLabel" aria-hidden="true">
-        <form id="completeOrder" th:method="delete" th:action="@{/employeeOrder/complete/} + ${order.id}">
+        <form id="completeOrder" th:method="get" th:action="@{/employeeOrder/close/} + ${order.id}">
             <div class="modal-dialog">
                 <div class="modal-content">
                     <div class="modal-header">
@@ -505,7 +508,7 @@
                     </div>
                     <div class="modal-body">
                         <div class="mb-3">
-                            Внимание! При подтверждении заказ будет удален!
+                            Внимание! При подтверждении будет создан отчет о заказе, а сам заказ будет удален!
                         </div>
                     </div>
                     <div class="modal-footer">

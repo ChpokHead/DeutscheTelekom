@@ -4,6 +4,8 @@ import com.chpok.logiweb.config.KafkaProducerConfig;
 import com.chpok.logiweb.config.TestConfig;
 import com.chpok.logiweb.config.kafka.KafkaTopicConfig;
 import com.chpok.logiweb.model.Order;
+import com.chpok.logiweb.model.enums.OrderStatus;
+
 import io.zonky.test.db.AutoConfigureEmbeddedDatabase;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -32,7 +34,7 @@ class OrderDaoTest {
     @Test
     void saveShouldCorrectlySaveOrderEntity() {
         final Order expected = Order.builder()
-                .withIsCompleted(false)
+                .withStatus(OrderStatus.COMPLETED)
                 .withCreationDate(LocalDate.now())
                 .withDrivers(new ArrayList<>())
                 .withWaypoints(new ArrayList<>())
@@ -48,7 +50,7 @@ class OrderDaoTest {
     @Test
     void findByIdShouldReturnCorrectOrderEntity() {
         final Order expected = Order.builder()
-                .withIsCompleted(false)
+                .withStatus(OrderStatus.COMPLETED)
                 .withCreationDate(LocalDate.now())
                 .build();
 
@@ -62,12 +64,12 @@ class OrderDaoTest {
     @Test
     void findAllShouldReturnCorrectOrderList() {
         final Order firstSavingOrder = Order.builder()
-                .withIsCompleted(false)
+                .withStatus(OrderStatus.IN_PROGRESS)
                 .withCreationDate(LocalDate.now())
                 .build();
 
         final Order secondSavingOrder = Order.builder()
-                .withIsCompleted(true)
+                .withStatus(OrderStatus.COMPLETED)
                 .withCreationDate(LocalDate.of(2020, 5, 12))
                 .build();
 
@@ -85,7 +87,7 @@ class OrderDaoTest {
     @Test
     void updateShouldCorrectlyUpdateOrderEntity() {
         final Order savingOrder = Order.builder()
-                .withIsCompleted(true)
+                .withStatus(OrderStatus.COMPLETED)
                 .withCreationDate(LocalDate.of(2010, 8, 4))
                 .build();
 
@@ -93,7 +95,7 @@ class OrderDaoTest {
 
         final Order expected = Order.builder()
                 .withId(savingOrder.getId())
-                .withIsCompleted(false)
+                .withStatus(OrderStatus.IN_PROGRESS)
                 .withCreationDate(LocalDate.of(2015, 1, 4))
                 .build();
 
@@ -108,7 +110,7 @@ class OrderDaoTest {
     @Test
     void deleteByIdShouldCorrectlyDeleteOrderEntity() {
         final Order savingOrder = Order.builder()
-                .withIsCompleted(true)
+                .withStatus(OrderStatus.COMPLETED)
                 .withCreationDate(LocalDate.of(2010, 8, 4))
                 .build();
 

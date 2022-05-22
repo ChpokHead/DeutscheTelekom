@@ -9,9 +9,11 @@ import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.ModelAndView;
 
 import javax.persistence.EntityNotFoundException;
 import java.io.IOException;
+import java.util.Collections;
 
 @Controller
 @RequestMapping("/employeeDriver")
@@ -31,8 +33,6 @@ public class EmployeeDriverPageController {
     @GetMapping
     public String getDrivers(Model model) {
         model.addAttribute("drivers", driverService.getAllDrivers());
-
-        model.addAttribute("trucks", truckService.getAllTrucks());
 
         model.addAttribute("driver", new DriverDto());
 
@@ -92,4 +92,25 @@ public class EmployeeDriverPageController {
         return REDIRECT_TO_MAIN_PAGE;
     }
 
+    @PostMapping("/search")
+    public ModelAndView searchDriver(@RequestParam(name = "driverId") Long driverId) {
+        final ModelAndView mav = new ModelAndView("employeeDriverPage");
+
+        if (driverId != null) {
+            try {
+                mav.addObject("searchId", driverId);
+                mav.addObject("drivers", Collections.singletonList(driverService.getDriverById(driverId)));
+            } catch (EntityNotFoundException nfe) {
+                mav.addObject("searchId", driverId);
+                mav.addObject("drivers", Collections.emptyList());
+            }
+        } else {
+            mav.addObject("drivers", driverService.getAllDrivers());
+        }
+
+        mav.addObject("driver", new DriverDto());
+        mav.addObject("locations", locationService.getAllLocations());
+
+        return mav;
+    }
 }

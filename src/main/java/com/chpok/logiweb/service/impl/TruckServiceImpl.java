@@ -25,6 +25,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityNotFoundException;
+import javax.persistence.NoResultException;
+
 import java.util.Collections;
 import java.util.List;
 import java.util.NoSuchElementException;
@@ -74,7 +76,7 @@ public class TruckServiceImpl implements TruckService {
 
             truckDao.update(truckMapper.mapDtoToEntity(truckDto));
 
-            sendMessage(new LogiwebMessage("truckUpdated", truckDto.getId()));
+            //sendMessage(new LogiwebMessage("truckUpdated", truckDto.getId()));
 
             logOnSuccess(String.format("truck with id = %d was updated", truckDto.getId()));
         } catch (HibernateException | NoSuchElementException | IllegalArgumentException e) {
@@ -93,7 +95,7 @@ public class TruckServiceImpl implements TruckService {
 
             truckDao.deleteById(id);
 
-            sendMessage(new LogiwebMessage("truckDeleted", deletingTruck.getId()));
+            //sendMessage(new LogiwebMessage("truckDeleted", deletingTruck.getId()));
 
             logOnSuccess(String.format("truck with id = %d was deleted", id));
         } catch (HibernateException | NoSuchElementException e) {
@@ -114,7 +116,7 @@ public class TruckServiceImpl implements TruckService {
 
             final Long savedTruckId = truckDao.save(truckMapper.mapDtoToEntity(truck));
 
-            sendMessage(new LogiwebMessage("truckSaved", savedTruckId));
+            //sendMessage(new LogiwebMessage("truckSaved", savedTruckId));
 
             logOnSuccess(String.format("truck with reg number = %s was created", truck.getRegNumber()));
         } catch (HibernateException | NoSuchElementException | IllegalArgumentException e) {
@@ -215,7 +217,18 @@ public class TruckServiceImpl implements TruckService {
     public TruckDto getTruckById(Long id) {
         try {
             return truckMapper.mapEntityToDto(truckDao.findById(id).orElseThrow(NoSuchElementException::new));
-        } catch (HibernateException | NoSuchElementException e) {
+        } catch (HibernateException | NoSuchElementException | NoResultException e) {
+            LOGGER.error("getting truck by id exception");
+
+            throw new EntityNotFoundException();
+        }
+    }
+
+    @Override
+    public TruckDto getTruckByRegNumber(String regNumber) {
+        try {
+            return truckMapper.mapEntityToDto(truckDao.findByRegNumber(regNumber).orElseThrow(NoSuchElementException::new));
+        } catch (HibernateException | NoSuchElementException | NoResultException e) {
             LOGGER.error("getting truck by id exception");
 
             throw new EntityNotFoundException();

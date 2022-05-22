@@ -12,6 +12,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityNotFoundException;
+import javax.persistence.NoResultException;
+
 import java.util.NoSuchElementException;
 
 @Service
@@ -28,7 +30,7 @@ public class EmployeeServiceImpl implements EmployeeService {
     public EmployeeDto getEmployeeById(Long id) {
         try {
             return employeeMapper.mapEntityToDto(employeeDao.findById(id).orElseThrow(NoSuchElementException::new));
-        } catch (HibernateException | NoSuchElementException e) {
+        } catch (HibernateException | NoSuchElementException | NoResultException e) {
             LOGGER.error("getting employee by id exception");
 
             throw new EntityNotFoundException();

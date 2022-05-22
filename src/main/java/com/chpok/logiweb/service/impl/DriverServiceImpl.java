@@ -24,6 +24,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityNotFoundException;
+import javax.persistence.NoResultException;
+
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.stream.Collectors;
@@ -149,7 +151,7 @@ public class DriverServiceImpl implements DriverService {
 
             logOnSuccess(String.format("new driver with first name = %s and last name = %s was created", driver.getFirstName(), driver.getLastName()));
 
-            sendMessage(new LogiwebMessage("driverSaved", savedDriverId));
+            //sendMessage(new LogiwebMessage("driverSaved", savedDriverId));
         } catch (HibernateException | NoSuchElementException | IllegalArgumentException e) {
             LOGGER.error("saving driver exception");
 
@@ -162,7 +164,7 @@ public class DriverServiceImpl implements DriverService {
         try {
             return driverMapper.mapEntityToDto(driverDao.findById(id)
                     .orElseThrow(NoSuchElementException::new));
-        } catch (HibernateException | NoSuchElementException e) {
+        } catch (HibernateException | NoSuchElementException | NoResultException e) {
             LOGGER.error("getting driver by id exception");
 
             throw new EntityNotFoundException();

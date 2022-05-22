@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="ru" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Отчеты</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-eOJMYsd53ii+scO/bJGFsiCZc+5NDVN2yr8+0RDqr0Ql0h+rP48ckxlpbzKgwra6" crossorigin="anonymous">
+    <link href="/static/css/employeeOrderPage.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
+    <link rel="shortcut icon" href="/static/images/logo.svg">
+    <script src="https://code.jquery.com/jquery-3.4.1.min.js"
+            integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta3/dist/js/bootstrap.bundle.min.js" integrity="sha384-JEW9xMcG8R+pH31jmWH6WWP0WintQrMb4s7ZOdauHnUtxwoG2vI5DkLtS3qm9Ekf" crossorigin="anonymous"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+</head>
+<body>
+<div class="container-fluid">
+    <div class="row flex-nowrap">
+        <div th:replace="navbar :: navbar"></div>
+        <div class="col py-1">
+            <div class="row py-1">
+                <div class="col-auto justify-content-start">
+                    <form th:action="@{/employeeReport/search}" th:method="post" id="reportSearch">
+                        <div class="input-group">
+                            <div class="form-outline">
+                                <div th:if="${searchId != null}">
+                                    <input type="text" pattern="[0-9]+" placeholder="Номер заказа" th:value="${searchId}" name="orderId" class="form-control" required/>
+                                </div>
+                                <div th:if="${searchId == null}">
+                                    <input type="text" pattern="[0-9]+" placeholder="Номер заказа" name="orderId" class="form-control" required/>
+                                </div>
+                            </div>
+                            <button type="submit" class="btn btn-primary px-2" style="background-color: #ef8b05">
+                                Поиск
+                            </button>
+                        </div>
+                    </form>
+                </div>
+                <div class="col d-flex w-100 justify-content-end" style="display: inline-block">
+                    <button id = "date-add" class="btn btn-secondary" style="margin-right: 2pt" data-bs-toggle="modal" data-bs-target="#addDateModal">Фильтр по датам</button>
+                    <a href="/employeeReport" class="btn btn-danger">Сбросить фильтр</a>
+                </div>
+            </div>
+            <div class="row-1 p-1 d-flex w-100 justify-content-md-center" style="padding-top: 20% !important; padding-bottom: 3rem !important;" th:if="${reports.isEmpty()}">
+                <div class="mb-3">
+                    <h4 style="color: gray; opacity: 0.8">Отчетов пока нет</h4>
+                </div>
+            </div>
+            <div class="row-1 py-1" id="reportsList">
+                <div class="list-group py-2" th:each="report : ${reports}">
+                    <div class="list-group-item list-group-item-action" aria-current="true">
+                        <div class="row">
+                            <div class="d-flex w-100 justify-content-end">
+                                <div class="col py-3">
+                                    <h5 class="mb-1" th:text="'Отчет по заказу #' + ${report.orderId}"></h5>
+                                </div>
+                                <div class="col-0 py-3">
+                                    <a class="btn btn-success rounded" style="background-color: #2bc853; border:0" name="report-view-btn" th:id ="${report.id}" th:href="@{/employeeReport/} + ${report.id}">
+                                        <em class="fa fa-eye"></em>
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row py-1">
+                            <div class="d-flex justify-content-end">
+                                <div class="col">
+                                    <p class="mb-1" th:text="'Дата создания: ' + ${report.reportCreationDate}"></p>
+                                </div>
+                                <div class="col-0">
+                                    <button type="button" class="btn btn-primary rounded" data-bs-toggle="modal" data-bs-target="#delModal" th:id ="${report.id}" name="del-item-btn">
+                                        <em class="fa fa-trash"></em>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="modal fade" id="delModal" tabindex="-1" aria-labelledby="delModalLabel" aria-hidden="true">
+            <form th:action="@{/employeeReport}" th:method="delete" id="reportDelete">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="delModalLabel">Удаление отчета</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+                            <input type="hidden" id="report-id-delete" name="delete-report-id"/>
+                            Пожалуйста, подтвердите удаление.
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Закрыть</button>
+                            <button type="submit"  class="btn btn-primary" form="reportDelete" id="delete-report">Удалить</button>
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+
+        <div class="modal fade" id="addDateModal" tabindex="-1" aria-labelledby="addDateModalLabel" aria-hidden="true">
+            <form th:action="@{/employeeReport}" th:method="post" id="dateAdd">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="addDateModalLabel">Фильтр по дате создания отчета</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+                            <div class="mb-3">
+                                <label for="start">Провести поиск от:</label>
+                                <input type="date" id="start" name="travel-start" required>
+                                <label for="end">до:</label>
+                                <input type="date" id="end" name="travel-end" required>
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Закрыть</button>
+                            <button type="submit" class="btn btn-primary" style="background-color: #ef8b05" form="dateAdd" id="date-add-btn">Поиск</button>
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+<script th:inline="javascript" type="text/javascript">
+    $("[name=del-item-btn]").click(function () {
+        var passedID = $(this).attr('id');
+        $('#report-id-delete').val(passedID);
+    });
+</script>
+<script>
+    var currentMenu = document.getElementById("reportsPage");
+    currentMenu.classList += " nav-link-active";
+</script>
+</body>
+</html>

@@ -12,6 +12,7 @@ public interface TruckService {
     void updateTruck(TruckDto truck);
     void deleteTruck(Long id);
     TruckDto getTruckById(Long id);
+    TruckDto getTruckByRegNumber(String regNumber);
     void saveTruck(TruckDto truck);
     DriverDto getDriverShiftworker(DriverDto driver);
     List<TruckDto> getTrucksWithOKStatusAndWithoutCurrentOrder();

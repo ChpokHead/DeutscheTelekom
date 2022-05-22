@@ -24,7 +24,7 @@
                     <button id = "order-status-change-btn" class="btn btn-primary btn-lg" th:disabled="${driver.currentOrder == null or isOrderCompleted or (driver.currentOrder?.startDate == null and driver.currentOrder?.endDate == null)}" data-bs-toggle="modal" data-bs-target="#changeOrderModal">Изменить статус заказа</button>
                 </div>
                 <div class="col py-3">
-                    <button id = "order-completion-change-btn" class="btn btn-success btn-lg" th:disabled="${driver.currentOrder == null or not isOrderCompleted or driver.currentOrder.isCompleted}" data-bs-toggle="modal" data-bs-target="#changeOrderCompletionModal">Завершить заказ</button>
+                    <button id = "order-completion-change-btn" class="btn btn-success btn-lg" th:disabled="${driver.currentOrder == null or not isOrderCompleted or driver.currentOrder.status.ordinal() == 0}" data-bs-toggle="modal" data-bs-target="#changeOrderCompletionModal">Завершить заказ</button>
                 </div>
                 <div class="col-1 py-3">
                         <a class="btn btn-lg btn-danger" href="/logout">
@@ -166,13 +166,13 @@
                 </div>
             </div>
 
-            <div class="row-1 p-1 d-flex w-100 justify-content-md-center" th:if="${driver.currentOrder != null and driver.currentOrder.isCompleted}">
+            <div class="row-1 p-1 d-flex w-100 justify-content-md-center" th:if="${driver.currentOrder != null and driver.currentOrder.status.ordinal() == 0}">
                 <div class="mb-3">
                     <h5 style="color: gray; opacity: 0.8">Заказ завершен и ожидает подтверждения администратора</h5>
                 </div>
             </div>
 
-            <div class="row-1 py-1" th:if="${driver.currentOrder != null and not #lists.isEmpty(driver.currentOrder.waypoints) and not driver.currentOrder.isCompleted and driver.currentOrder?.startDate != null and driver.currentOrder?.endDate != null}">
+            <div class="row-1 py-1" th:if="${driver.currentOrder != null and not #lists.isEmpty(driver.currentOrder.waypoints) and driver.currentOrder.status.ordinal() == 2 and driver.currentOrder?.startDate != null and driver.currentOrder?.endDate != null}">
                 <div class="list-group py-2">
                     <div class="list-group-item list-group-item-action" aria-current="true">
                         <div class="row">
@@ -332,7 +332,6 @@
                         <div class="modal-body">
                             <input type="hidden" th:field = "${driver.personalNumber}"/>
                             <input type="hidden" th:value="${driver.currentOrder.id}" th:field = "${driver.currentOrder.id}"/>
-                            <input type="hidden" id="order-complete-id" th:field = "${driver.currentOrder.isCompleted}"/>
 
                             Пожалуйста, подтвердите завершение заказа.
                         </div>
@@ -348,11 +347,5 @@
 </div>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta3/dist/js/bootstrap.bundle.min.js" integrity="sha384-JEW9xMcG8R+pH31jmWH6WWP0WintQrMb4s7ZOdauHnUtxwoG2vI5DkLtS3qm9Ekf" crossorigin="anonymous"></script>
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
-
-<script th:inline="javascript" type="text/javascript">
-    $("#order-completion-change-btn").click(function () {
-        $('#order-complete-id').val(true);
-    });
-</script>
 </body>
 </html>

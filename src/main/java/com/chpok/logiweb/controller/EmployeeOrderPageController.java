@@ -1,7 +1,9 @@
 package com.chpok.logiweb.controller;
 
+import com.chpok.logiweb.dto.DriverDto;
 import com.chpok.logiweb.dto.OrderDto;
 import com.chpok.logiweb.dto.WaypointsPair;
+import com.chpok.logiweb.model.enums.OrderStatus;
 import com.chpok.logiweb.service.*;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
@@ -9,10 +11,13 @@ import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.ModelAndView;
 
 import javax.persistence.EntityNotFoundException;
 import java.io.IOException;
 import java.time.LocalDate;
+import java.util.Collections;
+import java.util.Optional;
 
 @Controller
 @RequestMapping("/employeeOrder")
@@ -37,12 +42,35 @@ public class EmployeeOrderPageController {
     }
 
     @GetMapping
-    public String getOrders(Model model) {
-        model.addAttribute("orders", orderService.getAllOrders());
+    public ModelAndView getOrders(@RequestParam(required = false) Optional<Integer> status) {
+        ModelAndView mav = new ModelAndView("employeeOrderPage");
 
-        model.addAttribute("order", new OrderDto());
+        if (status.isPresent()) {
+            switch(status.get()) {
+            case 0:
+                mav.addObject("orders",
+                        orderService.getOrdersByStatus(OrderStatus.COMPLETED));
+                break;
+            case 1:
+                mav.addObject("orders",
+                        orderService.getOrdersByStatus(OrderStatus.CLOSED));
+                break;
+            case 2:
+                mav.addObject("orders",
+                        orderService.getOrdersByStatus(OrderStatus.IN_PROGRESS));
+                break;
+            default:
+                mav.addObject("orders",
+                        orderService.getAllOrders());
+                break;
+            }
+        } else {
+            mav.addObject("orders", orderService.getAllOrders());
+        }
 
-        return "employeeOrderPage";
+        mav.addObject("order", new OrderDto());
+
+        return mav;
     }
 
     @GetMapping(value = "/orders", produces={"application/json; charset=UTF-8"})
@@ -181,10 +209,10 @@ public class EmployeeOrderPageController {
         return REDIRECT_TO_MAIN_PAGE;
     }
 
-    @DeleteMapping("/complete/{orderId}")
-    public String completeOrder(@PathVariable(name = "orderId") Long orderId) {
+    @GetMapping("/close/{orderId}")
+    public String closeOrder(@PathVariable(name = "orderId") Long orderId) {
         if (orderId != null) {
-            orderService.completeOrder(orderId);
+            orderService.closeOrder(orderId);
         }
 
         return REDIRECT_TO_MAIN_PAGE;
@@ -197,4 +225,24 @@ public class EmployeeOrderPageController {
         return REDIRECT_TO_MAIN_PAGE;
     }
 
+    @PostMapping("/search")
+    public ModelAndView searchOrder(@RequestParam(name = "orderId") Long orderId) {
+        final ModelAndView mav = new ModelAndView("employeeOrderPage");
+
+        if (orderId != null) {
+            try {
+                mav.addObject("searchId", orderId);
+                mav.addObject("orders", Collections.singletonList(orderService.getOrderById(orderId)));
+            } catch (EntityNotFoundException nfe) {
+                mav.addObject("searchId", orderId);
+                mav.addObject("orders", Collections.emptyList());
+            }
+        } else {
+            mav.addObject("orders", orderService.getAllOrders());
+        }
+
+        mav.addObject("order", new OrderDto());
+
+        return mav;
+    }
 }

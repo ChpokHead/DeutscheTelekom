@@ -7,50 +7,52 @@
     <link href="/static/css/employeeOrderPage.css" rel="stylesheet">
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
     <link rel="shortcut icon" href="/static/images/logo.svg">
+    <script src="https://code.jquery.com/jquery-3.4.1.min.js"
+            integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin="anonymous"></script>
+    <script defer src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"
+            integrity="sha384-ka7Sk0Gln4gmtz2MlQnikT1wXgYsOg+OMhuP+IlRH9sENBO0LRn5q+8nbTov4+1p" crossorigin="anonymous"></script>
 </head>
 <body>
 <div class="container-fluid">
     <div class="row flex-nowrap">
-        <div class="col-auto col-md-3 col-xl-2 px-sm-2 px-0 bg-light">
-            <div class="d-flex flex-column align-items-center align-items-sm-start pt-2 text-white min-vh-100 position-fixed bg-light" style="padding-left: 1rem !important; padding-right: 5rem !important;">
-                <a href="/employeePage" class="d-flex align-items-center pb-3 mb-md-0 me-md-auto text-decoration-none" id="navbar-header">
-                    <span class="fs-5 d-none d-sm-inline">Меню</span>
-                </a>
-                <ul class="nav nav-pills flex-column mb-sm-auto mb-0 align-items-center align-items-sm-start" id="menu">
-                    <li class="nav-item py-1">
-                        <a href="employeePage" class="nav-link align-middle px-0">
-                            <span class="ms-1 d-none d-sm-inline">Личный кабинет</span>
-                        </a>
-                    </li>
-                    <li class="py-1">
-                        <a href="/employeeTruck" class="nav-link px-0 align-middle">
-                            <span class="ms-1 d-none d-sm-inline">Фуры</span> </a>
-                    </li>
-                    <li class="py-1">
-                        <a href="/employeeDriver" class="nav-link px-0 align-middle">
-                            <span class="ms-1 d-none d-sm-inline">Водители</span></a>
-                    </li>
-                    <li class="py-1">
-                        <a href="/employeeOrder" class="nav-link nav-link-active px-0 align-middle">
-                            <span class="ms-1 d-none d-sm-inline">Заказы</span></a>
-                    </li>
-                    <li class="py-1">
-                        <a href="/employeeCargo" class="nav-link px-0 align-middle">
-                            <span class="ms-1 d-none d-sm-inline">Грузы</span></a>
-                    </li>
-                </ul>
-                <div class="py-3">
-                    <a class="btn btn-lg btn-danger" href="/logout">
-                        <span>Выйти</span>
-                    </a>
-                </div>
-            </div>
-        </div>
+        <div th:replace="navbar :: navbar"></div>
         <div class="col py-1">
             <div class="row">
-                <div class="d-flex w-100 justify-content-end">
+                <div class="col-auto">
+                    <div class="d-flex w-100 justify-content-start">
+                        <div class="dropdown py-1">
+                            <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton1" data-bs-toggle="dropdown" aria-expanded="false">
+                                Фильтр
+                            </button>
+                            <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton1">
+                                <li><a class="dropdown-item" href="/employeeOrder">Все</a></li>
+                                <li><a class="dropdown-item" href="/employeeOrder?status=2">В процессе</a></li>
+                                <li><a class="dropdown-item" href="/employeeOrder?status=0">Завершенные</a></li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+                <div class="col py-1">
+                    <form th:action="@{/employeeOrder/search}" th:method="post" id="orderSearch">
+                        <div class="input-group">
+                            <div class="form-outline">
+                                <div th:if="${searchId != null}">
+                                    <input type="text" pattern="[0-9]+" placeholder="Номер заказа" th:value="${searchId}" name="orderId" class="form-control" required/>
+                                </div>
+                                <div th:if="${searchId == null}">
+                                    <input type="text" pattern="[0-9]+" placeholder="Номер заказа" name="orderId" class="form-control" required/>
+                                </div>
+                            </div>
+                            <button type="submit" class="btn btn-primary px-2" style="background-color: #ef8b05">
+                                Поиск
+                            </button>
+                        </div>
+                    </form>
+                </div>
+                <div class="col"></div>
+                <div class="col-auto">
                     <div class="py-1">
-                        <button id = "order-add-btn" class="btn btn-lg" data-bs-toggle="modal" data-bs-target="#addModal">Создать пустой заказ</button>
+                        <button id = "order-add-btn" class="btn" data-bs-toggle="modal" data-bs-target="#addModal">Создать пустой заказ</button>
                     </div>
                 </div>
             </div>
@@ -59,7 +61,7 @@
                     <h4 style="color: gray; opacity: 0.8">Заказов пока нет</h4>
                 </div>
             </div>
-            <div class="row-1 py-1">
+            <div class="row-1 py-1" id="ordersList">
                 <div class="list-group py-2" th:each="order : ${orders}">
                     <div class="list-group-item list-group-item-action" aria-current="true">
                         <div class="row">
@@ -106,12 +108,13 @@
                         </div>
                         <div class="row">
                             <div class="col py-1">
-                                <small th:text="${#bools.isTrue(order.isCompleted)} ? 'Выполнен' : 'Не выполнен'"></small>
+                                <small th:text="${#bools.isTrue(order.status == 0)} ? 'Завершен' : 'В процессе'"></small>
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
+        </div>
         </div>
         <div class="modal fade" id="addModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
             <form th:method="post" id="addOrder" th:action="@{/employeeOrder}" th:object="${order}">
@@ -156,14 +159,15 @@
         </div>
     </div>
 </div>
-
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta3/dist/js/bootstrap.bundle.min.js" integrity="sha384-JEW9xMcG8R+pH31jmWH6WWP0WintQrMb4s7ZOdauHnUtxwoG2vI5DkLtS3qm9Ekf" crossorigin="anonymous"></script>
-<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
 <script th:inline="javascript" type="text/javascript">
     $("[name=del-item-btn]").click(function () {
         var passedID = $(this).attr('id');
         $('#order-id-delete').val(passedID);
     });
+</script>
+<script>
+    var currentMenu = document.getElementById("ordersPage");
+    currentMenu.classList += " nav-link-active";
 </script>
 </body>
 </html>

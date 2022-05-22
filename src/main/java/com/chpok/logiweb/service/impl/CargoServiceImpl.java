@@ -18,6 +18,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityNotFoundException;
+import javax.persistence.NoResultException;
+
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.stream.Collectors;
@@ -69,7 +71,7 @@ public class CargoServiceImpl implements CargoService {
     public CargoDto getCargoById(Long id) {
         try {
             return cargoMapper.mapEntityToDto(cargoDao.findById(id).orElseThrow(NoSuchElementException::new));
-        } catch (HibernateException | NoSuchElementException e) {
+        } catch (HibernateException | NoSuchElementException | NoResultException e) {
             LOGGER.error("getting cargo by id exception");
 
             throw new EntityNotFoundException();

@@ -15,6 +15,8 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityNotFoundException;
+import javax.persistence.NoResultException;
+
 import java.util.NoSuchElementException;
 
 @Component
@@ -33,7 +35,7 @@ public class UserServiceImpl implements UserService {
     public User getUserById(Long id) {
         try {
             return userDao.findById(id).orElseThrow(NoSuchElementException::new);
-        } catch (HibernateException | NoSuchElementException | IllegalArgumentException e) {
+        } catch (HibernateException | NoSuchElementException | IllegalArgumentException | NoResultException e) {
             LOGGER.error("getting user by id exception");
 
             throw new EntityNotFoundException();
@@ -45,7 +47,7 @@ public class UserServiceImpl implements UserService {
         try {
             return driverMapper.mapEntityToDto(userDao.findById(id)
                     .orElseThrow(NoSuchElementException::new).getDriver());
-        } catch (HibernateException | NoSuchElementException | IllegalArgumentException e) {
+        } catch (HibernateException | NoSuchElementException | IllegalArgumentException | NoResultException e) {
             LOGGER.error("getting driver by user id exception");
 
             throw new EntityNotFoundException();
@@ -57,7 +59,7 @@ public class UserServiceImpl implements UserService {
         try {
             return employeeMapper.mapEntityToDto(userDao.findById(id)
                     .orElseThrow(NoSuchElementException::new).getEmployee());
-        } catch (HibernateException | NoSuchElementException | IllegalArgumentException e) {
+        } catch (HibernateException | NoSuchElementException | IllegalArgumentException | NoResultException e) {
             LOGGER.error("getting employee by user id exception");
 
             throw new EntityNotFoundException();

@@ -16,6 +16,7 @@ import java.util.Optional;
 public class TruckDaoImpl implements TruckDao{
     private static final String FIND_ALL_QUERY = "SELECT t FROM Truck t";
     private static final String FIND_ALL_BY_CURRENT_LOCATION_ID_QUERY = "SELECT t FROM Truck t where t.location.id = :id";
+    private static final String FIND_BY_REG_NUMBER_QUERY = "SELECT t FROM Truck t where t.regNumber = :regNumber";
 
     private final SessionFactory sessionFactory;
 
@@ -109,4 +110,17 @@ public class TruckDaoImpl implements TruckDao{
         }
     }
 
+    @Override
+    public Optional<Truck> findByRegNumber(String regNumber) {
+        try (Session session = sessionFactory.openSession()){
+            session.beginTransaction();
+
+            final Truck truck = session.createQuery(FIND_BY_REG_NUMBER_QUERY, Truck.class)
+                    .setParameter("regNumber", regNumber).getSingleResult();
+
+            session.getTransaction().commit();
+
+            return Optional.ofNullable(truck);
+        }
+    }
 }

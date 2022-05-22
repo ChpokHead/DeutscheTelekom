@@ -2,6 +2,7 @@ package com.chpok.logiweb.controller;
 
 import com.chpok.logiweb.dto.DriverDto;
 import com.chpok.logiweb.model.enums.DriverStatus;
+import com.chpok.logiweb.model.enums.OrderStatus;
 import com.chpok.logiweb.service.*;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -62,7 +63,7 @@ public class DriverMainPageController {
 
     @PutMapping("/completeOrder")
     public String completeOrder(@ModelAttribute DriverDto driver) {
-        orderService.updateOrderStatus(driver.getCurrentOrder());
+        orderService.updateOrderStatus(driver.getCurrentOrder().getId(), OrderStatus.COMPLETED);
 
         return REDIRECT_TO_MAIN_PAGE;
     }

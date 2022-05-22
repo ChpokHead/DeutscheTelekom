@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Fragment - Navbar</title>
+</head>
+<body>
+<div class="col-auto col-md-3 col-xl-2 px-sm-2 px-0 bg-light" th:fragment="navbar">
+    <div class="d-flex flex-column align-items-center align-items-sm-start pt-2 text-white min-vh-100 position-fixed bg-light" style="padding-left: 1rem !important; padding-right: 5rem !important;">
+        <a href="/employeePage" class="d-flex align-items-center pb-3 mb-md-0 me-md-auto text-decoration-none" id="navbar-header">
+            <span class="fs-5 d-none d-sm-inline">Меню</span>
+        </a>
+        <ul class="nav nav-pills flex-column mb-sm-auto mb-0 align-items-center align-items-sm-start" id="menu">
+            <li class="nav-item py-1">
+                <a href="employeePage" class="nav-link align-middle px-0" id="mainPage">
+                    <span class="ms-1 d-none d-sm-inline">Личный кабинет</span>
+                </a>
+            </li>
+            <li class="py-1">
+                <a href="/employeeTruck" class="nav-link px-0 align-middle" id="trucksPage">
+                    <span class="ms-1 d-none d-sm-inline">Фуры</span> </a>
+            </li>
+            <li class="py-1">
+                <a href="/employeeDriver" class="nav-link px-0 align-middle" id="driversPage">
+                    <span class="ms-1 d-none d-sm-inline">Водители</span></a>
+            </li>
+            <li class="py-1">
+                <a href="/employeeOrder" class="nav-link px-0 align-middle" id="ordersPage">
+                    <span class="ms-1 d-none d-sm-inline">Заказы</span></a>
+            </li>
+            <li class="py-1">
+                <a href="/employeeCargo" class="nav-link px-0 align-middle" id="cargosPage">
+                    <span class="ms-1 d-none d-sm-inline">Грузы</span></a>
+            </li>
+            <li class="py-1">
+                <a href="/employeeReport" class="nav-link px-0 align-middle" id="reportsPage">
+                    <span class="ms-1 d-none d-sm-inline">Отчеты</span></a>
+            </li>
+        </ul>
+        <div class="py-3">
+            <a class="btn btn-lg btn-danger" href="/logout">
+                <span>Выйти</span>
+            </a>
+        </div>
+    </div>
+</div>
+</body>
+</html>

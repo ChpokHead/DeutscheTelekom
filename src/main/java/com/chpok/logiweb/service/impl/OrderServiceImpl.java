@@ -1,12 +1,16 @@
 package com.chpok.logiweb.service.impl;
 
 import com.chpok.logiweb.dao.OrderDao;
+import com.chpok.logiweb.dao.OrderReportDao;
 import com.chpok.logiweb.dto.*;
 import com.chpok.logiweb.exception.InvalidEntityException;
 import com.chpok.logiweb.model.Driver;
 import com.chpok.logiweb.model.Location;
 import com.chpok.logiweb.model.Order;
+import com.chpok.logiweb.model.OrderReport;
 import com.chpok.logiweb.model.Truck;
+import com.chpok.logiweb.model.enums.OrderStatus;
+import com.chpok.logiweb.model.enums.WaypointType;
 import com.chpok.logiweb.model.kafka.LogiwebMessage;
 import com.chpok.logiweb.service.*;
 import com.chpok.logiweb.mapper.impl.OrderMapper;
@@ -19,12 +23,15 @@ import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Component;
 
 import javax.persistence.EntityNotFoundException;
+import javax.persistence.NoResultException;
+
 import java.time.LocalDate;
 import java.time.temporal.TemporalAdjusters;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.NoSuchElementException;
+import java.util.StringJoiner;
 import java.util.stream.Collectors;
 
 @Component
@@ -49,6 +56,8 @@ public class OrderServiceImpl implements OrderService {
     @Autowired
     private CargoService cargoService;
     @Autowired
+    private OrderReportService reportService;
+    @Autowired
     private KafkaTemplate<String, LogiwebMessage> kafkaTemplate;
 
     @Override
@@ -63,13 +72,24 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
+    public List<OrderDto> getOrdersByStatus(OrderStatus status) {
+        try {
+            return orderDao.findByStatus(status).stream().map(orderMapper::mapEntityToDto).collect(Collectors.toList());
+        } catch (HibernateException | NoSuchElementException e) {
+            LOGGER.error("getting all orders exception");
+
+            throw new EntityNotFoundException();
+        }
+    }
+
+    @Override
     public void saveOrder(OrderDto order) {
         try {
             final Long savedOrderId = orderDao.save(orderMapper.mapDtoToEntity(order));
 
             logOnSuccess("new order was created");
 
-            sendMessage(new LogiwebMessage("orderSaved", savedOrderId));
+            //sendMessage(new LogiwebMessage("orderSaved", savedOrderId));
         } catch (HibernateException | NoSuchElementException | IllegalArgumentException e) {
             LOGGER.error("saving order exception");
 
@@ -84,7 +104,7 @@ public class OrderServiceImpl implements OrderService {
 
             logOnSuccess(String.format("order with id = %d was updated", order.getId()));
 
-            sendMessage(new LogiwebMessage("orderUpdated", order.getId()));
+            //sendMessage(new LogiwebMessage("orderUpdated", order.getId()));
         } catch (HibernateException | NoSuchElementException | IllegalArgumentException e) {
             LOGGER.error("updating order exception");
 
@@ -139,11 +159,11 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
-    public void updateOrderStatus(Order order) {
+    public void updateOrderStatus(Long orderId, OrderStatus status) {
         try {
-            final OrderDto updatingOrder = getOrderById(order.getId());
+            final OrderDto updatingOrder = getOrderById(orderId);
 
-            updatingOrder.setIsCompleted(order.getIsCompleted());
+            updatingOrder.setStatus(status.ordinal());
 
             updateOrder(updatingOrder);
         } catch (HibernateException | NoSuchElementException | IllegalArgumentException e) {
@@ -190,7 +210,7 @@ public class OrderServiceImpl implements OrderService {
     public OrderDto getOrderById(Long id) {
         try {
             return orderMapper.mapEntityToDto(orderDao.findById(id).orElseThrow(NoSuchElementException::new));
-        } catch (HibernateException | NoSuchElementException e) {
+        } catch (HibernateException | NoSuchElementException | NoResultException e) {
             LOGGER.error("getting order by id exception");
 
             throw new EntityNotFoundException();
@@ -324,9 +344,12 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
-    public void completeOrder(Long orderId) {
+    public void closeOrder(Long orderId) {
         try {
             final OrderDto completingOrder = getOrderById(orderId);
+
+            reportService.createOrderReport(completingOrder, getOrderDistance(orderId));
+
             final List<Order.Waypoint> orderWaypoints = completingOrder.getWaypoints();
             final List<Driver> orderDrivers = completingOrder.getCurrentDrivers();
 
@@ -354,7 +377,7 @@ public class OrderServiceImpl implements OrderService {
 
             logOnSuccess(String.format("order with id = %d has been completed", orderId));
 
-            sendMessage(new LogiwebMessage("orderDeleted", orderId));
+            //sendMessage(new LogiwebMessage("orderDeleted", orderId));
         } catch (HibernateException | NoSuchElementException e) {
             LOGGER.error("completing order by order id exception");
 
@@ -405,7 +428,7 @@ public class OrderServiceImpl implements OrderService {
 
             logOnSuccess(String.format("order with id = %d has been deleted", id));
 
-            sendMessage(new LogiwebMessage("orderDeleted", id));
+            //sendMessage(new LogiwebMessage("orderDeleted", id));
         } catch (HibernateException | NoSuchElementException e) {
             LOGGER.error("deleting order by order id exception");
 

@@ -3,6 +3,8 @@ package com.chpok.logiweb.mapper.impl;
 import com.chpok.logiweb.dto.OrderDto;
 import com.chpok.logiweb.mapper.Mapper;
 import com.chpok.logiweb.model.Order;
+import com.chpok.logiweb.model.enums.OrderStatus;
+
 import org.springframework.stereotype.Component;
 
 @Component
@@ -15,7 +17,7 @@ public class OrderMapper implements Mapper<Order, OrderDto> {
         final OrderDto orderDto = new OrderDto();
 
         orderDto.setId(order.getId());
-        orderDto.setIsCompleted(order.getIsCompleted());
+        orderDto.setStatus(order.getStatus().ordinal());
         orderDto.setCurrentDrivers(order.getDrivers());
         orderDto.setWaypoints(order.getWaypoints());
         orderDto.setCurrentTruck(order.getCurrentTruck());
@@ -33,7 +35,7 @@ public class OrderMapper implements Mapper<Order, OrderDto> {
 
         return Order.builder()
                 .withId(orderDto.getId())
-                .withIsCompleted(orderDto.getIsCompleted())
+                .withStatus(OrderStatus.fromInteger(orderDto.getStatus()))
                 .withWaypoints(orderDto.getWaypoints())
                 .withDrivers(orderDto.getCurrentDrivers())
                 .withTruck(orderDto.getCurrentTruck())

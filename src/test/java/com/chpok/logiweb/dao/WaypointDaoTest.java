@@ -1,15 +1,11 @@
 package com.chpok.logiweb.dao;
-
+/*
 import com.chpok.logiweb.config.KafkaProducerConfig;
 import com.chpok.logiweb.config.TestConfig;
 import com.chpok.logiweb.config.kafka.KafkaTopicConfig;
 import com.chpok.logiweb.model.Cargo;
 import com.chpok.logiweb.model.Order;
-import com.chpok.logiweb.model.Truck;
-import com.chpok.logiweb.model.User;
 import com.chpok.logiweb.model.enums.CargoStatus;
-import com.chpok.logiweb.model.enums.TruckStatus;
-import com.chpok.logiweb.model.enums.UserRole;
 import com.chpok.logiweb.model.enums.WaypointType;
 import io.zonky.test.db.AutoConfigureEmbeddedDatabase;
 import org.junit.jupiter.api.Test;
@@ -26,6 +22,7 @@ import java.util.List;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
+
 
 @ExtendWith(SpringExtension.class)
 @ContextConfiguration(classes = {TestConfig.class, KafkaProducerConfig.class, KafkaTopicConfig.class})
@@ -45,7 +42,7 @@ class WaypointDaoTest {
     @Test
     void saveShouldCorrectlySaveWaypointEntity() {
         final Order savingOrder = Order.builder()
-                .withIsCompleted(false)
+                .withStatus(false)
                 .withCreationDate(LocalDate.now())
                 .withDrivers(new ArrayList<>())
                 .withWaypoints(new ArrayList<>())
@@ -78,7 +75,7 @@ class WaypointDaoTest {
     @Test
     void findByIdShouldReturnCorrectWaypointEntity() {
         final Order savingOrder = Order.builder()
-                .withIsCompleted(false)
+                .withStatus(false)
                 .withCreationDate(LocalDate.of(2012, 3, 12))
                 .withDrivers(new ArrayList<>())
                 .withWaypoints(new ArrayList<>())
@@ -111,7 +108,7 @@ class WaypointDaoTest {
     @Test
     void updateShouldCorrectlyUpdateWaypointEntity() {
         final Order savingOrder = Order.builder()
-                .withIsCompleted(false)
+                .withStatus(false)
                 .withCreationDate(LocalDate.of(2012, 3, 12))
                 .withDrivers(new ArrayList<>())
                 .withWaypoints(new ArrayList<>())
@@ -155,7 +152,7 @@ class WaypointDaoTest {
     @Test
     void findAllShouldReturnCorrectWaypointList() {
         final Order savingOrder = Order.builder()
-                .withIsCompleted(false)
+                .withStatus(false)
                 .withCreationDate(LocalDate.of(1990, 7, 4))
                 .withDrivers(new ArrayList<>())
                 .withWaypoints(new ArrayList<>())
@@ -199,7 +196,7 @@ class WaypointDaoTest {
     @Test
     void updateWaypointsShouldCorrectlyUpdateWaypointEntityList() {
         final Order firstSavingOrder = Order.builder()
-                .withIsCompleted(false)
+                .withStatus(false)
                 .withCreationDate(LocalDate.of(1990, 7, 4))
                 .withDrivers(new ArrayList<>())
                 .withWaypoints(new ArrayList<>())
@@ -216,7 +213,7 @@ class WaypointDaoTest {
         cargoDao.save(firstSavingCargo);
 
         final Order secondSavingOrder = Order.builder()
-                .withIsCompleted(true)
+                .withStatus(true)
                 .withCreationDate(LocalDate.of(2015, 3, 22))
                 .withDrivers(new ArrayList<>())
                 .withWaypoints(new ArrayList<>())
@@ -278,7 +275,7 @@ class WaypointDaoTest {
     @Test
     void deleteByIdShouldCorrectlyDeleteWaypointEntity() {
         final Order savingOrder = Order.builder()
-                .withIsCompleted(false)
+                .withStatus(false)
                 .withCreationDate(LocalDate.of(1990, 7, 4))
                 .withDrivers(new ArrayList<>())
                 .withWaypoints(new ArrayList<>())
@@ -313,7 +310,7 @@ class WaypointDaoTest {
     @Test
     void findAllByOrderIdShouldReturnCorrectWaypointEntityList() {
         final Order savingOrder = Order.builder()
-                .withIsCompleted(false)
+                .withStatus(false)
                 .withCreationDate(LocalDate.of(1990, 7, 4))
                 .withDrivers(new ArrayList<>())
                 .withWaypoints(new ArrayList<>())
@@ -361,4 +358,4 @@ class WaypointDaoTest {
 
         assertThat(actual).isEqualTo(expected);
     }
-}
+}*/
