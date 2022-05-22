@@ -1,14 +1,11 @@
 package com.chpok.logiweb.service;
 
-import com.chpok.logiweb.config.KafkaProducerConfig;
 import com.chpok.logiweb.config.TestConfig;
 import com.chpok.logiweb.dao.LocationDao;
 import com.chpok.logiweb.dto.LocationDto;
-import com.chpok.logiweb.dto.TruckDto;
 import com.chpok.logiweb.mapper.impl.LocationMapper;
 import com.chpok.logiweb.model.Location;
-import com.chpok.logiweb.model.Truck;
-import com.chpok.logiweb.model.enums.TruckStatus;
+
 import io.zonky.test.db.AutoConfigureEmbeddedDatabase;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -27,7 +24,7 @@ import static org.mockito.Mockito.when;
 
 @ExtendWith(SpringExtension.class)
 @ExtendWith(MockitoExtension.class)
-@ContextConfiguration(classes = {TestConfig.class, KafkaProducerConfig.class})
+@ContextConfiguration(classes = {TestConfig.class})
 @AutoConfigureEmbeddedDatabase(beanName = "dataSource")
 class LocationServiceTest {
     @Mock

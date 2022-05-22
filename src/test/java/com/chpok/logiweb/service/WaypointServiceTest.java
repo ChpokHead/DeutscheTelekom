@@ -1,9 +1,7 @@
 package com.chpok.logiweb.service;
 
-import com.chpok.logiweb.config.KafkaProducerConfig;
 import com.chpok.logiweb.config.TestConfig;
 import com.chpok.logiweb.dao.WaypointDao;
-import com.chpok.logiweb.dto.OrderDto;
 import com.chpok.logiweb.dto.WaypointDto;
 import com.chpok.logiweb.dto.WaypointsPair;
 import com.chpok.logiweb.mapper.impl.WaypointMapper;
@@ -16,7 +14,6 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
@@ -33,7 +30,7 @@ import static org.assertj.core.api.Assertions.*;
 
 @ExtendWith(SpringExtension.class)
 @ExtendWith(MockitoExtension.class)
-@ContextConfiguration(classes = {TestConfig.class, KafkaProducerConfig.class})
+@ContextConfiguration(classes = {TestConfig.class})
 @AutoConfigureEmbeddedDatabase(beanName = "dataSource")
 class WaypointServiceTest {
     @Mock

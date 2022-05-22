@@ -8,7 +8,6 @@ import com.chpok.logiweb.exception.InvalidEntityException;
 import com.chpok.logiweb.model.Driver;
 import com.chpok.logiweb.model.Location;
 import com.chpok.logiweb.model.enums.DriverStatus;
-import com.chpok.logiweb.model.kafka.LogiwebMessage;
 import com.chpok.logiweb.service.DriverService;
 import com.chpok.logiweb.mapper.impl.DriverMapper;
 import com.chpok.logiweb.mapper.impl.OrderMapper;
@@ -19,7 +18,6 @@ import org.apache.logging.log4j.Logger;
 import org.hibernate.HibernateException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 

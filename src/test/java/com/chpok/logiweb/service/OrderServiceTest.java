@@ -1,39 +1,5 @@
 package com.chpok.logiweb.service;
 
-import com.chpok.logiweb.config.KafkaProducerConfig;
-import com.chpok.logiweb.config.TestConfig;
-import com.chpok.logiweb.dao.OrderDao;
-import com.chpok.logiweb.dto.*;
-import com.chpok.logiweb.mapper.impl.OrderMapper;
-import com.chpok.logiweb.mapper.impl.TruckMapper;
-import com.chpok.logiweb.model.*;
-import com.chpok.logiweb.model.enums.DriverStatus;
-import com.chpok.logiweb.model.enums.OrderStatus;
-import com.chpok.logiweb.model.enums.TruckStatus;
-import com.chpok.logiweb.model.enums.WaypointType;
-import com.chpok.logiweb.model.kafka.LogiwebMessage;
-import io.zonky.test.db.AutoConfigureEmbeddedDatabase;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.Mockito;
-import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.kafka.core.KafkaTemplate;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit.jupiter.SpringExtension;
-
-import javax.persistence.EntityNotFoundException;
-import java.time.LocalDate;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
-import java.util.Optional;
-
-import static org.assertj.core.api.Assertions.*;
-import static org.mockito.Mockito.*;
-
 /*
 @ExtendWith(SpringExtension.class)
 @ExtendWith(MockitoExtension.class)

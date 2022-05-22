@@ -1,14 +1,11 @@
 package com.chpok.logiweb.service;
 
-import com.chpok.logiweb.config.KafkaProducerConfig;
 import com.chpok.logiweb.config.TestConfig;
 import com.chpok.logiweb.dao.EmployeeDao;
 import com.chpok.logiweb.dto.EmployeeDto;
-import com.chpok.logiweb.dto.WaypointDto;
 import com.chpok.logiweb.mapper.impl.EmployeeMapper;
 import com.chpok.logiweb.model.Employee;
-import com.chpok.logiweb.model.Order;
-import com.chpok.logiweb.model.enums.WaypointType;
+
 import io.zonky.test.db.AutoConfigureEmbeddedDatabase;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -28,7 +25,7 @@ import static org.mockito.Mockito.when;
 
 @ExtendWith(SpringExtension.class)
 @ExtendWith(MockitoExtension.class)
-@ContextConfiguration(classes = {TestConfig.class, KafkaProducerConfig.class})
+@ContextConfiguration(classes = {TestConfig.class})
 @AutoConfigureEmbeddedDatabase(beanName = "dataSource")
 class EmployeeServiceTest {
     @Mock

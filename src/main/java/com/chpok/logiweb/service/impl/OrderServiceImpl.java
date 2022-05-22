@@ -1,17 +1,13 @@
 package com.chpok.logiweb.service.impl;
 
 import com.chpok.logiweb.dao.OrderDao;
-import com.chpok.logiweb.dao.OrderReportDao;
 import com.chpok.logiweb.dto.*;
 import com.chpok.logiweb.exception.InvalidEntityException;
 import com.chpok.logiweb.model.Driver;
 import com.chpok.logiweb.model.Location;
 import com.chpok.logiweb.model.Order;
-import com.chpok.logiweb.model.OrderReport;
 import com.chpok.logiweb.model.Truck;
 import com.chpok.logiweb.model.enums.OrderStatus;
-import com.chpok.logiweb.model.enums.WaypointType;
-import com.chpok.logiweb.model.kafka.LogiwebMessage;
 import com.chpok.logiweb.service.*;
 import com.chpok.logiweb.mapper.impl.OrderMapper;
 import com.chpok.logiweb.mapper.impl.TruckMapper;
@@ -19,7 +15,6 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.hibernate.HibernateException;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Component;
 
 import javax.persistence.EntityNotFoundException;
