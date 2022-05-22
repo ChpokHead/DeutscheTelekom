@@ -15,7 +15,7 @@ import org.springframework.kafka.support.serializer.JsonSerializer;
 import java.util.HashMap;
 import java.util.Map;
 
-@Configuration
+/*@Configuration
 @EnableKafka
 public class KafkaProducerConfig {
     @Value(value = "localhost:9092")
@@ -41,4 +41,4 @@ public class KafkaProducerConfig {
     public KafkaTemplate<String, LogiwebMessage> kafkaTemplate() {
         return new KafkaTemplate<>(producerFactory());
     }
-}
+}*/

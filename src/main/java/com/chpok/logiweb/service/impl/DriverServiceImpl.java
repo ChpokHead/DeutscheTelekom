@@ -43,8 +43,8 @@ public class DriverServiceImpl implements DriverService {
     private TruckService truckService;
     @Autowired
     private OrderMapper orderMapper;
-    @Autowired
-    private KafkaTemplate<String, LogiwebMessage> kafkaTemplate;
+    /*@Autowired
+    private KafkaTemplate<String, LogiwebMessage> kafkaTemplate;*/
     private final ValidationProvider<DriverDto> saveUpdateValidator;
     private final ValidationProvider<DriverDto> deleteValidator;
 
@@ -74,7 +74,7 @@ public class DriverServiceImpl implements DriverService {
 
             logOnSuccess(String.format("driver with id = %d was updated", driver.getPersonalNumber()));
 
-            sendMessage(new LogiwebMessage("driverUpdated", driver.getPersonalNumber()));
+            //sendMessage(new LogiwebMessage("driverUpdated", driver.getPersonalNumber()));
         } catch (HibernateException | NoSuchElementException | IllegalArgumentException e) {
             LOGGER.error("updating driver exception");
 
@@ -130,7 +130,7 @@ public class DriverServiceImpl implements DriverService {
 
             logOnSuccess(String.format("driver with id = %d was deleted", id));
 
-            sendMessage(new LogiwebMessage("driverDeleted", id));
+            //sendMessage(new LogiwebMessage("driverDeleted", id));
         } catch (IllegalArgumentException e){
             LOGGER.error("deleting driver by id exception");
 
@@ -248,8 +248,8 @@ public class DriverServiceImpl implements DriverService {
         LOGGER.info(logInfo);
     }
 
-    private void sendMessage(LogiwebMessage message) {
+    /*private void sendMessage(LogiwebMessage message) {
         kafkaTemplate.send("logiweb-driver", message);
-    }
+    }*/
 
 }

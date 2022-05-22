@@ -16,7 +16,7 @@ import javax.servlet.Filter;
 public class LogiwebAppInit extends AbstractAnnotationConfigDispatcherServletInitializer {
     @Override
     protected Class<?>[] getRootConfigClasses() {
-        return new Class[] {WebSecurityConfig.class, HibernateConfig.class, KafkaProducerConfig.class, KafkaTopicConfig.class};
+        return new Class[] {WebSecurityConfig.class, HibernateConfig.class};
     }
 
     @Override

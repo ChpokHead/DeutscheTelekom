@@ -11,7 +11,7 @@ import org.springframework.kafka.core.KafkaAdmin;
 import java.util.HashMap;
 import java.util.Map;
 
-@Configuration
+/*@Configuration
 public class KafkaTopicConfig {
     @Value(value = "localhost:9092")
     private String bootstrapAddress;
@@ -29,4 +29,4 @@ public class KafkaTopicConfig {
     public NewTopic topic() {
         return TopicBuilder.name("logiweb").build();
     }
-}
+}*/

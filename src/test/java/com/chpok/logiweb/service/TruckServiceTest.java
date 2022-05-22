@@ -53,8 +53,8 @@ class TruckServiceTest {
     private OrderMapper orderMapper;
     @Mock
     private LocationDao locationDao;
-    @Mock
-    private KafkaTemplate<String, LogiwebMessage> kafkaTemplate;
+    /*@Mock
+    private KafkaTemplate<String, LogiwebMessage> kafkaTemplate;*/
     @Autowired
     @InjectMocks
     private TruckService truckService;

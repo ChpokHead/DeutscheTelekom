@@ -46,8 +46,8 @@ class DriverServiceTest {
     private DriverDao driverDao;
     @Mock
     private TruckService truckService;
-    @Mock
-    private KafkaTemplate<String, LogiwebMessage> kafkaTemplate;
+    /*@Mock
+    private KafkaTemplate<String, LogiwebMessage> kafkaTemplate;*/
     @Autowired
     @InjectMocks
     private DriverService driverService;

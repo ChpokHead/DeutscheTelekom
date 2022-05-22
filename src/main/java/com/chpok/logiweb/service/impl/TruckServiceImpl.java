@@ -47,8 +47,8 @@ public class TruckServiceImpl implements TruckService {
     private OrderMapper orderMapper;
     @Autowired
     private LocationDao locationDao;
-    @Autowired
-    private KafkaTemplate<String, LogiwebMessage> kafkaTemplate;
+    /*@Autowired
+    private KafkaTemplate<String, LogiwebMessage> kafkaTemplate;*/
     private final ValidationProvider<TruckDto> saveUpdateValidator;
     private final ValidationProvider<TruckDto> deleteValidator;
 
@@ -262,7 +262,7 @@ public class TruckServiceImpl implements TruckService {
         LOGGER.info(logInfo);
     }
 
-    private void sendMessage(LogiwebMessage message) {
+    /*private void sendMessage(LogiwebMessage message) {
         kafkaTemplate.send("logiweb-truck", message);
-    }
+    }*/
 }

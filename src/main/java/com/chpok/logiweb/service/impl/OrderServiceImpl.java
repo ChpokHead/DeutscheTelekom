@@ -57,8 +57,8 @@ public class OrderServiceImpl implements OrderService {
     private CargoService cargoService;
     @Autowired
     private OrderReportService reportService;
-    @Autowired
-    private KafkaTemplate<String, LogiwebMessage> kafkaTemplate;
+    /*@Autowired
+    private KafkaTemplate<String, LogiwebMessage> kafkaTemplate;*/
 
     @Override
     public List<OrderDto> getAllOrders() {
@@ -448,8 +448,8 @@ public class OrderServiceImpl implements OrderService {
         LOGGER.info(logInfo);
     }
 
-    private void sendMessage(LogiwebMessage message) {
+    /*private void sendMessage(LogiwebMessage message) {
         kafkaTemplate.send("logiweb-order", message);
-    }
+    }*/
 
 }
