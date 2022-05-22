@@ -2,7 +2,6 @@ package com.chpok.logiweb.service;
 
 import com.chpok.logiweb.config.KafkaProducerConfig;
 import com.chpok.logiweb.config.TestConfig;
-import com.chpok.logiweb.config.kafka.KafkaTopicConfig;
 import com.chpok.logiweb.dao.EmployeeDao;
 import com.chpok.logiweb.dto.EmployeeDto;
 import com.chpok.logiweb.dto.WaypointDto;
@@ -29,7 +28,7 @@ import static org.mockito.Mockito.when;
 
 @ExtendWith(SpringExtension.class)
 @ExtendWith(MockitoExtension.class)
-@ContextConfiguration(classes = {TestConfig.class, KafkaProducerConfig.class, KafkaTopicConfig.class})
+@ContextConfiguration(classes = {TestConfig.class, KafkaProducerConfig.class})
 @AutoConfigureEmbeddedDatabase(beanName = "dataSource")
 class EmployeeServiceTest {
     @Mock

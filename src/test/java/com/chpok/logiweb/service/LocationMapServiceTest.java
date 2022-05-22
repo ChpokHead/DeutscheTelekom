@@ -2,7 +2,6 @@ package com.chpok.logiweb.service;
 
 import com.chpok.logiweb.config.KafkaProducerConfig;
 import com.chpok.logiweb.config.TestConfig;
-import com.chpok.logiweb.config.kafka.KafkaTopicConfig;
 import com.chpok.logiweb.dao.LocationMapDao;
 import com.chpok.logiweb.model.Location;
 import com.chpok.logiweb.model.LocationMap;
@@ -25,7 +24,7 @@ import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 
 @ExtendWith(SpringExtension.class)
 @ExtendWith(MockitoExtension.class)
-@ContextConfiguration(classes = {TestConfig.class, KafkaProducerConfig.class, KafkaTopicConfig.class})
+@ContextConfiguration(classes = {TestConfig.class, KafkaProducerConfig.class})
 @AutoConfigureEmbeddedDatabase(beanName = "dataSource")
 class LocationMapServiceTest {
     @Mock

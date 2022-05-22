@@ -1,8 +1,6 @@
 package com.chpok.logiweb.config;
 
 import com.chpok.logiweb.config.hibernate.HibernateConfig;
-import com.chpok.logiweb.config.kafka.KafkaProducerConfig;
-import com.chpok.logiweb.config.kafka.KafkaTopicConfig;
 import com.chpok.logiweb.config.security.WebSecurityConfig;
 import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.filter.CharacterEncodingFilter;
