@@ -2,7 +2,6 @@ package com.chpok.logiweb.service;
 
 import com.chpok.logiweb.config.KafkaProducerConfig;
 import com.chpok.logiweb.config.TestConfig;
-import com.chpok.logiweb.config.kafka.KafkaTopicConfig;
 import com.chpok.logiweb.dao.OrderDao;
 import com.chpok.logiweb.dto.*;
 import com.chpok.logiweb.mapper.impl.OrderMapper;
