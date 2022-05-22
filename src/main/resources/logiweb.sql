@@ -1,3 +1,11 @@
+create type dblink_pkey_results as
+(
+    position integer,
+    colname text
+);
+
+alter type dblink_pkey_results owner to postgres;
+
 create type truck_status as enum ('OK', 'BROKEN');
 
 alter type truck_status owner to chpok;
@@ -18,9 +26,13 @@ create type user_role as enum ('ROLE_EMPLOYEE', 'ROLE_DRIVER');
 
 alter type user_role owner to chpok;
 
+create type order_status as enum ('COMPLETED', 'CLOSED', 'IN_PROGRESS');
+
+alter type order_status owner to postgres;
+
 create table cargo
 (
-    id bigserial not null
+    id bigserial
         constraint cargo_pkey
             primary key,
     name varchar(50) not null,
@@ -32,21 +44,21 @@ alter table cargo owner to chpok;
 
 create table customer_order
 (
-    id bigserial not null
+    id bigserial
         constraint customer_order_pkey
             primary key,
-    is_completed boolean default false,
     current_truck_id bigint,
     creation_date date default now(),
     start_date date,
-    end_date date
+    end_date date,
+    status order_status
 );
 
 alter table customer_order owner to chpok;
 
 create table location
 (
-    id bigserial not null
+    id bigserial
         constraint location_pkey
             primary key,
     name varchar(255)
@@ -56,7 +68,7 @@ alter table location owner to chpok;
 
 create table waypoint
 (
-    id bigserial not null
+    id bigserial
         constraint waypoint_pkey
             primary key,
     cargo_id bigint not null
@@ -79,7 +91,7 @@ alter table waypoint owner to chpok;
 
 create table truck
 (
-    id bigserial not null
+    id bigserial
         constraint truck_pkey
             primary key,
     capacity smallint,
@@ -98,9 +110,13 @@ create table truck
 
 alter table truck owner to chpok;
 
+alter table customer_order
+    add constraint customer_order_truck__fk
+        foreign key (current_truck_id) references truck;
+
 create table driver
 (
-    id bigserial not null
+    id bigserial
         constraint driver_pkey
             primary key,
     first_name varchar(30) not null,
@@ -123,13 +139,9 @@ create table driver
 
 alter table driver owner to chpok;
 
-alter table customer_order
-    add constraint customer_order_truck__fk
-        foreign key (current_truck_id) references truck;
-
 create table employee
 (
-    id bigserial not null
+    id bigserial
         constraint employee_pkey
             primary key,
     first_name varchar(30) not null,
@@ -141,7 +153,7 @@ alter table employee owner to chpok;
 
 create table users
 (
-    id bigserial not null
+    id bigserial
         constraint users_pkey
             primary key,
     username varchar(30) not null,
@@ -159,7 +171,7 @@ alter table users owner to chpok;
 
 create table location_map
 (
-    id bigserial not null
+    id bigserial
         constraint location_map_pkey
             primary key,
     starting_location bigint
@@ -172,4 +184,23 @@ create table location_map
 );
 
 alter table location_map owner to chpok;
+
+create table order_report
+(
+    id bigserial
+        constraint order_report_pkey
+            primary key,
+    order_creation_date date,
+    order_start_date date,
+    order_end_date date,
+    route text,
+    distance smallint,
+    truck varchar(7),
+    drivers text,
+    order_id bigint,
+    report_creation_date date
+);
+
+alter table order_report owner to postgres;
+
 
